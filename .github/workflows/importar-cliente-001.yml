@@ -20,7 +20,7 @@ jobs:
           test "$GITHUB_REPOSITORY" = "quijanopomae-crypto/proyectos-html"
           git clone --quiet --single-branch --branch feature/v1.3-mobile-cloud --depth 1 https://github.com/quijanopomae-crypto/nuevo-amanecer-pos.git "$RUNNER_TEMP/origen"
           SRC="$RUNNER_TEMP/origen"
-          test "$(git -C "$SRC" rev-parse HEAD)" = fa708d4def27da0f6cf75b2617592237ae9dda60 || { echo "La fuente cambio: detener por seguridad"; exit 1; }
+          test "$(git -C "$SRC" rev-parse HEAD)" = f45c64332377d1c5aa00575b23dbb1a678a1f093 || { echo "La fuente cambio: detener por seguridad"; exit 1; }
           find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
           cp -a "$SRC/POS" ./POS
           mkdir -p tools infra/database evidence/v1.2
@@ -108,7 +108,7 @@ jobs:
           # POS Cliente 001 - Copia aislada
 
           Copia de codigo fuente tomada del POS Nuevo Amanecer.
-          Origen fijo: fa708d4def27da0f6cf75b2617592237ae9dda60
+          Origen fijo: f45c64332377d1c5aa00575b23dbb1a678a1f093
 
           **ESTADO: NO APTO PARA OPERAR, SIN NUBE HABILITADA.**
           Los endpoints conocidos del negocio original se sustituyeron por dominios invalidos.
