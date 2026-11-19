@@ -6,6 +6,9 @@ on:
       - POS/js/sync/hosted-canonical-guard.js
       - tests/client-001/**
       - infra/database/migrations/**
+      - tools/cloudflare-prod/wrangler.turso.jsonc
+      - tools/cloudflare-lab/src/turso-d1-adapter.js
+      - tools/cloudflare-lab/src/database-binding.js
       - .github/workflows/cliente-001-offline-ci.yml
   workflow_dispatch:
 permissions:
@@ -23,6 +26,8 @@ jobs:
           node-version: '24'
       - name: Probar activacion y host del cliente
         run: node --test tests/client-001/hosted-guard.test.mjs
+      - name: Probar contrato Turso sin acceso a cuenta remota
+        run: node --test tools/cloudflare-lab/test/turso-d1-adapter.test.mjs
       - name: Comprobar migraciones en SQLite descartable
         run: python3 tests/client-001/migraciones_sqlite.py
       - name: Confirmar configuracion sin D1 real ni runtime activo
@@ -37,5 +42,12 @@ jobs:
           assert config['vars']['CANONICAL_RUNTIME_ENABLED']=='disabled'
           assert config['d1_databases'][0]['database_name']=='cliente-001-pos-db'
           assert config['d1_databases'][0]['database_id']=='REEMPLAZAR_CON_D1_EXCLUSIVA_DEL_CLIENTE'
-          print('Configuracion preliminar aislada: OK')
+          turso=json.loads(Path("tools/cloudflare-prod/wrangler.turso.jsonc").read_text())
+          assert turso['name']=='cliente-001-pos-api'
+          assert turso['vars']['DB_PROVIDER']=='turso'
+          assert turso['vars']['CANONICAL_RUNTIME_ENABLED']=='disabled'
+          assert 'd1_databases' not in turso
+          assert 'TURSO_AUTH_TOKEN' not in turso
+          assert 'TURSO_DATABASE_URL' not in turso
+          print('D1 en espera y Turso preparado sin secretos ni escrituras dobles: OK')
           PY
