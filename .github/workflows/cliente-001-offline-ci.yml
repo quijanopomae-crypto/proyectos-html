@@ -1,0 +1,41 @@
+name: Cliente 001 - comprobaciones sin nube
+on:
+  push:
+    branches: [main]
+    paths:
+      - POS/js/sync/hosted-canonical-guard.js
+      - tests/client-001/**
+      - infra/database/migrations/**
+      - .github/workflows/cliente-001-offline-ci.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Leer codigo del Cliente 001
+        uses: actions/checkout@v4
+      - name: Instalar Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Probar activacion y host del cliente
+        run: node --test tests/client-001/hosted-guard.test.mjs
+      - name: Comprobar migraciones en SQLite descartable
+        run: python3 tests/client-001/migraciones_sqlite.py
+      - name: Confirmar configuracion sin D1 real ni runtime activo
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path("tools/cloudflare-prod/wrangler.jsonc")
+          config=json.loads(p.read_text())
+          assert config['name']=='cliente-001-pos-api'
+          assert config['vars']['CANONICAL_RUNTIME_ENABLED']=='disabled'
+          assert config['d1_databases'][0]['database_name']=='cliente-001-pos-db'
+          assert config['d1_databases'][0]['database_id']=='REEMPLAZAR_CON_D1_EXCLUSIVA_DEL_CLIENTE'
+          print('Configuracion preliminar aislada: OK')
+          PY
