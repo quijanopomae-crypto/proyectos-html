@@ -1,0 +1,57 @@
+name: Verificar aislamiento de Cliente 001
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verificar-aislamiento-001.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  auditoria:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Revisar referencias heredadas y preparar inicio seguro
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,html
+          root=Path('.')
+          extensions={'.html','.js','.mjs','.cjs','.ts','.json','.jsonc','.css','.yaml','.yml','.md','.sql','.webmanifest','.cmd','.ps1','.txt','.svg'}
+          touched=[]
+          for dn in ('POS','tools','infra','tests','evidence'):
+              for p in (root/dn).rglob('*'):
+                  if not p.is_file() or p.suffix.lower() not in extensions: continue
+                  try: raw=p.read_text(encoding='utf-8')
+                  except (UnicodeError,OSError): continue
+                  fixed=raw.replace(r'\.nuevo-amanecer-pos\.workers\.dev',r'\.cliente-001\.sin-configurar\.invalid')
+                  fixed=fixed.replace('nuevo-amanecer-sync-lab','cliente-001-lab-desactivado')
+                  fixed=fixed.replace('cf2c83d3-f187-472e-967b-0ad24be969eb','00000000-0000-0000-0000-000000000000')
+                  if fixed!=raw: p.write_text(fixed,encoding='utf-8');touched.append(str(p))
+          forbidden=[r'(?i)nuevo-amanecer-pos\.workers\.dev',r'(?i)nuevo-amanecer-pos\\\.workers\\\.dev',r'(?i)cf2c83d3-f187-472e-967b-0ad24be969eb']
+          for dn in ('POS','tools','infra','tests','evidence'):
+              for p in (root/dn).rglob('*'):
+                  if not p.is_file() or p.suffix.lower() not in extensions: continue
+                  try: text=p.read_text(encoding='utf-8')
+                  except (UnicodeError,OSError): continue
+                  if any(re.search(pattern,text) for pattern in forbidden): raise SystemExit('Falla de aislamiento: '+str(p))
+          for needed in ['POS/index.html','tools/cloudflare-prod/wrangler.jsonc','infra/database/migrations/0010_session_auth.sql']:
+              assert (root/needed).is_file(),needed
+          assert not (root/'Nuevo_Amanecer_WORK_Clientes_Cuenta_Integrado.html').exists()
+          assert '"CANONICAL_RUNTIME_ENABLED": "disabled"' in (root/'tools/cloudflare-prod/wrangler.jsonc').read_text()
+          assert 'REEMPLAZAR_CON_D1_EXCLUSIVA_DEL_CLIENTE' in (root/'tools/cloudflare-prod/wrangler.jsonc').read_text()
+          assert 'cliente-001.sin-configurar.invalid' in (root/'tools/pos-local/setup.js').read_text()
+          print('Aislamiento de dominios conocidos: PASS')
+          print('Archivos corregidos:',touched)
+          (root/'index.html').write_text('''<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>POS Cliente 001</title><body style="max-width:620px;margin:80px auto;font:18px system-ui;padding:20px"><h1>POS Cliente 001</h1><p>Esta copia esta en preparacion. Todavia no dispone de almacenamiento comercial ni autorizacion para registrar ventas reales.</p><p>No ingreses informacion de clientes hasta completar la instalacion y las pruebas.</p></body></html>''',encoding='utf-8')
+          (root/'AUDITORIA_CLIENTE_001.md').write_text('# Verificacion automatica Cliente 001\n\n- Archivo anterior eliminado del arbol actual.\n- Dominios originales conocidos: sin coincidencias activas en los archivos revisados.\n- Conexion original en setup.js: bloqueada por dominio .invalid.\n- D1 exclusiva: pendiente de crear; ID de ejemplo.\n- Worker API desactivado por defecto.\n- Workflows heredados de origen: no importados.\n- Historial de Git anterior: aun existe y requiere recrear repo para purgarlo.\n- Pruebas funcionales y despliegue Cloudflare: pendientes.\n',encoding='utf-8')
+          PY
+          rm -f .github/workflows/verificar-aislamiento-001.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Cliente 001: corregir restos de dominio y bloquear uso antes de D1 propia"
+          git push origin HEAD:main
