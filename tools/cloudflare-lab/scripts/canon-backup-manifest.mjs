@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 export const CANON_BACKUP_FORMAT = 'nuevo-amanecer-d1-backup-v1';
-export const DEFAULT_CANON_DATABASE_ID = 'cf2c83d3-f187-472e-967b-0ad24be969eb';
+export const DEFAULT_CANON_DATABASE_ID = '00000000-0000-0000-0000-000000000000';
 
 function fail(message) {
   throw new Error('Invalid CANON backup manifest: ' + message);

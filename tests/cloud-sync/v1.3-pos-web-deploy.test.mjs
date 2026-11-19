@@ -32,7 +32,7 @@ test('launcher requires browser activation and never embeds the activation secre
   assert.match(launcher, /Clave de activación/);
   assert.match(activation, /x-activation-secret/);
   assert.match(activation, /NA_HOSTED_CONFIG/);
-  assert.doesNotMatch(activation, /cliente-001-pos-api\.nuevo-amanecer-pos\.workers\.dev/);
+  assert.doesNotMatch(activation, /cliente-001-pos-api\.cliente-001\.sin-configurar\.invalid/);
   assert.match(activation, /na_canonical_binding/);
   assert.match(activation, /na_cloud_sync_credentials/);
   assert.doesNotMatch(launcher + activation, /POS_ACTIVATION_SECRET|sk-[A-Za-z0-9_-]{20,}/);
@@ -50,7 +50,7 @@ test('launcher stores the current canonical authority only after authenticated p
 
 test('deployment assembles canonical POS under app and verifies the public URL', () => {
   assert.match(workflow, /cp -a POS\/\. tools\/cloudflare-pos-web\/_site\/app\//);
-  assert.match(workflow, /cliente-001-pos-web\.nuevo-amanecer-pos\.workers\.dev/);
+  assert.match(workflow, /cliente-001-pos-web\.cliente-001\.sin-configurar\.invalid/);
   assert.match(workflow, /npx wrangler deploy --config \.\.\/cloudflare-pos-web\/wrangler\.jsonc/);
   assert.match(workflow, /HOSTED_POS_WEB_PASS/);
   assert.match(workflow, /Local server required: NO/);

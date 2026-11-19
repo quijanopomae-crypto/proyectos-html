@@ -35,7 +35,7 @@ const { D1BackupWorkflow } = await import(`data:text/javascript;base64,${Buffer.
 
 test('el Workflow de respaldo D1 guarda en R2 el SQL sin filas internal:img', async t => {
   const objects = new Map();
-  const env = { ACCOUNT_ID: 'a'.repeat(32), DATABASE_ID: 'cf2c83d3-f187-472e-967b-0ad24be969eb', D1_REST_API_TOKEN: 'test-secret',
+  const env = { ACCOUNT_ID: 'a'.repeat(32), DATABASE_ID: '00000000-0000-0000-0000-000000000000', D1_REST_API_TOKEN: 'test-secret',
     BACKUP_BUCKET: {
       async put(key, bytes, options) { objects.set(key, { bytes: typeof bytes === 'string' ? new TextEncoder().encode(bytes) : bytes, options }); },
       async get(key) { const v = objects.get(key); return v && { size: v.bytes.byteLength, customMetadata: v.options.customMetadata, arrayBuffer: async () => v.bytes.buffer.slice(v.bytes.byteOffset, v.bytes.byteOffset + v.bytes.byteLength) }; },

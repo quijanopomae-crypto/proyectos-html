@@ -30,7 +30,7 @@ test('staging workflow names only isolated remote resources', () => {
   ]) assert.match(workflow,new RegExp(expected.replace(/[.*+?^$\{\}()|[\]\\]/g,'\\$&')));
 
   for (const forbidden of [
-    'cf2c83d3-f187-472e-967b-0ad24be969eb',
+    '00000000-0000-0000-0000-000000000000',
     'e734e6f1-41c4-4bfa-ab1f-5acbcdd2272e',
     'cliente-001-pos-db',
     'cliente-001-pos-db-backups',

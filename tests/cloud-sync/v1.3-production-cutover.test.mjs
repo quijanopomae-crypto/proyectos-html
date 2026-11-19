@@ -18,7 +18,7 @@ test('production worker config is isolated from LAB and points only to productio
   assert.equal(config.vars.CANONICAL_RUNTIME_ENABLED, 'enabled');
   assert.equal(config.d1_databases.length, 1);
   assert.equal(config.d1_databases[0].database_name, 'cliente-001-pos-db');
-  assert.equal(config.d1_databases[0].database_id, 'cf2c83d3-f187-472e-967b-0ad24be969eb');
+  assert.equal(config.d1_databases[0].database_id, '00000000-0000-0000-0000-000000000000');
   assert.equal(config.d1_databases[0].binding, 'DB');
   assert.equal(prodConfig.includes('e734e6f1-41c4-4bfa-ab1f-5acbcdd2272e'), false);
 });
@@ -26,12 +26,12 @@ test('production worker config is isolated from LAB and points only to productio
 test('local V1.3 setup activates against production and derives canonical binding from live authority', () => {
   assert.match(setupHtml, /clave de activación V1\.3/i);
   assert.match(setupHtml, /canonical-client\.js/);
-  assert.match(setupJs, /cliente-001-pos-api\.nuevo-amanecer-pos\.workers\.dev/);
+  assert.match(setupJs, /cliente-001-pos-api\.cliente-001\.sin-configurar\.invalid/);
   assert.match(setupJs, /\/auth\/activate/);
   assert.match(setupJs, /\/read\/canonical\/status/);
   assert.match(setupJs, /NuevoAmanecerCanonical\.configure/);
   assert.match(setupJs, /NuevoAmanecerCanonical\.refresh/);
-  assert.doesNotMatch(setupJs, /x-sync-token|SYNC_TOKEN|nuevo-amanecer-sync-lab/);
+  assert.doesNotMatch(setupJs, /x-sync-token|SYNC_TOKEN|cliente-001-lab-desactivado/);
 });
 
 test('production runtime explicitly hides LAB workspace routes', async t => {

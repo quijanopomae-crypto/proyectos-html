@@ -14,7 +14,7 @@ POS V9 (autoridad local) → OUTBOX durable → POST /commands/sale.create → D
 |---|---|
 | D1 | `nuevo-amanecer-lab` · `e734e6f1-41c4-4bfa-ab1f-5acbcdd2272e` · ENAM |
 | Binding | `env.DB` |
-| Worker | `nuevo-amanecer-sync-lab` |
+| Worker | `cliente-001-lab-desactivado` |
 | URL | `https://cliente-001.sin-configurar.invalid` |
 
 ## Contrato de `sync_operations`

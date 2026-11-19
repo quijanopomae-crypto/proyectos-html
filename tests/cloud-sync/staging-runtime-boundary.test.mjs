@@ -17,7 +17,7 @@ function env(environment) {
 
 test('health exposes distinct LAB, STAGING and production identities', async () => {
   for (const [environment, service] of [
-    ['lab','nuevo-amanecer-sync-lab'],
+    ['lab','cliente-001-lab-desactivado'],
     ['staging','nuevo-amanecer-pos-staging'],
     ['production','cliente-001-pos-api'],
   ]) {

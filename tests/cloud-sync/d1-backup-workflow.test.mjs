@@ -57,7 +57,7 @@ test('standard Cron starts one Workflow, awaits failure and keeps HTTP closed', 
 test('actual Workflow verifies R2 bytes, records failure and rejects wrong target before network', async t => {
   for (const fault of ['none', 'target', 'download', 'corruption', 'manifest']) await t.test(fault, async t => {
     const objects = new Map(), calls = [], steps = [];
-    const env = { ACCOUNT_ID: 'a'.repeat(32), DATABASE_ID: fault === 'target' ? 'wrong-db' : 'cf2c83d3-f187-472e-967b-0ad24be969eb', D1_REST_API_TOKEN: 'test-secret',
+    const env = { ACCOUNT_ID: 'a'.repeat(32), DATABASE_ID: fault === 'target' ? 'wrong-db' : '00000000-0000-0000-0000-000000000000', D1_REST_API_TOKEN: 'test-secret',
       BACKUP_BUCKET: {
         async put(key, bytes, options) {
           if (fault === 'manifest' && key.endsWith('.json') && JSON.parse(bytes).status === 'PASS') throw new Error('manifest outage');

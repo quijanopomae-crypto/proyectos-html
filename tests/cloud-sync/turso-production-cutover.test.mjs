@@ -19,7 +19,7 @@ test('Turso cutover keeps the same public production Worker identity', () => {
 test('D1 config remains available as rollback source before repository finalization', () => {
   assert.equal(d1.d1_databases.length, 1);
   assert.equal(d1.d1_databases[0].database_name, 'cliente-001-pos-db');
-  assert.equal(d1.d1_databases[0].database_id, 'cf2c83d3-f187-472e-967b-0ad24be969eb');
+  assert.equal(d1.d1_databases[0].database_id, '00000000-0000-0000-0000-000000000000');
 });
 
 test('cutover is one-shot owner authorized and tied to the validated candidate run', () => {

@@ -51,6 +51,6 @@ test('hosted guard fails closed when config is absent or invalid', () => {
 test('canonical client trusts hosted endpoint from config, not a production hostname constant', () => {
   assert.match(client,/HOSTED_API_ORIGIN/);
   assert.match(client,/url\.origin === HOSTED_API_ORIGIN/);
-  assert.match(client,/nuevo-amanecer-sync-lab/);
+  assert.match(client,/cliente-001-lab-desactivado/);
   assert.equal(client.includes(PROD_API),false);
 });

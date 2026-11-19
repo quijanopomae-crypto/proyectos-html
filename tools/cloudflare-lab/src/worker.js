@@ -56,7 +56,7 @@ function runtimeEnvironment(env) {
 function runtimeServiceName(environment) {
   if (environment === 'production') return 'cliente-001-pos-api';
   if (environment === 'staging') return 'nuevo-amanecer-pos-staging';
-  return 'nuevo-amanecer-sync-lab';
+  return 'cliente-001-lab-desactivado';
 }
 
 export default {
