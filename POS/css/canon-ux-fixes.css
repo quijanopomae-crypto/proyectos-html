@@ -1,0 +1,342 @@
+/* CANON-only: correcciones UX de la ronda 2 de QA. No existe en LAB. */
+
+/* D: un modal cerrado no debe quedar en el árbol de accesibilidad ni recibir foco o clics.
+   visibility se aplica al instante al abrir y con retardo al cerrar (respeta la animación). */
+.modal-overlay:not(.open){visibility:hidden;transition:opacity .2s,visibility 0s linear .2s}
+.modal-overlay.open{visibility:visible;transition:opacity .2s,visibility 0s linear 0s}
+#securityLockScreen:not(.open){visibility:hidden}
+
+/* 10: objetivos táctiles de al menos 44 px en pantallas táctiles/móviles. */
+@media (pointer:coarse),(max-width:700px){
+  .btn-close-m{min-width:44px;min-height:44px;width:44px;height:44px;font-size:16px}
+  #btnEditorToggle{min-height:44px;padding-left:12px;padding-right:12px}
+}
+
+/* 5: el aviso de actualización no tapa contenido en móvil. */
+@media (max-width:700px){
+  .pwa-update-prompt{left:8px;right:8px;gap:8px;padding:9px 10px;border-radius:14px;bottom:max(8px,env(safe-area-inset-bottom))}
+  .pwa-update-icon{width:30px;height:30px;font-size:15px;border-radius:10px}
+  /* Compacto: el texto (con «Quedan N por revisar») se ve en 2 líneas; fijo, sin empujar la página y debajo de las ventanas. */
+  .pwa-update-copy strong{display:none}
+  .pwa-update-copy span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.3}
+  .pwa-update-prompt{z-index:150!important}
+  .pwa-update-action{min-height:40px}
+}
+@media (min-width:701px){
+  body:has(#pwaUpdatePrompt:not([hidden])){padding-bottom:96px}
+}
+
+/* P2-4/P2-5/P2-6 (móvil · Clientes, Abonos, Caja): el pie de acciones de los modales queda
+   fijo al fondo del área visible (Confirmar nunca queda fuera de vista ni bajo el teclado),
+   objetivos táctiles de 44 px y pestañas de Clientes completas en 2×2. */
+@media (max-width:700px){
+  .modal-overlay{height:var(--na-visual-height,100dvh)!important;max-height:var(--na-visual-height,100dvh)!important}
+  .modal-overlay .mbody>.mbtns{position:sticky;bottom:-16px;z-index:4;margin-left:-4px;margin-right:-4px;padding:10px 4px 12px;background:rgba(255,255,255,.97);border-top:1px solid #edf1f5}
+  .mbtn{min-height:44px}
+  .fi,.fs{min-height:44px}
+  .top-btn-nuevo,.btn-cerrar-cj{min-height:44px}
+  #pageClientes .filter-bar{flex-wrap:wrap}
+  #pageClientes .search-box{height:44px;min-width:0}
+  #pageClientes .search-box input{font-size:16px;min-height:40px}
+  #pageClientes .f-select{height:44px}
+  #pageClientes .tabs-wrap{display:grid;grid-template-columns:1fr 1fr;overflow:visible}
+  #pageClientes .tabs-wrap .tab{justify-content:center;min-height:44px;padding:8px 6px;white-space:normal}
+  #pageCaja .tabs-wrap .tab{min-height:44px}
+  #pageClientes .na-v2-client-head .na-v2-risk,
+  #pageClientes .na-receipt-history,
+  #pageClientes .na-v2-batch-selectall,
+  #pageClientes .na-v2-batch-auto,
+  #naV2BatchMethod{min-height:44px}
+}
+
+/* B: una venta a crédito no es ingreso de caja. */
+.mov-ic.credito{background:#ede9fe}
+.mov-amt.credito{color:#7c3aed;font-size:13px}
+.cjsg-sub{font-size:10px;font-weight:700;color:var(--slate,#64748b);margin-top:2px;line-height:1.25}
+
+/* I: detalle de cada abono en el historial de pagos. */
+.na-v2-payment-detail small{display:block}
+
+/* P0-1: el aviso de versión nueva se puede posponer ("Más tarde") y nunca tapa Cobrar. */
+.pwa-update-prompt{grid-template-columns:auto minmax(0,1fr) auto auto}
+.pwa-update-later{min-height:38px;padding:0 12px;border:1px solid rgba(15,23,42,.14);border-radius:11px;background:transparent;color:var(--dark,#0f172a);font:800 12px/1 'Nunito',system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.pwa-update-later:focus-visible,.pwa-update-action:focus-visible{outline:2px solid var(--teal,#0f766e);outline-offset:2px}
+@media (max-width:700px){
+  .pwa-update-prompt{grid-template-columns:minmax(0,1fr) auto auto}
+  .pwa-update-icon{display:none}
+  .pwa-update-action,.pwa-update-later{grid-column:auto;width:auto;min-height:44px}
+  /* Nueva venta: chip compacto arriba, en la franja del título; el carrito y Cobrar quedan libres. */
+  body:has(#pagePOS.active) .pwa-update-prompt{top:max(6px,env(safe-area-inset-top));bottom:auto;left:58px;right:8px;max-width:none;margin:0;padding:0 0 0 10px;gap:6px;min-height:44px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.16)}
+  body:has(#pagePOS.active) .pwa-update-copy strong{font-size:12px}
+  body:has(#pagePOS.active) .pwa-update-action,body:has(#pagePOS.active) .pwa-update-later{padding:0 10px;font-size:12px}
+  body:has(#pagePOS.active):has(#pwaUpdatePrompt:not([hidden])){padding-bottom:0}
+  body:has(#pagePOS.active):has(#pwaUpdatePrompt:not([hidden])) #posPhoneTitle{visibility:hidden}
+}
+@media (max-width:359px){
+  body:has(#pagePOS.active) .pwa-update-copy{display:none}
+  body:has(#pagePOS.active) .pwa-update-prompt{grid-template-columns:auto auto;justify-content:end;padding:0}
+}
+@media (min-width:701px){
+  /* Escritorio/tablet: en Nueva venta el aviso va abajo a la izquierda, lejos del carrito y de Cobrar. */
+  body:has(#pagePOS.active) .pwa-update-prompt{left:14px;right:auto;max-width:420px;margin:0}
+  body:has(#pagePOS.active):has(#pwaUpdatePrompt:not([hidden])){padding-bottom:0}
+}
+
+/* P1-4: en Nueva venta (teléfono) un solo botón de 44×44 abre el menú; "← Menú" ya no queda encima. */
+@media (max-width:767px){
+  body.na-pos-reference-active>.g-topbar>div:last-child{display:none!important}
+  body.na-pos-reference-active>.g-topbar>.na-mobile-menu-toggle{position:absolute!important;top:max(6px,env(safe-area-inset-top));left:7px;z-index:101;display:grid!important;width:44px!important;height:44px!important;border:1px solid #e1e7ed!important;background-color:#fff!important}
+  .g-topbar .back-btn{width:44px;min-width:44px;height:44px}
+}
+
+/* P1-C / P2-C: objetivos táctiles de 44 px en el carrito del teléfono y en el comprobante. */
+@media (pointer:coarse),(max-width:767px){
+  body.na-pos-phone-device #pagePOS.phone-sale #cartDrawer .qty-btn{width:44px;height:44px}
+  body.na-pos-phone-device #pagePOS.phone-sale #cartDrawer .ci-qty{gap:8px}
+  body.na-pos-phone-device #pagePOS.phone-sale #cartDrawer .btn-rm{width:44px;height:44px}
+  body.na-pos-phone-device #pagePOS.phone-sale #cartDrawer .ci-sub{line-height:44px}
+  body.na-pos-phone-device #btnCartMenu{width:44px;height:44px}
+  body.na-pos-phone-device #pagePOS #cartDrawer .cart-mobile-close,body.na-pos-phone-device #pagePOS .cart-head-clear{min-width:44px;min-height:44px}
+  .na-receipt-download{min-height:44px;padding:0 12px}
+  #backBtn{min-width:44px;min-height:44px}
+}
+
+/* Etapa 2: título "Venta actual" en tamaño normal y sin selección por doble toque. */
+@media(min-width:701px){#pagePOS .cart-head-title{font-size:16px!important;font-weight:800!important;letter-spacing:0!important;line-height:1.2!important}}
+#pagePOS .cart-head-title,#pagePOS button,#pagePOS .product-card,#pagePOS .p-stock-badge{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* Etapa 2: Caja centrada en tablet y PC, igual que los demás módulos. */
+@media(min-width:701px){#cajContent>*{width:100%;max-width:900px;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}}
+/* Etapa 2: cabeceras compactas en celular (Inventario y Clientes ocupaban 46-61% de la pantalla). */
+@media(max-width:700px){
+  body.module-mobile-scroll #pageInventario>.page-chrome .top-mod-bar,
+  body.module-mobile-scroll #pageClientes>.page-chrome .top-mod-bar{padding:6px 12px!important;min-height:0!important;gap:8px!important}
+  body.module-mobile-scroll #pageInventario>.page-chrome .top-mod-title,
+  body.module-mobile-scroll #pageClientes>.page-chrome .top-mod-title{font-size:17px!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .top-btn-nuevo{min-height:44px!important;padding:6px 12px!important;font-size:12px!important}
+  body.module-mobile-scroll #pageInventario>.page-chrome .top-btn-nuevo{min-height:36px!important;padding:6px 10px!important;font-size:12px!important}
+  body.module-mobile-scroll #pageInventario .ocr-purchase-status{font-size:11px!important;padding:2px 12px 4px!important;line-height:1.3!important}
+  body.module-mobile-scroll #pageInventario>.page-chrome .filter-bar,
+  body.module-mobile-scroll #pageClientes>.page-chrome .filter-bar{padding:6px 12px!important;gap:6px!important;flex-wrap:nowrap!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .search-box{flex:1 1 auto!important;min-width:0!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .f-select{flex:0 0 112px!important;width:112px!important;min-height:44px!important}
+  body.module-mobile-scroll #pageInventario #ocrPurchaseStatus:not([data-state]),body.module-mobile-scroll #pageInventario #ocrPurchaseStatus[data-state="idle"]{display:none!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .tab{padding:4px 10px!important;font-size:12px!important;min-height:44px!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .stats-strip{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;padding:6px 12px!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .ss{padding:5px 3px!important;min-height:0!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .ss-num{font-size:13px!important}
+  body.module-mobile-scroll #pageClientes>.page-chrome .ss-lbl{font-size:8px!important;margin-top:0!important}
+}
+/* Inventario en tablet: columnas fijas para que las filas que llegan al deslizar no cambien
+   el ancho de las columnas (CLS 0,17 -> ~0 en tablet vertical). */
+@media(min-width:701px) and (max-width:1024px){
+  #pageInventario .table-card>table{table-layout:fixed;width:100%}
+  #pageInventario .table-card>table th:nth-child(1){width:33%}
+  #pageInventario .table-card>table th:nth-child(2){width:15%}
+  #pageInventario .table-card>table th:nth-child(3){width:12%}
+  #pageInventario .table-card>table th:nth-child(4){width:13%}
+  #pageInventario .table-card>table th:nth-child(5){width:8%}
+  #pageInventario .table-card>table th:nth-child(6){width:19%}
+}
+/* Stock bajo: misma familia naranja que el stock normal, un tono ámbar más oscuro + ⚠ (pedido del dueño). */
+body #pagePOS .p-stock-badge.low{background:#d97706!important;color:#fff!important}
+
+/* Etapa 2 (G): revisiones del dueño */
+.na-review-notice{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:10px 14px;border-radius:12px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-weight:700;font-size:14px}
+.na-review-notice button{border:0;border-radius:10px;padding:8px 12px;background:#b45309;color:#fff;font-weight:700;cursor:pointer}
+.badge-descuento-revision{display:inline-block;margin:0 6px 0 0;padding:1px 7px;border-radius:999px;background:#fef3c7;color:#92400e;border:1px solid #f59e0b;font-size:11px;font-weight:700}
+.na-review-overlay{position:fixed;inset:0;z-index:10050;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.na-review-box{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:85vh;overflow:auto;padding:18px;color:#0f172a}
+.na-review-box h3{margin:0 0 12px}
+.na-review-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #e2e8f0}
+.na-review-row small{display:block;color:#64748b;font-size:12px;word-break:break-all}
+.na-review-actions{display:flex;gap:6px;flex-shrink:0}
+.na-review-actions button,.na-review-close{border:0;border-radius:10px;padding:8px 10px;background:#15803d;color:#fff;font-weight:700;cursor:pointer}
+.na-review-actions .danger{background:#b91c1c}
+.na-review-close{margin-top:12px;width:100%;background:#0f172a}
+/* Ítem 3: Yape, Plin y Transferencia en una fila */
+#mDigitalChannels.digital-channel-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+
+/* Historial (Etapa 2): cada tanda de tarjetas es un bloque contenido; agregar una tanda no recalcula ni repinta las anteriores. */
+#ventasContent .v-list-wrap>.v-chunk{contain:layout style paint}
+
+/* Ítem 12: hoja de descuento */
+.na-ds-overlay{position:fixed;inset:0;z-index:10060;background:rgba(15,23,42,.45);display:flex;align-items:flex-end;justify-content:center}
+.na-ds-sheet{background:#fff;color:#0f172a;width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+@media (min-width:700px){.na-ds-overlay{align-items:center}.na-ds-sheet{border-radius:18px}}
+.na-ds-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px}.na-ds-head span{color:#64748b;font-size:13px}
+.na-ds-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.na-ds-chips button,.na-ds-mode button{min-height:44px;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;font-weight:800;font-size:15px;color:#0f172a;cursor:pointer}
+.na-ds-chips button.active,.na-ds-mode button.active{background:#0f766e;border-color:#0f766e;color:#fff}
+.na-ds-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+#naDsInput{width:100%;box-sizing:border-box;min-height:46px;border:1px solid #cbd5e1;border-radius:12px;padding:8px 12px;font-size:18px;font-weight:700}
+.na-ds-preview{margin:10px 0;font-size:14px;color:#334155;font-weight:600}
+.na-ds-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.na-ds-actions button{min-height:48px;border:0;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer}
+.na-ds-cancel{background:#e2e8f0;color:#0f172a}.na-ds-ok{background:#15803d;color:#fff}.na-ds-ok:disabled{opacity:.45;cursor:not-allowed}
+
+/* Ítem 10: nota de venta en Pagar */
+.na-sale-note{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+.na-sale-note label{font:800 12px 'Nunito',sans-serif;color:#475569}
+.na-sale-note input{height:40px;border:1px solid #cbd5e1;border-radius:10px;padding:0 10px;font:600 14px 'Nunito',sans-serif;box-sizing:border-box;width:100%}
+
+/* Ítem 11: compras con proveedor y costo */
+.na-pur-box{max-width:560px;width:calc(100vw - 24px);max-height:88vh;overflow:auto}
+.na-pur-head{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.na-pur-head input,.na-pur-line input{height:40px;border:1px solid #cbd5e1;border-radius:10px;padding:0 8px;font:600 14px 'Nunito',sans-serif;min-width:0;box-sizing:border-box}
+.na-pur-line{display:grid;grid-template-columns:minmax(0,1fr) 64px 82px 36px;gap:6px;margin-bottom:6px}
+.na-pur-del{height:40px;border:0;border-radius:10px;background:#f1f5f9;color:#475569;font-weight:900}
+.na-pur-add{border:1px dashed #94a3b8;background:#fff;border-radius:10px;height:38px;width:100%;font:800 13px 'Nunito',sans-serif;color:#0f766e}
+.na-pur-total{margin:8px 0 2px;font:900 14px 'Nunito',sans-serif;color:#0f172a}
+.na-pur-hint{margin:0 0 6px;color:#64748b;font-size:12px}
+.na-pur-item{border:1px solid #e2e8f0;border-radius:10px;padding:8px;margin-bottom:6px}
+.na-pur-item summary{cursor:pointer;font-size:14px}.na-pur-item summary small{display:block;color:#64748b}
+.na-pur-row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0;border-top:1px solid #f1f5f9}
+@media(max-width:420px){.na-pur-head{grid-template-columns:1fr}}
+@media(max-width:480px){.na-pur-line{grid-template-columns:1fr 1fr 36px}.na-pur-line .na-pur-prod{grid-column:1/-1}.na-pur-line{padding-bottom:6px;border-bottom:1px solid #f1f5f9}}
+
+/* Días para pagar: solo PC/tablet; el teléfono no cambia (usa valor guardado, 30 por defecto) */
+@media(max-width:700px){.na-duedays-field{display:none!important}}
+
+/* PC y tablet: los montos rápidos se ven de entrada (Exacto, S/ 10, 20...). La segunda fila con los
+   mismos montos sobra y se oculta para que el vuelto quede a la vista. Teléfono sin cambios. */
+@media (min-width:701px){
+  body:not(.na-pos-phone-device) #mCobro #mCashAdvanced .pay-quick-row{display:none!important}
+}
+
+/* Cobro en PC y tablet: los cuatro métodos en una fila (Dividir pago ya no ocupa una fila propia),
+   así total, recibido, Vuelto y Nota caben sin desplazamiento interno. Teléfono sin cambios. */
+@media (min-width:701px){
+  body:not(.na-pos-phone-device) #mCobro .pay-methods{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  body:not(.na-pos-phone-device) #mCobro .pay-methods .pm-btn{grid-column:auto!important;min-width:0}
+  body:not(.na-pos-phone-device) #mCobro .modal.pay-modal{max-height:calc(100vh - 24px)!important}
+}
+/* Nota dentro del cuerpo del cobro: alineada con el resto del formulario. */
+#mCobro .pay-modal-body>.na-sale-note{margin:10px 0 0}
+
+/* Abono: avisos de red dentro del modal, junto al botón (no flotantes). */
+.na-pay-net{display:flex;align-items:center;gap:8px;margin:10px 0 0;padding:10px 12px;border-radius:10px;font:700 13px/1.35 'Nunito',sans-serif}
+.na-pay-net[hidden]{display:none}
+.na-pay-net.offline,.na-pay-net.rejected{background:#fef2f2;border:1px solid #fca5a5;color:#b91c1c}
+.na-pay-net.checking{background:#fffbeb;border:1px solid #f59e0b;color:#92400e}
+.na-pay-spin{width:14px;height:14px;flex:none;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:naPaySpin .8s linear infinite}
+@keyframes naPaySpin{to{transform:rotate(360deg)}}
+body.dark .na-pay-net.offline,body.dark .na-pay-net.rejected{background:#450a0a;color:#fecaca;border-color:#7f1d1d}
+body.dark .na-pay-net.checking{background:#451a03;color:#fde68a;border-color:#92400e}
+.na-pur-err{margin:6px 0 8px;padding:9px 12px;border-radius:10px;background:#fef2f2;border:1px solid #fca5a5;color:#b91c1c;font:700 13px/1.35 Nunito,sans-serif}.na-pur-err[hidden]{display:none}
+#mPagoCred .mbtns{flex-wrap:wrap}
+#mPagoCred .mbtns>.na-pay-net{flex:1 1 100%;grid-column:1/-1;margin:0 0 2px;box-sizing:border-box}
+#mPagoCred #pagoConfirmBtn:disabled{opacity:.5;cursor:not-allowed}
+.na-pay-net.done{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46}body.dark .na-pay-net.done{background:#052e16;color:#bbf7d0;border-color:#166534}
+.na-pur-err.info{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}
+/* Nota del cobro a todo el ancho del formulario (en celular quedaba angosta). */
+#mCobro .pay-modal-body>.na-sale-note{grid-column:1/-1;width:100%;align-self:stretch;box-sizing:border-box}
+/* Ventana angosta sin diseño de teléfono (p. ej. 360 px): el cobro nunca pasa la altura de la pantalla;
+   el cuerpo se desplaza y Confirmar queda siempre a la vista. El diseño de teléfono no cambia. */
+@media (max-width:700px){
+  body:not(.na-pos-phone-device) #mCobro .modal.pay-modal{max-height:calc(var(--na-vvh,100dvh) - 16px - env(safe-area-inset-bottom))!important;display:flex!important;flex-direction:column!important}
+  body:not(.na-pos-phone-device) #mCobro .pay-modal-body{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch}
+}
+/* Compra incompleta en Historial: fila ámbar, proveedor y monto en una línea, dos botones lado a lado (>=44 px). */
+.na-pur-item.na-pur-open{background:#fffbeb;border-color:#fcd34d}
+.na-pur-open-head{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#92400e}
+.na-pur-open-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.na-pur-open-actions button{min-height:44px;border-radius:10px;font-weight:800;font-size:14px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.na-pur-finish-h{border:0;background:#0d9488;color:#fff}
+.na-pur-partial-h{border:1.5px solid #dc2626;background:#fff;color:#b91c1c}
+.na-pur-partial-h .na-li{width:16px;height:16px}
+.na-pur-reason{width:100%;box-sizing:border-box;min-height:44px;border:1px solid #cbd5e1;border-radius:10px;padding:0 10px;margin-bottom:6px;font-size:15px}
+.na-pur-open details summary{font-size:13px;color:#92400e}
+/* 360 px: proveedor en la 1.ª línea; monto e «Incompleta» en la 2.ª (sin cortar) */
+.na-pur-open-sub{font-size:14px;font-weight:700;color:#92400e;margin-top:2px;white-space:normal}
+body.dark .na-pur-open-sub{color:#fcd34d}
+body.dark .na-pur-item.na-pur-open{background:#3b2f12;border-color:#92400e}body.dark .na-pur-open-head{color:#fcd34d}
+
+/* Recargar (aviso de versión nueva): toque cómodo en tablet/PC */
+@media (min-width:700px){#pwaUpdateAction,#pwaUpdateLater{min-height:44px}}
+body:not(.dark) #mPagoCred .mhead.green{background:#15803d}
+#pagePOS .total-row[hidden]{display:none!important}
+/* Modo nocturno en celular: Inicio, Inventario, hoja Cobrar, Total del carrito y ventana PIN (solo colores, contraste >= 4.5:1). */
+body.dark #pageMenu .main-scroll.home-shell{background:#0f172a!important}
+body.dark #pageMenu .qs-card{background:#1e293b!important;border-color:#334155!important;box-shadow:none!important;color:#e2e8f0}
+body.dark #pageMenu .qs-card .qs-val,body.dark #pageMenu .qs-card strong,body.dark #pageMenu .qs-card b{color:#f1f5f9!important}
+body.dark #pageMenu .qs-card .qs-label,body.dark #pageMenu .qs-card small,body.dark #pageMenu .qs-card span{color:#cbd5e1}
+body.dark #pageInventario.inv-mobile-simple,body.dark #pageInventario.inv-mobile-simple .table-card,body.dark #pageInventario.inv-mobile-simple .top-mod-bar,body.dark #pageInventario.inv-mobile-simple .filter-bar,body.dark #pageInventario.inv-mobile-simple .inv-mobile-controls,body.dark #pageInventario.inv-mobile-simple .tabs-wrap{background:#0f172a!important;color:#e2e8f0}
+body.dark #pageInventario.inv-mobile-simple .search-box,body.dark #pageInventario.inv-mobile-simple .inv-mobile-totals,body.dark #pageInventario.inv-mobile-simple #invBody>tr[data-mobile-inventory],body.dark #pageInventario.inv-mobile-simple .inv-menu-content,body.dark #pageInventario.inv-mobile-simple .inv-summary .stats-strip,body.dark #pageInventario.inv-mobile-simple .prod-icon-sm{background:#1e293b!important;border-color:#334155!important;color:#e2e8f0}
+body.dark #pageInventario.inv-mobile-simple #invBody>tr[data-mobile-inventory] td,body.dark #pageInventario.inv-mobile-simple #invBody>tr[data-mobile-inventory]>td:nth-child(3)>div:first-child,body.dark #pageInventario.inv-mobile-simple .inv-mobile-totals *{color:#e2e8f0!important}
+body.dark #pageInventario.inv-mobile-simple .search-box input{background:transparent;color:#f1f5f9}
+body.dark #mOcrPurchaseReview .mbtns{background:#1e293b}
+body.dark.na-pos-phone-device #mCobro .pay-modal{background:#1e293b!important;color:#e2e8f0}
+body.dark.na-pos-phone-device #mCobro .pay-modal h2,body.dark.na-pos-phone-device #mCobro .pay-modal h3,body.dark.na-pos-phone-device #mCobro .pay-modal label,body.dark.na-pos-phone-device #mCobro .pay-modal .pml{color:#e2e8f0}
+body.dark.na-pos-phone-device #pagePOS.phone-sale .total-main,body.dark.na-pos-phone-device #pagePOS.phone-sale .total-main *{color:#f1f5f9!important}
+body.dark .na-pin-box{background:#1e293b;color:#f1f5f9}
+body.dark .na-pin-title{color:#f1f5f9}
+body.dark .na-pin-detail{color:#cbd5e1}
+/* Nueva venta en celular: el aviso de versión va abajo como en Inicio (la franja de pendientes ya no lo tapa), justo encima de Cobrar sin taparlo. */
+@media (max-width:700px){
+  body:has(#pagePOS.active) .pwa-update-prompt{top:auto!important;bottom:calc(72px + (var(--na-ap-buttons,1) - 1) * 60px + env(safe-area-inset-bottom))!important;left:8px!important;right:8px!important;z-index:420!important}
+  body:has(#pagePOS.active):has(#pwaUpdatePrompt:not([hidden])) #posPhoneTitle{visibility:visible}
+}
+@media (max-width:700px){
+  body.dark #pageMenu h2,body.dark #pageMenu strong,body.dark #pageMenu .qs-val{color:#f1f5f9!important}
+  body.dark #pageMenu [id^="qs"][id$="Sub"],body.dark #pageMenu .qs-sub{color:#cbd5e1!important}
+  body.dark #pageInventario .top-mod-title,body.dark #pageInventario summary,body.dark #pageInventario .prod-name-sm{color:#f1f5f9!important}
+  body.dark #pageInventario .inv-mobile-category,body.dark #pageInventario .inv-mobile-count{color:#cbd5e1!important}
+  body.dark #pageInventario .stock-pill.ok{color:#86efac!important}
+  body.dark #pageInventario .ss.amber,body.dark #pageInventario .ss.amber *{color:#fcd34d!important}
+  body.dark #pageInventario .ss.green,body.dark #pageInventario .ss.green *{color:#86efac!important}
+  body.dark #pageInventario .btn-act.btn-ent{color:#86efac!important}
+  body.dark #pageInventario .btn-act.btn-edt{background:#334155!important;color:#e2e8f0!important}
+  body.dark #pageInventario .top-btn-nuevo:not(.na-pur-btn):not([onclick^="abrirModalProd"]){background:color-mix(in srgb,var(--teal,#00a99d) 45%,#000)!important;color:#fff!important}
+  body.dark #pagePOS .cat-btn:not(.active){color:#cbd5e1!important}
+  body.dark #pagePOS .p-img{color:#e2e8f0}
+  body.dark #pagePOS .cart-empty{background:#1e293b!important;color:#cbd5e1!important}
+  body.dark #pagePOS .cart-totals,body.dark #pagePOS .cart-totals span,body.dark #pagePOS #posProductCount{color:#cbd5e1!important}
+  body.dark #pagePOS .scanner-dot{color:#052e16!important}
+}
+/* Tablet y PC: en Caja del Día y Ventas e Historial la cabecera (título, pestañas, filtros, KPIs) quedaba
+   fija y el contenido se desplazaba por debajo; en pantallas bajas tapaba los datos y en Reportes los KPIs
+   cortaban «Resultado del período». Ahora toda la página se desplaza junta, como ya ocurre en celular. */
+@media (min-width:701px){
+  #pageInventario.active{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain}
+  #pageCaja.active,#pageVentas.active{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain}
+  #pageCaja.active>.page-chrome,#pageVentas.active>.page-chrome{position:relative!important;top:auto!important}
+  #pageCaja #cajContent,#pageVentas #ventasContent{flex:none!important;overflow-y:visible!important;height:auto!important;max-height:none!important;min-height:0!important}
+}
+/* PR B (tablet y PC, el celular no cambia) */
+@media (min-width:701px){
+  /* Pestañas fijas arriba al desplazar Caja del Día y Ventas: la cabecera deja de ser una caja propia
+     y .tabs-wrap queda pegada al borde superior de la página que se desplaza. */
+  #pageCaja.active>.page-chrome,#pageVentas.active>.page-chrome{display:contents!important}
+  #pageCaja.active .tabs-wrap,#pageVentas.active .tabs-wrap{position:sticky!important;top:0;z-index:20}
+  /* Reportes: se reserva el alto de KPIs y controles para que no salte al cargar. */
+  #pageVentas #ventasKPI{min-height:var(--na-kpi-h,86px);contain:layout}
+  #pageVentas #ventasContent{min-height:60vh}
+  /* Inventario en Nocturno: el módulo fijaba --dark oscuro y los nombres casi no se veían. */
+  body.dark #pageInventario{--dark:#f1f5f9;--border:#334155}
+  /* Controles de al menos 44 px */
+  #mCli .fi,#mCli select,#mCli .mbtn,#mCli .btn-close-m,.na-pur-head input,.na-pur-line input,.na-pur-box button,.na-review-actions button,.na-review-close,.na-sale-note input,.na-ds-actions button{min-height:44px}
+  #mCli .btn-close-m{min-width:44px}
+}
+.na-pur-box .na-pur-hist,.na-pur-box .na-pur-cancel{min-height:44px}
+/* Nocturno: Nueva compra y Descuento ya no salen blancas (todas las pantallas). */
+body.dark .na-review-box,body.dark .na-ds-sheet{background:#0f172a;color:#e2e8f0;border:1px solid #334155}
+body.dark .na-review-row{border-top-color:#334155}
+body.dark .na-review-row small,body.dark .na-ds-head span,body.dark .na-ds-preview{color:#cbd5e1}
+body.dark .na-review-box input,body.dark .na-review-box select,body.dark .na-review-box textarea,body.dark #naDsInput{background:#1e293b;color:#f1f5f9;border-color:#475569}
+body.dark .na-review-box input::placeholder,body.dark #naDsInput::placeholder{color:#94a3b8}
+body.dark .na-ds-chips button,body.dark .na-ds-mode button{background:#1e293b;color:#f1f5f9;border-color:#475569}
+body.dark .na-ds-chips button.active,body.dark .na-ds-mode button.active{background:#0f766e;border-color:#14b8a6;color:#fff}
+body.dark .na-ds-cancel{background:#334155;color:#f1f5f9}
+body.dark .na-review-close{background:#334155}
+.na-ds-ok{background:var(--teal,#15803d)}.na-ds-ok:disabled{opacity:1;background:#94a3b8;color:#0f172a}
+body.dark .na-ds-ok:disabled{background:#475569;color:#e2e8f0}
+
+/* Permission feedback blocks the whole viewport. */
+#naNoPermission{position:fixed;inset:0;height:auto;background:rgba(15,23,42,.55);z-index:100000;pointer-events:auto;text-align:center}
+#naNoPermission .na-pin-box{margin:auto;width:min(100%,400px)}
+#naNoPermission .na-permission-lock{font-size:40px;margin-bottom:16px}
+#naNoPermission .na-pin-actions{justify-content:center}
+#naNoPermission .na-pin-ok{background:var(--teal,#00a99d);color:#fff}
+@media(max-width:600px){#naNoPermission .na-pin-actions,#naNoPermission .na-pin-ok{width:100%}}
+/* Caja action styling must respect the permission bridge's hidden state. */
+#pageCaja .btn-cjac.gas[hidden]{display:none!important}

@@ -1,0 +1,125 @@
+/* Íconos de línea (estilo Configuración v9). Tamaño fijo: el espacio está reservado desde el primer pintado. */
+.na-li{display:inline-block;flex:none;width:18px;height:18px;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.qs-icon .na-li{width:18px;height:18px;vertical-align:middle}
+.cart-fab .na-li{width:24px;height:24px;vertical-align:middle}
+#saveStatus{display:inline-flex;align-items:center;gap:5px}
+#saveStatus .na-li{width:15px;height:15px}
+#btnDarkMode .na-li,#topSettingsBtn .na-li{width:18px;height:18px;color:#334155}
+/* Los botones redondos siguen claros en modo noche: el ícono queda oscuro; el sol en ámbar. */
+body.dark #btnDarkMode .na-li{color:#d97706}
+#topSettingsBtn{display:inline-flex;align-items:center;justify-content:center}
+.top-mod-title .na-li-title{width:20px;height:20px;margin-right:6px;vertical-align:-4px}
+.na-li-dot{width:10px;height:10px;margin-right:5px;vertical-align:0}
+.na-li-dot.red{color:#dc2626}.na-li-dot.amber{color:#d97706}.na-li-dot.green{color:#16a34a}
+.p-img>.na-li-product{width:40%;height:40%;max-width:44px;max-height:44px;color:#64748b;stroke-width:1.6;vertical-align:middle}
+body.dark .p-img>.na-li-product{color:#64748b}
+.c-meta .na-li{width:13px;height:13px;vertical-align:-2px;margin-right:3px;color:#64748b}
+.ei>.na-li-empty{width:40px;height:40px;color:#94a3b8;stroke-width:1.6}
+/* Aviso flotante: oculto de verdad cuando no se muestra y nunca vacío (salía una píldora oscura sin texto). */
+.toast:not(.show){visibility:hidden}
+.toast:empty{display:none!important}
+.search-box .na-li-search{width:15px;height:15px;color:#64748b;flex:none}
+
+/* Íconos que reemplazan emoji en títulos, pestañas y botones: tamaño fijo, alineados al texto. */
+.na-li-host>.na-li{width:1.1em;height:1.1em;vertical-align:-.18em;flex:none}
+.prod-icon-sm>.na-li,.ei>.na-li,.cjsg-icon>.na-li,.bci>.na-li{width:1.4em;height:1.4em;vertical-align:middle}
+.btn-act>.na-li{width:16px;height:16px;vertical-align:middle}
+/* Pago en PC/tablet: íconos de línea (los mismos del celular) en vez de emoji. */
+#mCobro .pmi-emoji{display:none!important}
+#mCobro .pmi-icon{display:inline-flex!important;align-items:center;justify-content:center;color:currentColor}
+#mCobro .pmi-icon svg{display:block;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#mCobro .pmi-icon .digital-arrow{stroke:#1685e8;stroke-width:3}
+/* Ventanas en el celular (Cobro, abono, compra, PIN, anulación, cierre): nunca más altas que la pantalla
+   visible; el contenido se desplaza por dentro. Sin cambio de diseño ni pie fijo. */
+@media (max-width:700px){
+  .modal-overlay .modal{max-height:calc(var(--na-vvh,100dvh) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  #mCobro .modal.pay-modal{overflow-y:hidden}
+  .na-review-overlay,.na-pin-overlay{height:var(--na-vvh,100dvh);bottom:auto;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+  .na-review-box,.na-pur-box,.na-pin-box{max-height:calc(var(--na-vvh,100dvh) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overflow-y:auto;overscroll-behavior:contain}
+}
+.mov-ic>.na-li{width:1.3em;height:1.3em;vertical-align:middle}
+.toast.warning{background:#b45309!important;color:#fff!important}
+/* Producto sin foto: un solo ícono por CSS (máscara), sin un SVG por tarjeta. Color = tema. */
+.p-img.na-noimg:empty::before{content:"";display:inline-block;width:40%;aspect-ratio:1;max-width:44px;vertical-align:middle;background:#94a3b8;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/%3E%3Cpath d='m3.3 7 8.7 5 8.7-5M12 22V12'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/%3E%3Cpath d='m3.3 7 8.7 5 8.7-5M12 22V12'/%3E%3C/svg%3E") center/contain no-repeat}
+body.dark .p-img.na-noimg:empty::before{background:#94a3b8}
+/* Contraste ≥3:1: ícono #64748b sobre el recuadro claro (≈4.5:1). En modo oscuro el recuadro también es oscuro. */
+.p-img.na-noimg:empty::before{background:#64748b}
+body.dark .p-img.na-noimg{background:#1e293b!important;box-shadow:none!important}
+/* Abono y Cierre en el celular con teclado: se desplaza la VENTANA (como Cobro, PIN y Compra), no el fondo
+   oscuro; la barra Cancelar/Confirmar queda pegada al borde inferior de la ventana. */
+@media (max-width:700px){
+  #mPagoCred .modal,#mCierre .modal{overflow-x:hidden!important;overflow-y:auto!important;max-height:calc(var(--na-vvh,100dvh) - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;overscroll-behavior:contain}
+  #mPagoCred,#mCierre{overflow:clip!important}
+  #mPagoCred .mbody>.mbtns,#mCierre .mbody>.mbtns{bottom:0!important;background:#fff!important}
+  body.dark #mPagoCred .mbody>.mbtns,body.dark #mCierre .mbody>.mbtns{background:var(--card,#1e293b)!important}
+  /* Con teclado: la ventana empieza en y>=0 (arriba del área visible), título fijo arriba y sin relleno blanco bajo la barra. */
+  #mPagoCred,#mCierre{top:0!important;bottom:auto!important;height:var(--na-vvh,100dvh)!important;align-items:flex-start!important;padding-top:max(8px,env(safe-area-inset-top))!important;padding-bottom:8px!important;box-sizing:border-box!important}
+  #mPagoCred .modal,#mCierre .modal{margin-top:0!important}
+  #mPagoCred .mhead,#mCierre .mhead{position:sticky;top:0;z-index:5}
+}
+/* Franja de estado: ícono de línea por CSS (reloj = revisando, prohibido = rechazado). */
+.na-sb-text[data-icon]::before{content:"";display:inline-block;width:1em;height:1em;margin-right:.35em;vertical-align:-.15em;background:currentColor;-webkit-mask:var(--na-sb-ic) center/contain no-repeat;mask:var(--na-sb-ic) center/contain no-repeat}
+.na-sb-text[data-icon="clock"]{--na-sb-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 6v6l4 2'/%3E%3C/svg%3E")}
+.na-sb-text[data-icon="ban"]{--na-sb-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m4.9 4.9 14.2 14.2'/%3E%3C/svg%3E")}
+.mbtn>.na-li{width:18px;height:18px;vertical-align:-3px;margin-right:4px}
+/* Íconos de línea como máscara CSS (sin SVG por elemento, sin observador). Color = texto. */
+.na-ic{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em;flex:none;background:currentColor;-webkit-mask:var(--na-i) center/contain no-repeat;mask:var(--na-i) center/contain no-repeat}
+.cjsg-icon>.na-ic,.bci>.na-ic,.ei>.na-ic,.prod-icon-sm>.na-ic,.mov-ic>.na-ic{width:1.4em;height:1.4em;vertical-align:middle}
+.btn-act>.na-ic{width:16px;height:16px;vertical-align:middle}
+.na-ic-dot{background:#16a34a}
+.na-ic-alert{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E")}
+.na-ic-ban{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m4.9 4.9 14.2 14.2'/%3E%3C/svg%3E")}
+.na-ic-bank{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 21h18M5 21V10M19 21V10M9 21V10M15 21V10M2 10l10-6 10 6'/%3E%3C/svg%3E")}
+.na-ic-bars{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='M8 17v-5M13 17V7M18 17v-8'/%3E%3C/svg%3E")}
+.na-ic-box{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z'/%3E%3Cpath d='m3.3 7 8.7 5 8.7-5M12 22V12'/%3E%3C/svg%3E")}
+.na-ic-cal{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
+.na-ic-cart{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='21' r='1'/%3E%3Ccircle cx='19' cy='21' r='1'/%3E%3Cpath d='M2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6'/%3E%3C/svg%3E")}
+.na-ic-cash{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3Cpath d='M6 12h.01M18 12h.01'/%3E%3C/svg%3E")}
+.na-ic-cashout{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M8 12h8'/%3E%3C/svg%3E")}
+.na-ic-check{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
+.na-ic-clip{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='2' width='8' height='4' rx='1'/%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M8 12h8M8 16h5'/%3E%3C/svg%3E")}
+.na-ic-clock{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 6v6l4 2'/%3E%3C/svg%3E")}
+.na-ic-dot{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='6' fill='%23000' stroke='none'/%3E%3C/svg%3E")}
+.na-ic-down{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 17 13.5 8.5 8.5 13.5 2 7'/%3E%3Cpath d='M16 17h6v-6'/%3E%3C/svg%3E")}
+.na-ic-file{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z'/%3E%3Cpath d='M14 2v6h6M8 13h8M8 17h5'/%3E%3C/svg%3E")}
+.na-ic-folder{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/%3E%3C/svg%3E")}
+.na-ic-gear{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2Z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.na-ic-hand{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m11 17 2 2a1 1 0 1 0 3-3'/%3E%3Cpath d='m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.9-3.9a3 3 0 0 0-4.2 0l-.9.9a1 1 0 1 1-3-3l2.8-2.8a5.8 5.8 0 0 1 7.1-.9l.5.3a2 2 0 0 0 1.4.3L21 4'/%3E%3Cpath d='m21 3 1 11h-2M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3M3 4h8'/%3E%3C/svg%3E")}
+.na-ic-in{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12M7 10l5 5 5-5M5 21h14'/%3E%3C/svg%3E")}
+.na-ic-lock{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E")}
+.na-ic-out{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3M7 8l5-5 5 5M5 21h14'/%3E%3C/svg%3E")}
+.na-ic-pen{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3C/svg%3E")}
+.na-ic-phone{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='2' width='14' height='20' rx='2'/%3E%3Cpath d='M12 18h.01'/%3E%3C/svg%3E")}
+.na-ic-receipt{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z'/%3E%3Cpath d='M8 8h8M8 12h8M8 16h5'/%3E%3C/svg%3E")}
+.na-ic-search{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E")}
+.na-ic-star{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1Z'/%3E%3C/svg%3E")}
+.na-ic-swap{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 3h5v5M21 3l-7 7M8 21H3v-5M3 21l7-7'/%3E%3C/svg%3E")}
+.na-ic-trend{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 7 13.5 15.5 8.5 10.5 2 17'/%3E%3Cpath d='M16 7h6v6'/%3E%3C/svg%3E")}
+.na-ic-unlock{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 7.9-1'/%3E%3C/svg%3E")}
+.na-ic-users{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'/%3E%3C/svg%3E")}
+.na-ic-menu{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16M4 12h16M4 18h16'/%3E%3C/svg%3E")}
+.na-ic-trash{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6'/%3E%3C/svg%3E")}
+.na-ic-bulb{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z'/%3E%3C/svg%3E")}
+.na-ic-store{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1-5h16l1 5M4 9v11h16V9M3 9h18M9 20v-6h6v6'/%3E%3C/svg%3E")}
+.na-ic-user{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E")}
+.na-ic-car{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 17h14v-5l-2-5H7l-2 5zM5 12h14'/%3E%3Ccircle cx='7.5' cy='17' r='1.5'/%3E%3Ccircle cx='16.5' cy='17' r='1.5'/%3E%3C/svg%3E")}
+.na-ic-card{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='5' width='20' height='14' rx='2'/%3E%3Cpath d='M2 10h20'/%3E%3C/svg%3E")}
+.na-ic-pin{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s7-7 7-12a7 7 0 0 0-14 0c0 5 7 12 7 12z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E")}
+.na-ic-save{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 3h11l3 3v15H5zM8 3v5h8M8 21v-7h8v7'/%3E%3C/svg%3E")}
+.na-ic-key{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='7' cy='15' r='4'/%3E%3Cpath d='M10 12l10-10M17 5l3 3'/%3E%3C/svg%3E")}
+.na-ic-shield{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z'/%3E%3C/svg%3E")}
+.na-ic-bell{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4'/%3E%3C/svg%3E")}
+.na-ic-eye{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E")}
+.na-ic-plus{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E")}
+.na-ic-zap{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9z'/%3E%3C/svg%3E")}
+.na-ic-tag{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12l-8 8-9-9V3h8z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1.5'/%3E%3C/svg%3E")}
+.na-ic-cloud{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 19 10a4 4 0 0 1-1 8z'/%3E%3C/svg%3E")}
+.na-ic-upload{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5M4 20h16'/%3E%3C/svg%3E")}
+.na-ic-download{--na-i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v12M7 11l5 5 5-5M4 20h16'/%3E%3C/svg%3E")}
+.btn-rm>.na-ic{width:18px;height:18px;vertical-align:middle}
+.na-mobile-menu-toggle>.na-ic{width:22px;height:22px;vertical-align:middle}
+.gasto-icon>.na-ic,.cfg-screen-head-icon>.na-ic,.cfg-setting-icon>.na-ic{width:1.3em;height:1.3em;vertical-align:middle}
+/* Botón de menú del encabezado: contraste ≥3:1 en claro y oscuro (sin cambiar el diseño). */
+.na-mobile-menu-toggle:has(>.na-ic){background-image:none!important;color:#19344c}
+body.dark:not(.na-pos-reference-active) .na-mobile-menu-toggle{color:#e2e8f0!important}
+body.dark.na-pos-reference-active>.g-topbar>.na-mobile-menu-toggle{color:#19344c!important}

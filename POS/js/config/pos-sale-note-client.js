@@ -1,0 +1,192 @@
+/* Etapa 2 (ítem 10): nota opcional de venta.
+   - Campo "Nota (opcional)" en Pagar. El borrador sobrevive al vaciar el carrito y a recargar; se limpia solo al confirmar una venta.
+   - La nota nunca cambia el monto: viaja aparte (POST /auth/sale-notes) después de la venta.
+   - Cola local: si no hay internet o la venta aún no llegó al servidor, se reintenta luego (no se pierde).
+   - Se muestra en el Historial (detalle) y en el comprobante.
+   - Ítem 10b: comentario opcional del abono (llave 'pay:<operation_id>'), y quién atendió cada venta y abono
+     (GET /auth/record-meta: etiqueta del aparato; sin etiqueta = Dueño o Empleado). */
+(function (root) {
+  'use strict';
+  var doc = root.document, DRAFT = 'na_sale_note_draft_v1', QUEUE = 'na_sale_note_queue_v1', CACHE = 'na_sale_notes_v1', META = 'na_record_meta_v1';
+  var busy = false;
+  function lsGet(k, d) { try { var v = JSON.parse(root.localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } }
+  function lsSet(k, v) { memo = null; try { root.localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} }
+  function clean(t) { return String(t || '').replace(/[\x00-\x1f\x7f]+/g, ' ').trim().replace(/\s+/g, ' ').slice(0, 300); }
+  function cloud() { try { return !!(root.NuevoAmanecerCanonical && root.NuevoAmanecerCanonical.enabled()); } catch (_) { return false; } }
+  function getVentas() { try { return ventas; } catch (_) { return []; } } // eslint-disable-line no-undef
+  function keys(v) { return [v && v.sale_id, v && v.id, v && v.ventaUid, v && v.operation].filter(function (x) { return x != null && x !== ''; }).map(String); }
+
+  // El servidor llama «Dueño» al aparato del admin sin etiqueta; en pantalla se muestra «Admin».
+  function who(x) { return x === 'Dueño' ? 'Admin' : x; }
+  function draft() { return clean(lsGet(DRAFT, '')); }
+  function ensureField() {
+    var conf = doc.getElementById('mBtnConf'); if (!conf || doc.getElementById('naSaleNote')) return;
+    var box = doc.createElement('div'); box.className = 'na-sale-note';
+    box.innerHTML = '<label for="naSaleNote">Nota (opcional)</label><input id="naSaleNote" type="text" maxlength="300" autocomplete="off" placeholder="Ej.: entregar mañana">';
+    // Dentro del cuerpo del cobro, al final: mismos márgenes que el resto del formulario.
+    var modal = conf.closest('.modal'), body = modal && modal.querySelector('.pay-modal-body');
+    if (body) body.appendChild(box);
+    else { var host = conf.closest('.pay-actions') || conf.parentElement; host.parentElement.insertBefore(box, host); }
+    var input = box.querySelector('input'); input.value = draft();
+    input.addEventListener('input', function () { lsSet(DRAFT, input.value.slice(0, 300)); });
+  }
+
+  function mark() {
+    var list = getVentas(); if (!Array.isArray(list)) return;
+    var server = lsGet(CACHE, {}), local = {};
+    lsGet(QUEUE, []).forEach(function (q) { (q.keys || []).forEach(function (k) { local[k] = q.note; }); });
+    var meta = lsGet(META, { sales: {}, payments: {} });
+    list.forEach(function (v) {
+      var ks = keys(v), i;
+      var rc = root.NA_RECORD_CASHIER && root.NA_RECORD_CASHIER.get(ks);
+      if (rc && rc.nombre) { v.cajero = v.cajeroNombre = rc.nombre; if (rc.id) v.cajeroId = rc.id; }
+      else for (i = 0; i < ks.length; i++) { var w = who(meta.sales[ks[i]]); if (w) { v.cajero = v.cajeroNombre = w; break; } }
+      for (i = 0; i < ks.length; i++) { var n = server[ks[i]] || local[ks[i]]; if (n) { v.nota = n; break; } }
+    });
+    var credits; try { credits = creditos; } catch (_) { credits = []; } // eslint-disable-line no-undef
+    (Array.isArray(credits) ? credits : []).forEach(function (cr) {
+      (Array.isArray(cr && cr.pagos) ? cr.pagos : []).forEach(function (p) {
+        var op = String(p.operationId || p.operation_id || p.pagoId || p.id || ''); if (!op) return;
+        var rp = root.NA_RECORD_CASHIER && root.NA_RECORD_CASHIER.get([op]); var who = rp && rp.nombre ? rp.nombre : meta.payments[op]; if (who) p.cajero = p.cajeroNombre = who;
+        var c = server['pay:' + op] || local['pay:' + op]; if (c) p.comentario = c;
+      });
+    });
+  }
+  async function post(saleId, note) {
+    var r = root.NA_ROLES; if (!r) throw new Error('sin sesión');
+    return r.api('/auth/sale-notes', { sale_id: saleId, note: note });
+  }
+  // T-47: cada nota pendiente guarda la identidad de la sesión que la escribió y solo esa sesión la envía.
+  // Las de otra sesión (o antiguas sin identidad, si no se puede probar que es la misma) se quedan en la
+  // cola sin enviarse ni borrarse (se siguen viendo en este aparato).
+  function who() { var c = root.NuevoAmanecerCanonical; try { return c && typeof c.sessionIdentity === 'function' ? c.sessionIdentity() : null; } catch (_) { return null; } }
+  function stampNote(item) { var w = who(); if (w) { item.identity = w.key; if (w.user) item.identity_user = w.user; if (w.principal) item.identity_principal = w.principal; } return item; }
+  // Mismo aparato y mismo rol => se envía sola; otro rol (o sin poder confirmarlo aún) => se queda.
+  function mine(item) {
+    var c = root.NuevoAmanecerCanonical, w = who();
+    if (!w || !c || typeof c.identityCheck !== 'function') return true;
+    try { return c.identityCheck(item.identity ? { key: item.identity, user: item.identity_user || null } : null, { command: 'sale-note' }) === 'same'; } catch (_) { return false; }
+  }
+  async function flush() {
+    if (busy || !cloud() || root.navigator.onLine === false || !root.NA_ROLES) return;
+    var q = lsGet(QUEUE, []); if (!q.length) return;
+    busy = true;
+    try {
+      var cache = lsGet(CACHE, {}), rest = [];
+      for (var i = 0; i < q.length; i++) {
+        var item = q[i], done = false;
+        if (!mine(item)) { rest.push(item); continue; }
+        // También se buscan las llaves de la venta proyectada desde el servidor (sale_id).
+        var ks = (item.keys || []).slice();
+        getVentas().forEach(function (v) { var vk = keys(v); if (vk.some(function (k) { return ks.indexOf(k) >= 0; })) vk.forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k); }); });
+        for (var j = 0; j < ks.length && !done; j++) {
+          try { await post(ks[j], item.note); cache[ks[j]] = item.note; done = true; } catch (e) { if (!/404|sale_not_found/.test(String(e && (e.status || e.message || e)))) { j = ks.length; } }
+        }
+        if (!done) rest.push(item);
+      }
+      lsSet(QUEUE, rest); lsSet(CACHE, cache);
+    } finally { busy = false; }
+  }
+  async function load() {
+    if (!cloud() || !root.NA_ROLES || root.navigator.onLine === false) return;
+    try {
+      var out = await root.NA_ROLES.api('/auth/sale-notes'), next = {};
+      (out.notes || []).forEach(function (n) { next[String(n.sale_id)] = n.note; });
+      lsSet(CACHE, next);
+      try {
+        var m = await root.NA_ROLES.api('/auth/record-meta'), meta = { sales: {}, payments: {} };
+        (m.sales || []).forEach(function (r) { meta.sales[String(r.sale_id)] = r.cashier; });
+        (m.payments || []).forEach(function (r) { meta.payments[String(r.operation_id)] = r.cashier; });
+        lsSet(META, meta);
+      } catch (_) {}
+      mark();
+    } catch (_) {}
+  }
+
+  function cashierLabel() { var r = root.NA_ROLES; if (!r) return ''; return r.label || (r.role === 'empleado' ? 'Empleado' : 'Admin'); }
+  function ensurePayFields() {
+    var hosts = [];
+    var single = doc.querySelector('#mPagoCred .mbtns'); if (single) hosts.push(single);
+    var batch = doc.getElementById('naV2BatchSubmit'); if (batch) hosts.push(batch);
+    hosts.forEach(function (h) {
+      var parent = h.parentElement; if (!parent || parent.querySelector('.na-pay-note')) return;
+      var box = doc.createElement('div'); box.className = 'na-sale-note na-pay-note';
+      box.innerHTML = '<label>Comentario del abono (opcional)</label><input type="text" maxlength="300" autocomplete="off" placeholder="Ej.: pagó su hija">';
+      parent.insertBefore(box, h);
+    });
+  }
+  // Lo llama share-receipt.js onPayments con los abonos confirmados: guarda el comentario y lo pone en el recibo.
+  root.__naPayNoteTake = function (entries) {
+    var inputs = [].slice.call(doc.querySelectorAll('.na-pay-note input')), note = '';
+    inputs.forEach(function (i) { if (!note && clean(i.value)) note = clean(i.value); i.value = ''; });
+    if (!note) return '';
+    var q = lsGet(QUEUE, []);
+    (entries || []).forEach(function (e) {
+      var op = e && e.receipt && (e.receipt.operation_id || e.receipt.event_id || e.receipt.payment_id);
+      if (op) q.push(stampNote({ keys: ['pay:' + String(op)], note: note, at: new Date().toISOString() }));
+    });
+    lsSet(QUEUE, q); setTimeout(flush, 1500);
+    return note;
+  };
+  root.__naCashierLabel = cashierLabel;
+  // Solo lectura: al pintar la lista se llama una vez por abono (cientos). Se lee y se interpreta
+  // cada clave una sola vez por tarea en lugar de una vez por abono; la siguiente tarea vuelve a leer.
+  var memo = null;
+  function lsMemo(k, d) {
+    if (!memo) { memo = {}; setTimeout(function () { memo = null; }, 0); }
+    // Copia congelada: nadie puede modificar la caché compartida; __naPaymentMeta devuelve siempre un objeto nuevo.
+    if (!Object.prototype.hasOwnProperty.call(memo, k)) { var v = lsGet(k, d); memo[k] = v && typeof v === 'object' ? Object.freeze(v) : v; }
+    return memo[k];
+  }
+  root.__naPaymentMeta = function (op) {
+    if (!op) return null;
+    var meta = lsMemo(META, { sales: {}, payments: {} }), server = lsMemo(CACHE, {}), c = server['pay:' + op];
+    if (!c) lsMemo(QUEUE, []).some(function (q) { if ((q.keys || []).indexOf('pay:' + op) >= 0) { c = q.note; return true; } return false; });
+    var pw = who(meta.payments && meta.payments[op]);
+    return pw || c ? { cashier: pw || '', comment: c || '' } : null;
+  };
+  function wrapConfirm() {
+    var base = root.confirmarVenta;
+    if (typeof base !== 'function' || base.__naNote) return;
+    var wrapped = async function () {
+      var note = draft(), before = {};
+      getVentas().forEach(function (v) { keys(v).forEach(function (k) { before[k] = 1; }); });
+      var captured = [];
+      root.__naSaleNoteCapture = note ? { note: note, ids: captured } : null;
+      var out;
+      try { out = await base.apply(this, arguments); } finally { root.__naSaleNoteCapture = null; }
+      if (note) {
+        var attach = function () {
+          var fresh = getVentas().filter(function (v) { return !keys(v).some(function (k) { return before[k]; }); });
+          var ks = [];
+          if (out && out.sale_id) ks.push(String(out.sale_id));
+          if (out && out.operation_id) ks.push(String(out.operation_id));
+          captured.forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k); });
+          fresh.forEach(function (v) { v.nota = note; keys(v).forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k); }); });
+          if (!ks.length) return false;
+          var q = lsGet(QUEUE, []); q.push(stampNote({ keys: ks, note: note, at: new Date().toISOString() }));
+          lsSet(QUEUE, q); lsSet(DRAFT, ''); var i = doc.getElementById('naSaleNote'); if (i) i.value = '';
+          mark(); setTimeout(flush, 1500); return true;
+        };
+        if (!attach()) setTimeout(attach, 1200);
+      }
+      return out;
+    };
+    wrapped.__naNote = true;
+    Object.keys(base).forEach(function (k) { try { wrapped[k] = base[k]; } catch (_) {} });
+    root.confirmarVenta = wrapped;
+  }
+  // El comprobante que se abre al confirmar toma la nota de __naSaleNoteCapture (share-receipt.js onSale).
+  function wrapRender() {
+    var base = root.ventasRender; if (typeof base !== 'function' || base.__naNote) return;
+    var w = function () { mark(); return base.apply(this, arguments); }; w.__naNote = true; root.ventasRender = w;
+  }
+  function init() {
+    ensureField(); ensurePayFields(); wrapConfirm(); wrapRender();
+    doc.addEventListener('click', function () { setTimeout(ensurePayFields, 60); }, true); mark(); load().then(flush);
+    root.addEventListener('online', function () { flush(); });
+    setInterval(function () { wrapConfirm(); flush(); }, 60000);
+  }
+  root.NA_SALE_NOTE = { flush: flush, load: load, mark: mark, draft: draft };
+  if (doc.readyState === 'complete') setTimeout(init, 0); else root.addEventListener('load', function () { setTimeout(init, 0); });
+})(window);

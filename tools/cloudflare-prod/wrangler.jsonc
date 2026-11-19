@@ -1,0 +1,16 @@
+{
+  "name": "cliente-001-pos-api",
+  "main": "../cloudflare-lab/src/worker-entry.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "vars": {
+    "RUNTIME_ENVIRONMENT": "production",
+    "CANONICAL_RUNTIME_ENABLED": "disabled"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "cliente-001-pos-db",
+    "database_id": "REEMPLAZAR_CON_D1_EXCLUSIVA_DEL_CLIENTE",
+    "migrations_dir": "../../infra/database/migrations"
+  }]
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Configurar caja — Nuevo Amanecer</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#eff5f3;color:#19332d;font:17px/1.5 system-ui,sans-serif;padding:32px 16px}main{max-width:640px;margin:auto;background:white;border:1px solid #d1dfd9;border-radius:18px;padding:32px}h1{font-size:28px;line-height:1.2;margin:0 0 16px}p{margin:12px 0}label{display:block;font-weight:650;margin-top:24px}input{width:100%;padding:12px;border:1px solid #738a81;border-radius:8px;font:inherit;margin:8px 0 16px}button,.open{display:inline-block;background:#146650;color:white;padding:12px 18px;border:0;border-radius:8px;font:inherit;text-decoration:none;cursor:pointer}button:disabled{opacity:.6;cursor:wait}.note{font-size:15px;color:#456056}.status{margin:18px 0;min-height:26px;font-weight:650}.open{background:#294f67}a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #be6c00;outline-offset:3px}@media(max-width:400px){main{padding:22px}h1{font-size:24px}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Activar Nuevo Amanecer V1.3</h1>
+  <p>Introduce tu clave privada de activación una sola vez. El servidor la valida y entrega una sesión propia para este navegador.</p>
+  <p class="note">No uses tu contraseña de GitHub ni READ_TOKEN. Usa la misma <strong>clave de activación V1.3</strong> que ya probaste en PC y teléfono.</p>
+  <form id="setupForm">
+    <label for="activationSecret">Clave de activación</label>
+    <input id="activationSecret" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+    <button id="save" type="submit">Activar y conectar</button>
+  </form>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+  <p class="note">Después de activar, cierra cualquier pestaña antigua del POS y vuelve a abrirla. V1.3 usa la autoridad CANON de producción y conserva una sesión persistente por navegador.</p>
+  <a class="open" href="/POS/index.html">Abrir POS</a>
+  <p class="note">La clave de activación no queda guardada. Solo se conserva el token de sesión emitido por el Worker productivo.</p>
+</main>
+<script src="/POS/js/sync/outbox.js"></script>
+<script src="/POS/js/sync/canonical-client.js"></script>
+<script src="/tools/pos-local/setup.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "cliente-001-pos-web",
+  "main": "./src/worker.js",
+  "compatibility_date": "2026-09-24",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./_site",
+    "binding": "ASSETS",
+    "run_worker_first": ["/", "/app", "/app/", "/health", "/auth/*", "/read/*", "/features/*", "/commands/*", "/imports/*", "/sync/operations*", "/settings"],
+    "html_handling": "none",
+    "not_found_handling": "none"
+  },
+  "vars": {
+    "HOSTED_ENVIRONMENT": "production",
+    "CANON_API_ORIGIN": "https://cliente-001.sin-configurar.invalid"
+  },
+  "services": [{"binding": "CANON_BACKEND", "service": "cliente-001-pos-api"}]
+}

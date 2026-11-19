@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+.dev.vars*
+.wrangler/
+*.sqlite
+*.sqlite3
+customer-data/
+tools/cloudflare-lab/private/
+tools/cloudflare-pos-web/_site/

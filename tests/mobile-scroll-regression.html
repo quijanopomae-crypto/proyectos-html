@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Regresión: desplazamiento unificado de módulos</title>
+  <style>
+    :root{font-family:system-ui,sans-serif;color:#172033;background:#eef3f7}
+    body{margin:16px}
+    h1{margin:0 0 4px;font-size:22px}
+    p{margin:0 0 12px;color:#526071}
+    button{height:38px;border:0;border-radius:8px;padding:0 14px;background:#087f72;color:#fff;font-weight:800;cursor:pointer}
+    button:disabled{opacity:.55;cursor:wait}
+    .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+    table{width:100%;border-collapse:collapse;background:#fff;font-size:12px;margin-top:12px}
+    th,td{border:1px solid #d7dee8;padding:7px;text-align:left;vertical-align:top}
+    th{background:#e7eef4;position:sticky;top:0}
+    .ok{color:#087443;font-weight:900}.fail{color:#b42318;font-weight:900}.warn{color:#b45309;font-weight:900}
+    pre{margin:0;white-space:pre-wrap;word-break:break-word;font-size:10px}
+    #auto-result{display:none;margin:12px 0;padding:14px;border:2px solid #087f72;border-radius:12px;background:#f0fdf4;font:12px/1.5 monospace;white-space:pre-wrap;word-break:break-word}
+  </style>
+</head>
+<body>
+  <h1>Regresión: desplazamiento unificado de módulos</h1>
+  <p>Verifica CSS + 5 módulos + máquina de gestos + exclusión de POS/Config/menú.</p>
+  <div class="controls" id="controls">
+    <button id="run" type="button">Ejecutar matriz completa</button>
+    <strong id="status">Esperando.</strong>
+  </div>
+  <table id="results-table">
+    <thead><tr><th>Caso</th><th>Resultado</th></tr></thead>
+    <tbody id="results"></tbody>
+  </table>
+  <pre id="auto-result"></pre>
+  <script>
+  (() => {
+    var MODULES=['pageInventario','pageClientes','pageVentas','pageCaja','pageGastos'];
+    var MOBILE_W=360,DESKTOP_W=1366,IFRAME_W=375,IFRAME_H=600;
+    var iframe,runBtn,statusEl,tbody,autoResult,results=[],win=null,doc=null,body=null,api=null;
+    var consoleErrors=[],testStart=0,autoMode=false;
+
+    var PASS=function(l){return'<span class="ok">✔ '+l+'</span>';};
+    var FAIL=function(l,d){return'<span class="fail">✘ '+l+'</span>'+(d?'<br><pre>'+d+'</pre>':'');};
+    var WARN=function(l,d){return'<span class="warn">⚠ '+l+'</span>'+(d?'<br><pre>'+d+'</pre>':'');};
+    function add(label,result){results.push({label:label,result:result});tbody.innerHTML=results.map(function(x){return'<tr><td>'+x.label+'</td><td>'+x.result+'</td></tr>';}).join('');}
+    function stat(){var p=results.filter(function(r){return r.result.indexOf('class="ok"')!==-1;}).length;var f=results.filter(function(r){return r.result.indexOf('class="fail"')!==-1;}).length;var w=results.filter(function(r){return r.result.indexOf('class="warn"')!==-1;}).length;var txt='Completado: '+p+' \u2714 / '+f+' \u2718 / '+w+' \u26a0 | '+results.length+' pruebas';statusEl.textContent=txt;return{p:p,f:f,w:w,total:results.length,txt:txt};}
+    var wait=function(ms){return new Promise(function(r){setTimeout(r,ms);});};
+
+    function createIframe(){
+      iframe=document.createElement('iframe');
+      iframe.src='../CVV2.4_backup_antes_demo-1.html?na-test=1';
+      iframe.style.cssText='border:0;width:'+IFRAME_W+'px;height:'+IFRAME_H+'px;display:block;margin-bottom:10px;overflow:auto';
+      document.body.insertBefore(iframe,document.getElementById('results-table'));
+      iframe.contentWindow&&iframe.contentWindow.addEventListener('error',function(e){consoleErrors.push('[iframe] '+e.message);});
+    }
+
+    async function setWidth(w){return new Promise(function(resolve){Object.defineProperty(win,'innerWidth',{value:w,configurable:true});win.dispatchEvent(new Event('resize'));setTimeout(resolve,200);});}
+
+    async function init(){
+      results=[];tbody.innerHTML='';autoResult.textContent='';autoResult.style.display='none';consoleErrors=[];testStart=Date.now();
+      iframe&&iframe.parentNode&&iframe.parentNode.removeChild(iframe);
+      createIframe();
+      await new Promise(function(resolve){if(iframe.contentWindow&&iframe.contentWindow.document.readyState==='complete')resolve();else iframe.addEventListener('load',resolve,{once:true});});
+      await wait(2500);win=iframe.contentWindow;doc=win.document;body=doc.body;api=win._naTopbarGesture||null;
+      if(!win.goPage||!win.goMenu){statusEl.textContent='Funciones no expuestas.';return false;}
+      if(!api){statusEl.textContent='API de gestos no encontrada (falta ?na-test=1).';return false;}
+      return true;
+    }
+
+    function hasClass(){return (body.className||'').indexOf('module-mobile-scroll')!==-1;}
+
+    /* ─── FASE 1: CSS ─── */
+    async function testCSS(){
+      add('FASE 1: CSS estático','<strong>Iniciando...</strong>');
+      var sheets=Array.from(doc.styleSheets||[]);
+      var all=sheets.map(function(s){try{return Array.from(s.cssRules||[]).map(function(r){return r.cssText;}).join('')}catch(e){return'';}}).join('');
+      add('CSS: module-mobile-scroll presente',all.indexOf('module-mobile-scroll')!==-1?PASS('Encontrada'):FAIL('No'));
+      add('CSS: g-topbar sticky',all.indexOf('body.module-mobile-scroll .g-topbar')!==-1?PASS('Encontrada'):FAIL('No'));
+      add('CSS: g-topbar-hidden',all.indexOf('g-topbar-hidden')!==-1?PASS('Encontrada'):FAIL('No'));
+      add('CSS: overflow-y:auto en body',all.indexOf('overflow-y:auto')!==-1?PASS('Encontrada'):FAIL('No'));
+      add('CSS: IDs explícitos de módulos',all.indexOf('pageInventario')!==-1&&all.indexOf('pageClientes')!==-1&&all.indexOf('pageVentas')!==-1&&all.indexOf('pageCaja')!==-1&&all.indexOf('pageGastos')!==-1?PASS('5 módulos referenciados'):WARN('Verificación parcial',all.length+' caracteres CSS'));
+    }
+
+    /* ─── FASE 2: Módulos ─── */
+    async function testModules(){
+      add('FASE 2: Activación por módulo','<strong>Iniciando...</strong>');
+      // En móvil, cada módulo debe tener la clase
+      await setWidth(MOBILE_W);await wait(100);
+      for(var i=0;i<MODULES.length;i++){
+        win.goPage(MODULES[i]);await wait(400);
+        var name=MODULES[i].replace('page','');
+        add(name+': clase activa en móvil',hasClass()?PASS('Sí'):FAIL('No'));
+        win.goMenu();await wait(200);
+        add(name+': clase removida en menú',!hasClass()?PASS('Sí'):FAIL('Sigue'));
+      }
+      // POS NO debe tener la clase
+      win.goPage('pagePOS');await wait(400);
+      add('POS: SIN clase en móvil',!hasClass()?PASS('Correcto'):FAIL('Tiene clase - mal'));
+      win.goMenu();await wait(150);
+      // Config NO debe tener la clase
+      win.goPage('pageConfig');await wait(400);
+      add('Config: SIN clase en móvil',!hasClass()?PASS('Correcto'):FAIL('Tiene clase - mal'));
+      win.goMenu();await wait(150);
+      // Menú NO debe tener la clase
+      add('Menú: SIN clase',!hasClass()?PASS('Correcto'):FAIL('Tiene clase'));
+      // Escritorio: ningún módulo debe tener la clase
+      await setWidth(DESKTOP_W);await wait(100);
+      for(var j=0;j<MODULES.length;j++){
+        win.goPage(MODULES[j]);await wait(300);
+        var dn=MODULES[j].replace('page','');
+        add(dn+': SIN clase en escritorio',!hasClass()?PASS('Correcto'):FAIL('Tiene clase'));
+      }
+      // POS en escritorio
+      win.goPage('pagePOS');await wait(300);
+      add('POS: SIN clase en escritorio',!hasClass()?PASS('Correcto'):FAIL('Tiene clase'));
+      win.goMenu();await wait(100);
+      // Volver a móvil para fase 3
+      await setWidth(MOBILE_W);await wait(100);
+    }
+
+    /* ─── FASE 3: Gestos ─── */
+    async function testGestures(){
+      add('FASE 3: Máquina de estados de gestos','<strong>Iniciando...</strong>');
+      await setWidth(MOBILE_W);await wait(100);
+      win.goPage('pageInventario');await wait(400);
+      if(!hasClass()){add('Precondición',FAIL('module-mobile-scroll no activo'));return;}
+      api=win._naTopbarGesture;
+      var tb=doc.querySelector('.g-topbar');
+      function hidden(){return tb&&tb.classList.contains('g-topbar-hidden');}
+      function cnt(){return api.getCount();}
+
+      api.hide();api.reset();
+      if(!hidden()){add('Precondición: barra oculta',FAIL('No se pudo ocultar'));return;}
+      if(cnt()!==0)api.reset();
+      add('Precondición: oculta, count=0',(hidden()&&cnt()===0)?PASS('OK'):FAIL('Hidden:'+hidden()+' Count:'+cnt()));
+
+      api.simulateUpGesture();await wait(100);
+      add('Caso A: 1 gesto → +1',cnt()===1?PASS('Count:1'):FAIL('Count:'+cnt()));
+
+      api.simulateUpGesture();await wait(100);
+      add('Caso B: 2 gestos → +1',cnt()===2?PASS('Count:2'):FAIL('Count:'+cnt()));
+
+      api.simulateUpGesture();await wait(100);
+      add('Caso C: 3 gestos → visible, count=0',(cnt()===0&&!hidden())?PASS('Count:0 Visible'):FAIL('Count:'+cnt()+' Hidden:'+hidden()));
+
+      api.hide();api.reset();
+      api.simulateUpGesture();await wait(100);
+      var cu=cnt();
+      api.simulateDownScroll();await wait(100);
+      add('Caso D: ↑→+1, ↓→0',(cu===1&&cnt()===0)?PASS('OK'):FAIL('↑:'+cu+' ↓:'+cnt()));
+
+      add('Caso E: NEAR_TOP='+api.getNearTop(),api.getNearTop()===20?PASS('20px'):FAIL('Incorrecto'));
+
+      api.hide();api.reset();
+      win.goMenu();await wait(300);
+      add('Caso F: menú → visible, clase removida',(!hidden()&&!hasClass())?PASS('OK'):FAIL('Hidden:'+hidden()+' Clase:'+hasClass()));
+
+      await setWidth(DESKTOP_W);await wait(300);
+      add('Caso G: resize escritorio → visible',!hidden()?PASS('Visible'):FAIL('Oculta'));
+    }
+
+    /* ─── FASE 4: API restringida ─── */
+    async function testAPI(){
+      add('FASE 4: API ?na-test=1','<strong>Iniciando...</strong>');
+      add('Con ?na-test=1: typeof API',api?PASS('definida'):FAIL('undefined'));
+      var testIframe2=document.createElement('iframe');
+      testIframe2.src='../CVV2.4_backup_antes_demo-1.html';
+      testIframe2.style.cssText='border:0;width:1px;height:1px;position:absolute;left:-9999px';
+      document.body.appendChild(testIframe2);
+      await new Promise(function(resolve){testIframe2.addEventListener('load',resolve,{once:true});});
+      await wait(2000);
+      var hasAPI=typeof testIframe2.contentWindow._naTopbarGesture!=='undefined';
+      testIframe2.parentNode.removeChild(testIframe2);
+      add('Sin ?na-test=1: typeof API',!hasAPI?PASS('undefined (correcto)'):FAIL('definido en producción'));
+    }
+
+    function cleanup(){
+      if(iframe&&iframe.parentNode){iframe.parentNode.removeChild(iframe);iframe=null;}
+      win=null;doc=null;body=null;api=null;
+    }
+
+    async function runAll(){
+      runBtn.disabled=true;results=[];tbody.innerHTML='';
+      if(!(await init())){runBtn.disabled=false;return;}
+      await testCSS();
+      await testModules();
+      await testGestures();
+      await testAPI();
+      var s=stat();runBtn.disabled=false;
+      if(autoMode)finishAuto(s);else cleanup();
+    }
+
+    function finishAuto(s){
+      var elapsed=((Date.now()-testStart)/1000).toFixed(1);
+      var fails=results.filter(function(r){return r.result.indexOf('class="fail"')!==-1;}).map(function(r){return r.label;});
+      var warns=results.filter(function(r){return r.result.indexOf('class="warn"')!==-1;}).map(function(r){return r.label;});
+      var payload={total:s.total,passed:s.p,failed:s.f,warnings:s.w,durationSec:elapsed,consoleErrors:consoleErrors,failList:fails,warnList:warns};
+      var json=JSON.stringify(payload,null,2);
+      var controls=document.getElementById('controls');
+      var table=document.getElementById('results-table');
+      if(controls)controls.style.display='none';
+      if(table)table.style.display='none';
+      if(iframe&&iframe.parentNode)iframe.parentNode.removeChild(iframe);
+      statusEl.textContent=s.txt;
+      autoResult.textContent=json;
+      autoResult.style.display='block';
+      document.documentElement.dataset.testStatus=s.f===0?'passed':'failed';
+    }
+
+    runBtn=document.getElementById('run');
+    statusEl=document.getElementById('status');
+    tbody=document.getElementById('results');
+    autoResult=document.getElementById('auto-result');
+    autoMode=(new URLSearchParams(window.location.search).get('auto')==='1');
+
+    runBtn.addEventListener('click',runAll);
+    if(autoMode){setTimeout(function(){runAll().catch(function(e){statusEl.textContent='Error: '+e.message;document.documentElement.dataset.testStatus='timeout';});},500);}
+  })();
+  </script>
+</body>
+</html>

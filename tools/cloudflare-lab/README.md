@@ -1,0 +1,300 @@
+# cloudflare-lab
+
+Capa cloud de V1.3 del POS Nuevo Amanecer. V9 conserva la autoridad local; el
+OUTBOX A4 envía cada nueva venta como un único comando durable `sale.create`. El
+segundo dispositivo solo consulta.
+
+```
+POS V9 (autoridad local) → OUTBOX durable → POST /commands/sale.create → D1
+```
+
+## Recursos
+
+| Recurso | Valor |
+|---|---|
+| D1 | `nuevo-amanecer-lab` · `e734e6f1-41c4-4bfa-ab1f-5acbcdd2272e` · ENAM |
+| Binding | `env.DB` |
+| Worker | `nuevo-amanecer-sync-lab` |
+| URL | `https://cliente-001.sin-configurar.invalid` |
+
+## Contrato de `sync_operations`
+
+`operation_id` es la clave de idempotencia. El Worker hace `INSERT … ON CONFLICT(operation_id) DO NOTHING` y decide por el resultado:
+
+| Situación | Respuesta |
+|---|---|
+| `operation_id` nuevo | `201 {status:"inserted"}` |
+| mismo `operation_id`, mismo `payload_hash` | `200 {status:"already_processed"}` — no se inserta duplicado |
+| mismo `operation_id`, `payload_hash` distinto | `409 {status:"conflict"}` — **no se sobrescribe** |
+| `payload_hash` ≠ sha256(payload) | `400 payload_hash_mismatch` |
+
+Nunca Last-Push-Wins sobre ventas, dinero o inventario.
+
+Campos técnicos añadidos a los obligatorios: `received_at` (hora del servidor, default en D1) y el índice `(device_id, device_sequence)` para el futuro "¿última secuencia recibida de esta caja?".
+
+## Endpoints
+
+- `GET /health` → `{ok, d1}`; público.
+- `POST /sync/operations` → inserta una operación (JSON con los 8 campos).
+- `GET /sync/operations/:operation_id` → devuelve la fila.
+- `POST /commands/sale.create` → crea atómicamente venta, líneas, movimientos de
+  inventario y movimiento de caja. Requiere una sesión persistente activa.
+- `POST /commands/import.stage` → carga por lotes un manifiesto A5 validado en
+  staging y finaliza su reconciliacion `PASS`/`FAIL`; nunca promociona a tablas A3.
+- `GET /imports/{import_id}` → consulta autenticada del run y sus conteos staging.
+
+`sale.create` recibe `operation_id`, `device_id`, `sale_id`, `created_at`,
+`payment_method`, `total_cents` e `items`; cada línea contiene `product_id`,
+`quantity`, `unit_price_cents`, `line_total_cents` e `inventory_quantity`. El
+último campo conserva las unidades físicas descontadas localmente y puede ser cero
+para líneas sin control de inventario. El total debe coincidir exactamente con las líneas. Un retry
+idéntico devuelve `already_processed`; el mismo `operation_id` con cualquier
+contenido distinto devuelve `operation_id_conflict` sin efectos adicionales.
+Para `payment_method: "mixto"`, `payment` incluye `cash_cents`, `digital_cents`,
+`digital_method` (`yape`, `plin` o `transferencia`) y `reference` opcional; ambos
+importes deben sumar `total_cents`.
+Para `credito`, `customer_id` y `credit_due` (`YYYY-MM-DD`) son obligatorios.
+
+El OUTBOX A4 guarda el comando y su SHA-256 dentro del mismo snapshot durable que
+la venta local antes de intentar red. Sus estados son `PENDING`, `ACKED`,
+`REJECTED` y `NEEDS_REVIEW`. Offline, timeout y 5xx conservan `PENDING`; una
+respuesta `created` o `already_processed` con identidad coincidente produce
+`ACKED`; 401/403 quedan `REJECTED` sin bucle; conflicto, ACK ambiguo o payload
+alterado quedan `NEEDS_REVIEW`. Los retries reutilizan los mismos bytes y el mismo
+`operation_id`. Un OUTBOX V1 encontrado al actualizar se conserva dentro del
+snapshot como journal legacy para revisión y nunca se reinterpreta como una venta.
+
+Los endpoints de escritura usan una **sesión persistente**. Un navegador nuevo
+llama una sola vez a `POST /auth/activate` con `x-activation-secret`. Si la clave
+coincide con `POS_ACTIVATION_SECRET`, el Worker genera un token aleatorio de 256 bits,
+guarda únicamente su SHA-256 en D1 y devuelve el token al navegador.
+
+Las siguientes solicitudes usan `Authorization: Bearer <session_token>`. No se exige
+`x-device-id`, IMEI, hardware ID, registro manual del teléfono ni una credencial
+distinta por equipo. La migración `0010_session_auth.sql` elimina el índice que imponía
+un único writer y permite varias sesiones activas simultáneamente.
+
+El esquema histórico conserva algunas columnas llamadas `device_id` para compatibilidad
+con FKs/auditoría de migraciones anteriores. En el runtime actual esas columnas reciben
+un principal de sesión `session:<uuid>`; no representan un dispositivo físico y no
+participan en la decisión de login.
+
+La clave de activación nunca se almacena en el navegador. `NuevoAmanecerOutbox.activate()`
+la intercambia por el token de sesión y persiste solo ese token. La clave vuelve a ser
+necesaria únicamente si se elimina el almacenamiento del navegador, se revoca la sesión
+o se usa un perfil/navegador nuevo.
+
+El visor A1 conserva su acceso de lectura separado con `READ_TOKEN`, que nunca permite
+escritura.
+
+Pruebas A2 desde la raíz (sin evidencia histórica, servicios remotos ni release gates):
+
+```sh
+node --test tests/cloud-sync/session-auth.test.mjs tests/cloud-sync/worker-cors.test.mjs tests/cloud-sync/read-only.test.mjs tests/cloud-sync/outbox-sync.test.mjs
+node --test tools/cloudflare-lab/test/pwa-shell.test.mjs tests/release-local-server.test.mjs
+node --test tools/cloudflare-lab/test/pwa-browser.test.mjs
+```
+
+Prueba focal A3 desde la raíz, sin despliegue ni datos remotos:
+
+```sh
+node --test tests/cloud-sync/sale-create.test.mjs tests/cloud-sync/session-auth.test.mjs tests/cloud-sync/worker-cors.test.mjs tests/cloud-sync/read-only.test.mjs tests/cloud-sync/outbox-sync.test.mjs
+```
+
+Pruebas focalizadas A4 desde la raíz, sin desplegar ni usar datos remotos:
+
+```sh
+node --test tests/cloud-sync/outbox-sync.test.mjs
+node --test tests/cloud-sync/sale-create.test.mjs tests/cloud-sync/session-auth.test.mjs tests/cloud-sync/worker-cors.test.mjs tests/cloud-sync/read-only.test.mjs
+node --test tools/cloudflare-lab/test/pwa-shell.test.mjs tests/release-local-server.test.mjs
+node --test tools/cloudflare-lab/test/pwa-browser.test.mjs
+```
+
+Prueba focalizada A5, completamente local y sin fuentes comerciales:
+
+```sh
+node --test tests/cloud-sync/migration-reconciliation.test.mjs
+```
+
+Regresion cloud secuencial PRE-A6, despues de la prueba focalizada:
+
+```sh
+node --test --test-concurrency=1 tests/cloud-sync/sale-create.test.mjs tests/cloud-sync/session-auth.test.mjs tests/cloud-sync/worker-cors.test.mjs tests/cloud-sync/read-only.test.mjs tests/cloud-sync/outbox-sync.test.mjs
+```
+
+Gate P A6 local, sin deploy ni acceso a D1 remota:
+
+```sh
+node --test --test-concurrency=1 tests/cloud-sync/canonical-promotion.test.mjs
+node --test tools/cloudflare-lab/test/d1-canonical-local.test.mjs
+```
+
+La segunda prueba exige las fuentes privadas A5 exactas, crea dos D1 locales nuevas
+en el directorio temporal aprobado y falla cerrada si el baseline no satisface la
+reconciliacion campo a campo. Un `PASS` sintetico no sustituye ese resultado. A6
+solo puede publicar `CANONICAL_READ_ONLY`; no expone una ruta para `ACTIVE`.
+
+El migrador A5 esta en `scripts/a5-migrate.mjs`; formatos, dry-run y ruta privada
+de inputs estan definidos en `docs/V1.3_A5_MIGRATION_RECONCILIATION.md`.
+
+Consultas autenticadas mediante `x-read-token` y el secreto independiente `READ_TOKEN`:
+
+- `GET /read/status`
+- `GET /read/sales`
+- `GET /read/sales/{saleId}/items`
+- `GET /read/inventory-movements`
+
+Las listas aceptan `limit` (25 por defecto, máximo 100) y `cursor` opaco.
+La lectura anuncia únicamente `GET, OPTIONS` y `x-read-token` en CORS;
+las respuestas JSON usan `Cache-Control: no-store`.
+
+`POS/read-only.html` carga exclusivamente el cliente de consulta. Se entrega junto
+a `POS/js/sync/read-only.js`, conservando esa estructura. La clave de lectura se
+introduce en el visor y permanece en la sesión; nunca usar allí la clave de escritura.
+
+Visor publicado: `https://cliente-001.sin-configurar.invalid/read-only.html`.
+En esta rama V1.3, el build `scripts/build-reader.mjs` prepara 52 archivos de un
+allowlist explicito: el visor y el shell PWA bajo `POS/`, en `.reader-assets/`
+(ignorado por Git). Este cambio queda limitado a un nuevo preview HTTPS y prueba
+Android fisica; no autoriza deploy de produccion ni cutover. Nunca publicar la raiz
+del repositorio.
+
+Pruebas focalizadas A1 desde la raiz del repositorio, sin regenerar evidencia historica:
+
+```sh
+node tools/cloudflare-lab/scripts/build-reader.mjs
+node --test tools/cloudflare-lab/test/pwa-shell.test.mjs tests/release-local-server.test.mjs
+```
+
+El service worker conserva HTML y dependencias en la cache de su generacion,
+tambien al recargar online. Una actualizacion espera al cierre de todas las pestanas
+controladas; no fuerza recarga ni activacion durante una venta. Si falta un recurso
+de esa cache responde 503, sin mezclarlo con otra generacion. El servidor local
+calcula la generacion al arrancar: reiniciarlo despues de cambiar archivos del POS.
+
+## Ejecutar
+
+```sh
+npm install
+cp .dev.vars.example .dev.vars      # poner un valor aleatorio largo
+npm run migrate:local
+npm run dev                         # en otra terminal:
+POS_ACTIVATION_SECRET=<clave-local> npm run test:worker
+npm run test:d1:local               # contrato a nivel SQL, sin Worker
+```
+
+Remoto (requiere `CLOUDFLARE_API_TOKEN` en el entorno, nunca en archivos):
+
+```sh
+npm run migrate:remote
+npm run test:d1:remote              # mismo contrato contra la D1 real
+npm run deploy                      # sube el Worker + binding D1
+```
+
+## Estado de la verificación V1.2
+
+El subdominio ya está registrado, `workers_dev` está activo y la migración
+`0002_read_only_indexes.sql` fue aplicada a la D1 indicada. READ_TOKEN fue creado
+sin reemplazar SYNC_TOKEN. El Worker publicado pasó 16 comprobaciones remotas de
+lectura y rechazo de escrituras con credenciales de lectura.
+
+El E2E remoto ya confirmó seis operaciones en D1 provenientes de dos ventas de
+ensayo, recuperación offline e idempotencia. Otros 17 controles verificaron claves,
+consultas y conflicto sin sobrescritura. Solo resta la confirmación del visor en un
+segundo dispositivo físico. Consultar `docs/V1.2_STATUS.md`.
+
+Prueba remota sin insertar registros, con READ_TOKEN cargado en el entorno:
+
+```sh
+node test/read-only-remote.test.mjs
+```
+
+Las pruebas de `sync-operations.test.mjs` sí insertan operaciones de laboratorio.
+No ejecutarlas sobre datos comerciales sin identificar claramente el ensayo.
+
+## Seguridad
+
+- `.dev.vars`, `.env*`, `.wrangler/` ignorados por git.
+- El Worker no contiene ningún token de Cloudflare; el token administrativo solo vive en el entorno de la máquina que ejecuta wrangler.
+- El POS nunca habla con la API administrativa de Cloudflare: solo con el Worker. Tras la activación inicial usa un token de sesión aleatorio; D1 conserva únicamente su SHA-256.
+
+
+## Workspace aislado CANON -> LAB
+
+El POS-LAB dispone de un workspace D1 independiente y revisionado definido por
+`migrations/0007_lab_workspace.sql` y `src/lab-workspace.js`.
+
+Flujo:
+
+```text
+R2 CANON --GET read-only por GitHub Actions--> snapshot firmado
+       --LAB_IMPORT_HMAC_SECRET--> Worker LAB --> D1 nuevo-amanecer-lab --> POS-LAB
+```
+
+No existe código de escritura hacia el bucket CANON. `R2_CANON_READ_TOKEN` tiene
+únicamente permiso **Workers R2 Storage Read** y nunca se configura como secreto
+del Worker. La firma de import usa `LAB_IMPORT_HMAC_SECRET`; la activación de escritura usa
+`POS_ACTIVATION_SECRET` y sesiones persistentes. El Worker elimina
+`cloudSync`, carrito/borrador y controles de seguridad del snapshot CANON antes
+de crear el baseline LAB.
+
+Endpoints autenticados:
+- `GET /lab/workspace`
+- `GET /lab/workspace/status`
+- `POST /lab/workspace/import-baseline` (solo pipeline firmado GitHub Actions)
+- `POST /lab/workspace/save`
+- `POST /lab/workspace/reset`
+
+Prueba focal:
+
+```powershell
+node --test test/lab-workspace.test.mjs
+```
+
+Contrato completo: `docs/LAB_CANON_MIRROR.md`.
+
+
+### Formato real del backup R2
+
+El bucket `cliente-001-pos-db-backups` contiene pares:
+
+```text
+<timestamp>.manifest.json
+<timestamp>.sql
+```
+
+La restauración CANON -> LAB se ejecuta mediante `.github/workflows/lab-data-refresh.yml`.
+El workflow descarga el `.sql` más reciente con un token R2 de solo lectura,
+lo restaura en SQLite temporal, extrae la promoción canónica activa y genera un
+snapshot POS V9. El snapshot se firma y se publica en
+`POST /lab/workspace/import-baseline`.
+
+El Worker no interpreta ni ejecuta el dump SQL remoto y no escribe en R2.
+
+> Compatibilidad: el runtime acepta temporalmente el binding legacy `nuevo_amanecer_lab` mediante `database-binding.js`, pero las configuraciones activas usan `DB`.
+
+
+## Turso LAB (experimental)
+
+Esta variante mantiene el mismo Worker y el mismo contrato de persistencia usado por D1,
+pero enruta las consultas a una base Turso/libSQL mediante SQL-over-HTTP.
+
+Reglas:
+- solo LAB; CANON y producción permanecen en D1 hasta una promoción explícita;
+- `TURSO_AUTH_TOKEN` nunca se versiona ni se entrega al navegador;
+- el navegador sigue hablando con el Worker, no directamente con Turso;
+- `DB_PROVIDER=d1` sigue siendo el comportamiento predeterminado;
+- `DB_PROVIDER=turso` requiere `TURSO_DATABASE_URL` y `TURSO_AUTH_TOKEN`.
+
+Configuración aislada:
+
+```bash
+npx wrangler dev --config wrangler.turso.jsonc
+npx wrangler secret put TURSO_DATABASE_URL --config wrangler.turso.jsonc
+npx wrangler secret put TURSO_AUTH_TOKEN --config wrangler.turso.jsonc
+```
+
+El adaptador implementa únicamente la superficie que usa el Worker:
+`prepare().bind().first()`, `all()`, `run()` y `batch()`.
+Los lotes usan una transacción explícita con rollback condicionado para conservar la
+semántica all-or-nothing antes de considerar una promoción a CANON.

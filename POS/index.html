@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<!-- Fuente limpia reconstruida: estructura estática estable + lógica Codex, sin DOM guardado por navegador. -->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <!-- Arranque rápido: en el dominio publicado, sin sesión guardada se vuelve al lanzador antes de pedir CSS/JS.
+         Es un subconjunto estricto de lo que ya redirige la guardia de abajo (que sigue validando todo). -->
+    <script>(function(){try{var l=location;if(!/\.nuevo-amanecer-pos\.workers\.dev$/.test(l.hostname)||!/^\/app(\/|$)/.test(l.pathname))return;var c=JSON.parse(localStorage.getItem('na_cloud_sync_credentials')||'null');if(!c||typeof c.token!=='string'||!c.token)l.replace(l.origin+'/');}catch(_){}})();</script>
+    <!-- Comprobación completa, síncrona y antes de los recursos de la app; no usa document.body. -->
+    <script src="/runtime-config.js"></script>
+    <script src="js/sync/hosted-canonical-guard.js"></script>
+    <!-- Sin parpadeo del Inicio heredado: en CANON hospedado con sesión guardada, el fondo se mantiene del color de WORK
+         (o del tema oscuro guardado) mientras carga la nueva pantalla principal.
+         La marca se quita al abrir WORK, al decidir que no se abre (js/work-host.js), al terminar de cargar la página si js/work-host.js no
+         cargó, a los 3,5 s del montaje o a los 6 s como tope duro. Sin internet o sin sesión no se marca nada.
+         Solo CSS y una marca en <html>; lee únicamente si hay sesión guardada y el tema guardado (no expone ni escribe nada). Mientras está
+         puesta se oculta el body entero salvo #naRevoked (máx. unos segundos). -->
+    <style>html.na-work-pre{background:#f7fbff}html.na-work-pre.na-work-pre-dk{background:#0f172a}html.na-work-pre body{visibility:hidden}html.na-work-pre #naRevoked{visibility:visible}</style>
+    <script>(function(){try{var l=location,d=document,h=d.documentElement;if(!/\.nuevo-amanecer-pos\.workers\.dev$/.test(l.hostname)||!/^\/app(\/|$)/.test(l.pathname))return;var cfg=window.NA_HOSTED_CONFIG;if(!cfg||cfg.environment!=='production')return;if(navigator.onLine===false)return;var c=JSON.parse(localStorage.getItem('na_cloud_sync_credentials')||'null');if(!c||typeof c.token!=='string'||!c.token)return;h.classList.add('na-work-pre');try{var m=(JSON.parse(localStorage.getItem('na_v9_appearance')||'{}')||{}).mode;if(m==='noche'||(m==='auto'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches))h.classList.add('na-work-pre-dk')}catch(_){}function off(){h.classList.remove('na-work-pre');h.classList.remove('na-work-pre-dk')}window.setTimeout(off,6000);d.addEventListener('DOMContentLoaded',function(){if(!window.NA_WORK_HOST)off()},{once:true});}catch(_){}})();</script>
+    <meta name="theme-color" content="#0f766e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="POS Cliente 001">
+    <title>POS Cliente 001 — ERP &amp; POS v4.0 · CVV1.4</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <!-- Arranque: la fuente (display=swap) y las hojas que no pintan Inicio ni Nueva venta no bloquean el primer pintado.
+         Las hojas diferidas conservan su posición en el documento, así que la cascada final es idéntica. -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <!-- SheetJS solo al exportar/importar Excel (js/core/lazy-assets.js). -->
+    <script type="text/x-na-lazy" data-na-lazy="sheetjs" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/proximamente.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/print.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/print.css"></noscript>
+    <link rel="stylesheet" href="css/motion/motion.css">
+    <link rel="stylesheet" href="css/motion/transitions.css">
+    <link rel="stylesheet" href="css/motion/modals.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/motion/modals.css"></noscript>
+    <link rel="stylesheet" href="css/motion/notifications.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/motion/notifications.css"></noscript>
+    <link rel="stylesheet" href="css/client-credit-accounts-v2.css">
+    <link rel="stylesheet" href="css/clientes-reporte-deuda.css">
+    <link rel="stylesheet" href="css/clientes-deudores-caja.css">
+    <link rel="stylesheet" href="css/clonar-venta.css">
+    <link rel="stylesheet" href="css/clientes-importar.css">
+    <link rel="stylesheet" href="css/receipt-share.css">
+    <link rel="stylesheet" href="css/experience-v2/tokens.css">
+    <link rel="stylesheet" href="css/experience-v2/layout.css">
+    <link rel="stylesheet" href="css/experience-v2/responsive.css">
+    <link rel="stylesheet" href="css/experience-v2/components/buttons.css">
+    <link rel="stylesheet" href="css/experience-v2/components/cards.css">
+    <link rel="stylesheet" href="css/experience-v2/components/tables.css">
+    <link rel="stylesheet" href="css/experience-v2/components/forms.css">
+    <link rel="stylesheet" href="css/experience-v2/components/modals.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/experience-v2/components/modals.css"></noscript>
+    <link rel="stylesheet" href="css/experience-v2/components/navigation.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/menu.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/pos.css">
+<link rel="stylesheet" href="css/canon-pos-reference-ui.css">
+<link rel="stylesheet" href="css/canon-phone-sale.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/inventario.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/clientes.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/caja.css">
+    <link rel="stylesheet" href="css/canon-caja-responsive.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/ventas.css">
+    <link rel="stylesheet" href="css/canon-pending-sales.css">
+    <link rel="stylesheet" href="css/canon-ventas-tabs.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/gastos.css">
+    <link rel="stylesheet" href="css/experience-v2/pages/configuracion.css">
+    <link rel="stylesheet" href="css/experience-v2/animations/motion.css">
+    <link rel="stylesheet" href="css/experience-v2/animations/transitions.css">
+    <link rel="stylesheet" href="css/experience-v2/animations/menu.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/experience-v2/animations/menu.css"></noscript>
+    <link rel="stylesheet" href="css/experience-v2/animations/pos.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/experience-v2/animations/pos.css"></noscript>
+    <link rel="stylesheet" href="css/experience-v2/animations/modals.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/experience-v2/animations/modals.css"></noscript>
+    <link rel="stylesheet" href="css/experience-v2/animations/notifications.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="css/experience-v2/animations/notifications.css"></noscript>
+    <link rel="stylesheet" href="css/canon-desktop-dashboard.css">
+    <link rel="stylesheet" href="css/mobile-inventory.css">
+    <link rel="stylesheet" href="css/codigos-duplicados.css">
+    <link rel="stylesheet" href="css/edicion-masiva-productos.css">
+    <link rel="stylesheet" href="css/stock-lots.css">
+    <link id="naMobileHomeBaseStyles" rel="stylesheet" href="css/canon-mobile-home.css">
+    <link rel="stylesheet" href="css/canon-ux-fixes.css">
+    <link rel="stylesheet" href="css/na-line-icons.css">
+    <link rel="stylesheet" href="css/config-e2.css">
+    <link rel="stylesheet" href="css/config-v9.css">
+    <link rel="stylesheet" href="css/inventario-redesign.css">
+    <link rel="stylesheet" href="css/theme-dark.css">
+    <link rel="stylesheet" href="css/sales-reports.css">
+    <link rel="stylesheet" href="css/valorizacion-inventario.css">
+    <link rel="stylesheet" href="css/rotacion-abc.css">
+    <link rel="stylesheet" href="css/clientes-frecuencia.css">
+    <link rel="stylesheet" href="css/reporte-productos-vencer.css">
+    <link rel="stylesheet" href="css/cliente-historial-compras.css">
+    <link rel="stylesheet" href="css/kardex.css">
+    <link rel="stylesheet" href="css/ventas-stock.css">
+    <link rel="stylesheet" href="css/reporte-arqueo.css">
+    <link rel="stylesheet" href="css/reporte-medio-pago.css">
+    <link rel="stylesheet" href="css/panel-tesoreria.css">
+    <link rel="stylesheet" href="css/historial-compras.css">
+    <link rel="stylesheet" href="css/price-history.css">
+    <link rel="stylesheet" href="css/etiquetas-precios.css">
+    <link rel="stylesheet" href="css/catalogo-pos.css">
+    <link rel="stylesheet" href="css/productos-sin-movimiento.css">
+    <link rel="stylesheet" href="css/sugerencia-compra.css">
+    <link rel="stylesheet" href="css/ajustes-inventario.css">
+    <link rel="stylesheet" href="css/precios-masivos.css">
+    <link rel="stylesheet" href="css/inventory-form-polish.css">
+<link rel="stylesheet" href="css/costo-compra-ficha.css">
+<link rel="stylesheet" href="css/cobro-qr-yape-plin.css">
+    <script>
+      // The mobile enhancement must never leave a usable home permanently hidden.
+      window.addEventListener('DOMContentLoaded', function () {
+        window.setTimeout(function () {
+          var home = document.getElementById('pageMenu');
+          if (home) home.classList.add('na-mobile-ready');
+        }, 2000);
+      }, { once:true });
+    </script>
+    <style>
+      .ocr-purchase-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.ocr-purchase-status{padding:8px 13px;font-size:12px;font-weight:800;color:var(--slate)}.ocr-purchase-status[data-state="error"]{color:var(--red)}.ocr-purchase-status[data-state="success"]{color:var(--green)}.ocr-purchase-raw{white-space:pre-wrap;max-height:120px;overflow:auto;background:#f8fafc;border:1px solid var(--border);border-radius:9px;padding:9px;font-size:11px}.ocr-review-row{border:1px solid var(--border);border-radius:11px;padding:11px;margin-top:10px;background:var(--white)}.ocr-review-name{font-size:14px;margin:0 0 4px}.ocr-review-raw,.ocr-review-status{font-size:11px;font-weight:700;color:var(--slate);margin-bottom:5px}.ocr-review-field{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:8px;margin-top:7px;font-size:12px;font-weight:800}.ocr-review-field input,.ocr-review-field select{min-width:0;padding:8px;border:1px solid var(--border);border-radius:8px}.ocr-review-reasons,.ocr-review-candidates,.ocr-review-validation{font-size:11px;margin:7px 0;padding-left:20px}.ocr-review-validation{color:var(--red)}.ocr-review-confirm,.ocr-review-discard{border:0;border-radius:8px;padding:8px 12px;margin:5px 6px 0 0;font-weight:800;cursor:pointer}.ocr-review-confirm{background:var(--teal);color:white}.ocr-review-discard{background:#fee2e2;color:var(--red)}
+    </style>
+
+<script defer src="js/modules/caja-movimientos-historial.js"></script>
+<!-- Asistente (encendido salvo que se apague en este aparato: Configuración o ?asistente=0): si el ÚLTIMO ping dijo «dueño», se reserva el alto de la tarjeta de Inicio
+     desde el primer pintado (no mueve nada). Ese dato guardado SOLO reserva espacio; el cargador pregunta al servidor y lo quita si ya no es dueño. -->
+<style>html.na-asst-owner #naMobileWelcome{display:none!important}html.na-asst-pre #pageMenu .main-scroll>.quick-stats{margin-top:304px}@media (min-width:380px) and (max-width:699px){html.na-asst-pre #pageMenu .main-scroll>.quick-stats{margin-top:304px}}@media (min-width:700px){html.na-asst-pre #pageMenu .main-scroll>.quick-stats{margin-top:398px}}@media (min-width:1100px){html.na-asst-pre #pageMenu .main-scroll>.quick-stats{margin-top:314px}}</style>
+<script>try{if(localStorage.getItem('na_asistente_off')!=='1'&&localStorage.getItem('na_asistente_acc')==='owner'&&!/[?&]asistente=0\b/.test(location.search))document.documentElement.classList.add('na-asst-owner','na-asst-pre')}catch(e){}</script>
+</head>
+<body>
+<aside class="pwa-update-prompt" id="pwaUpdatePrompt" hidden role="dialog" aria-live="polite" aria-label="Nueva versión disponible">
+    <div class="pwa-update-icon" aria-hidden="true"><i class="na-ic na-ic-upload" aria-hidden="true"></i></div>
+    <div class="pwa-update-copy">
+        <strong>Nueva versión disponible</strong>
+        <span id="pwaUpdateStatus">Lista para actualizar.</span>
+    </div>
+    <button class="pwa-update-action" id="pwaUpdateAction" type="button">Actualizar ahora</button>
+    <button class="pwa-update-later" id="pwaUpdateLater" type="button" aria-label="Actualizar más tarde">Más tarde</button>
+</aside>
+<div class="g-topbar">
+    <div class="g-logo"><div class="g-logo-icon">🌅</div><div><div class="g-logo-text" id="topBusinessName">POS Cliente 001</div><div class="g-logo-sub" id="topBusinessSub">Puerto Súngaro · Multiservicios</div></div></div>
+    <div class="g-spacer"></div>
+    <div style="display:flex;align-items:center;gap:9px">
+        <div class="g-status" id="localStatus" data-state="disconnected" role="status" aria-live="polite" aria-label="Desconectado" title="Desconectado"><div class="g-dot"></div><span class="g-status-label">Desconectado</span></div>
+        <div class="g-sync" id="saveStatus"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7M7 3v4a1 1 0 0 0 1 1h7"/></svg><span class="na-li-text">Guardado local</span></div>
+        <button id="btnDarkMode" onclick="toggleDark()" title="Modo día/noche" style="background:#f1f5f9;border:none;width:34px;height:34px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+        <button class="g-settings-btn" id="topSettingsBtn" type="button" onclick="window.NA_MENU_NAVIGATION ? window.NA_MENU_NAVIGATION.navigate('pageConfig') : goPage('pageConfig')" title="Configuración" aria-label="Abrir configuración"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="back-btn" id="backBtn" onclick="goMenu()">← Menú</button>
+    </div>
+</div>
+
+<div class="page active" id="pageMenu">
+    <!-- PC/tablet: estructura del Inicio escrita de entrada (antes la agregaba canon-desktop-dashboard.js al cargar y movía la pantalla; CLS). En teléfono no se ve, igual que antes. -->
+    <aside class="menu-desktop-sidebar" aria-label="Navegación principal"><div class="menu-sidebar-title">Navegación</div><button class="menu-side-link is-active" type="button" onclick="goMenu()" data-menu-target="pageMenu" aria-current="page"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></svg></span><span>Inicio</span><span class="menu-side-chevron">›</span></button><button class="menu-side-link" type="button" onclick="goPage('pagePOS')" data-menu-target="pagePOS"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/><path d="M3 4h2l2.2 10h10.9l2-7H6"/></svg></span><span>Punto de Venta</span><span class="menu-side-chevron">›</span></button><button class="menu-side-link" type="button" onclick="goPage('pageVentas')" data-menu-target="pageVentas"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M7.5 11h9M8 15h3M14 15h2"/></svg></span><span>Ventas</span><span class="menu-side-chevron">›</span></button><button class="menu-side-link" type="button" onclick="goPage('pageInventario')" data-menu-target="pageInventario"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 8 8-4 8 4-8 4-8-4Z"/><path d="M4 8v8l8 4 8-4V8M12 12v8"/></svg></span><span>Inventario</span><span class="menu-side-chevron">›</span></button><button class="menu-side-link" type="button" onclick="goPage('pageClientes')" data-menu-target="pageClientes"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-4 3-6 6.5-6s5.8 2 6.5 6"/></svg></span><span>Clientes</span><span class="menu-side-chevron">›</span></button><button class="menu-side-link" type="button" onclick="goPage('pageCaja')" data-menu-target="pageCaja"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 10h5v5h-5a2.5 2.5 0 0 1 0-5Z"/><path d="M7 6V4h10v2"/></svg></span><span>Caja</span><span class="menu-side-chevron">›</span></button><button class="menu-side-link" type="button" onclick="goPage('pageGastos')" data-menu-target="pageGastos"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span>Gastos</span><span class="menu-side-chevron">›</span></button><div class="menu-sidebar-spacer"></div><button class="menu-side-link" type="button" onclick="goPage('pageConfig')" data-menu-target="pageConfig"><span class="menu-side-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9 7 7M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span><span>Configuración</span><span class="menu-side-chevron">›</span></button></aside><div class="main-scroll home-shell">
+        <section class="hero-dashboard hero-welcome-only">
+            <div class="hero-main">
+                <div class="hero-kicker">Panel principal</div>
+                <h1>¿Qué quieres hacer hoy? 👋</h1>
+                <p id="fechaHoy"></p>
+                <div class="hero-welcome-note">Elige un módulo para empezar.</div>
+            </div>
+        </section>
+
+        <div class="menu-desktop-heading"><div><span class="menu-desktop-eyebrow">Panel principal</span><h1>Resumen</h1><p id="menuDesktopDate">Estado actual del negocio</p></div><div class="menu-desktop-live"><span aria-hidden="true"></span> Operación del día</div></div><div class="section-label">Resumen</div>
+        <div class="quick-stats">
+            <div class="qs-card qs-card-sales"><div class="qs-top"><div class="qs-label">Ventas hoy</div><div class="qs-icon" style="color:var(--teal);background:#e7faf7"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></div></div><div class="qs-val" style="color:var(--teal)" id="qsVentas">S/ 0.00</div><div class="qs-prev" id="qsVentasPrev">Ayer: S/ 0.00</div><div class="qs-sub" id="qsVentasSub">0 transacciones</div><div class="qs-trend" id="qsVentasTrend" data-trend="flat">— vs ayer</div></div>
+            <div class="qs-card"><div class="qs-top"><div class="qs-label">En caja</div><div class="qs-icon" style="color:#0f172a;background:#f8fafc"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div></div><div class="qs-val" id="qsCaja">S/ 0.00</div><div class="qs-sub" id="qsCajaSub">Caja no abierta</div></div>
+            <div class="qs-card"><div class="qs-top"><div class="qs-label">Por cobrar</div><div class="qs-icon" style="color:var(--amber);background:#fffbeb"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div></div><div class="qs-val" style="color:var(--amber)" id="qsPorCobrar">S/ 0.00</div><div class="qs-sub" id="qsPorCobrarSub">0 créditos activos</div></div>
+            <div class="qs-card"><div class="qs-top"><div class="qs-label">Stock crítico</div><div class="qs-icon" style="color:var(--red);background:#fef2f2"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></svg></div></div><div class="qs-val" style="color:var(--red)" id="qsStockCritico">0</div><div class="qs-sub" id="qsStockCriticoSub">productos por reponer</div></div>
+        </div>
+
+        <div class="menu-desktop-sections"><section class="menu-data-panel" aria-labelledby="menuActivityTitle"><div class="menu-panel-head"><div><span>Movimientos</span><h2 id="menuActivityTitle">Actividad reciente</h2></div></div><div class="menu-activity-list"><div class="menu-activity-row"><span class="menu-activity-dot"></span><span id="menuActivity0Label">Sin movimientos recientes</span><strong id="menuActivity0Amount">—</strong></div><div class="menu-activity-row"><span class="menu-activity-dot"></span><span id="menuActivity1Label">—</span><strong id="menuActivity1Amount">—</strong></div><div class="menu-activity-row"><span class="menu-activity-dot"></span><span id="menuActivity2Label">—</span><strong id="menuActivity2Amount">—</strong></div></div></section><section class="menu-data-panel" aria-labelledby="menuPendingTitle"><div class="menu-panel-head"><div><span>Control</span><h2 id="menuPendingTitle">Pendientes</h2></div></div><div class="menu-pending-list"><div class="menu-pending-row"><span class="menu-pending-mark amber"></span><span id="menuPendingCredits">Créditos por revisar</span></div><div class="menu-pending-row"><span class="menu-pending-mark red"></span><span id="menuPendingStock">Stock por revisar</span></div><div class="menu-pending-row"><span class="menu-pending-mark teal"></span><span id="menuPendingCash">Estado de caja</span></div></div></section></div><div class="section-label menu-modules-label">Módulos principales</div>
+        <div class="modules-grid">
+            <div class="module-card" style="--accent:#00bca4;--icon-bg:#e0f7f4" onclick="goPage('pagePOS')"><div class="module-badge">POS</div><div class="module-icon">🛒</div><div class="module-label">Punto de Venta</div><div class="module-desc">Cobrar, registrar ventas y emitir comprobantes.</div><div class="module-arrow">Entrar →</div></div>
+            <div class="module-card" style="--accent:#ff7043;--icon-bg:#fff3ef" onclick="goPage('pageInventario')"><div class="module-icon">📦</div><div class="module-label">Inventario</div><div class="module-desc">Control de stock, ingresos y productos críticos.</div><div class="module-arrow">Entrar →</div></div>
+            <div class="module-card" style="--accent:#3b82f6;--icon-bg:#eff6ff" onclick="goPage('pageVentas')"><div class="module-icon">📊</div><div class="module-label">Ventas</div><div class="module-desc">Historial, filtros, reportes y movimientos.</div><div class="module-arrow">Entrar →</div></div>
+            <div class="module-card" style="--accent:#a855f7;--icon-bg:#f5f0ff" onclick="goPage('pageClientes')"><div class="module-icon">👥</div><div class="module-label">Clientes</div><div class="module-desc">Créditos, seguimiento y cuentas por cobrar.</div><div class="module-arrow">Entrar →</div></div>
+            <div class="module-card" style="--accent:#f59e0b;--icon-bg:#fffbeb" onclick="goPage('pageCaja')"><div class="module-icon">💰</div><div class="module-label">Caja</div><div class="module-desc">Apertura, cierre diario y control de efectivo.</div><div class="module-arrow">Entrar →</div></div>
+            <div class="module-card" style="--accent:#ef4444;--icon-bg:#fef2f2" onclick="goPage('pageGastos')"><div class="module-icon">🧾</div><div class="module-label">Gastos</div><div class="module-desc">Egresos, compras y salidas de dinero.</div><div class="module-arrow">Entrar →</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- POS -->
+<div class="page" id="pagePOS">
+
+  <!-- Barra superior: búsqueda + botones -->
+  <div style="background:linear-gradient(180deg,#ffffff 0%,#f8fbfd 100%);border-bottom:1px solid #dde7ef;padding:8px 12px;min-height:62px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 8px 18px rgba(15,23,42,.03)">
+    <div class="pos-search-box">
+      <svg class="na-li na-li-search" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="posSearch" placeholder="Buscar o escanear código..." autocomplete="off" autocapitalize="off" spellcheck="false">
+      <span id="scannerIndicator" class="scanner-indicator ready" role="status" aria-live="polite" title="Lectura automática de escáner HID activada"><span class="scanner-dot"></span><span class="scanner-label">Escáner listo</span></span>
+    </div>
+    <button class="free-sale-btn" id="btnVentaLibre" type="button" onclick="abrirVentaLibre()" title="Venta libre / VARIOS (F2)">➕ <span class="free-sale-label">VARIOS</span></button>
+    <button class="cart-fab" onclick="toggleCart()">
+      <svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span class="cart-fab-badge" id="cartBadge">0</span>
+    </button>
+    <button id="btnMayorista" onclick="toggleMayorista()"
+      style="background:linear-gradient(180deg,#ffffff 0%,#f8fbfd 100%);border:1.5px solid #dce5ed;border-radius:12px;padding:9px 12px;font-size:11px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s;box-shadow:0 6px 16px rgba(15,23,42,.04)">🛍️ Mayor</button>
+  </div>
+
+  <div class="pos-body">
+
+    <!-- Sidebar categorías -->
+    <aside class="sidebar" id="posSidebar">
+      <button class="cat-btn active" data-cat="todo" onclick="posSetCat(this,'todo')"><span class="ci">⊞</span>Todo</button>
+      <button class="cat-btn" data-cat="abarrotes" onclick="posSetCat(this,'abarrotes')"><span class="ci">🛒</span>Abarrotes</button>
+      <button class="cat-btn" data-cat="bebidas" onclick="posSetCat(this,'bebidas')"><span class="ci">🥤</span>Bebidas</button>
+      <button class="cat-btn" data-cat="snacks" onclick="posSetCat(this,'snacks')"><span class="ci">🍿</span>Snacks</button>
+      <button class="cat-btn" data-cat="helados" onclick="posSetCat(this,'helados')"><span class="ci">🍦</span>Helados</button>
+      <button class="cat-btn" data-cat="licores" onclick="posSetCat(this,'licores')"><span class="ci">🍺</span>Licores</button>
+      <button class="cat-btn" data-cat="limpieza" onclick="posSetCat(this,'limpieza')"><span class="ci">🧼</span>Limpieza</button>
+      <button class="cat-btn" data-cat="cuidado" onclick="posSetCat(this,'cuidado')"><span class="ci">🧴</span>Cuidado</button>
+      <button class="cat-btn" data-cat="bebe" onclick="posSetCat(this,'bebe')"><span class="ci">👶</span>Bebés</button>
+      <button class="cat-btn" data-cat="hogar" onclick="posSetCat(this,'hogar')"><span class="ci">🏠</span>Hogar</button>
+      <button class="cat-btn" data-cat="tecnologia" onclick="posSetCat(this,'tecnologia')"><span class="ci">📱</span>Tecnología</button>
+      <button class="cat-btn" data-cat="libreria" onclick="posSetCat(this,'libreria')"><span class="ci">✏️</span>Librería</button>
+      <button class="cat-btn" data-cat="servicios" onclick="posSetCat(this,'servicios')"><span class="ci"><i class="na-ic na-ic-card" aria-hidden="true"></i></span>Servicios</button>
+    </aside>
+
+    <!-- Área de productos -->
+    <main class="products-area" id="posArea"></main>
+
+    <!-- Backdrop carrito -->
+    <div class="cart-backdrop" id="cartBackdrop" onclick="toggleCart();closeCartMenu()"></div>
+
+    <!-- Drawer carrito -->
+    <aside class="cart-drawer" id="cartDrawer">
+
+      <!-- Cabecera del carrito -->
+      <div class="cart-head">
+        <div class="cart-head-title">🛒 Carrito actual <span id="modoMayoristaTag" style="display:none;background:var(--amber-light);color:#b45309;border-radius:20px;padding:2px 8px;font-size:11px;margin-left:6px">MAYORISTA</span></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <!-- Menú 3 puntos -->
+          <div style="position:relative">
+            <button class="btn-close-x" onclick="toggleCartMenu()" id="btnCartMenu" title="Opciones">⋮</button>
+            <div id="cartMenuDropdown"
+                 style="display:none;position:absolute;top:36px;right:0;
+                        background:var(--white);border:1px solid var(--border);
+                        border-radius:12px;min-width:190px;z-index:300;
+                        box-shadow:0 8px 24px rgba(0,0,0,.18);overflow:hidden">
+              <button onclick="abrirDescuento()"  class="cart-menu-item">💸 Aplicar descuento</button>
+              <button onclick="guardarBorrador()" class="cart-menu-item">💾 Guardar borrador</button>
+              <button onclick="cargarBorrador()"  class="cart-menu-item">📂 Cargar borrador</button>
+              <button onclick="generarCatalogo()" class="cart-menu-item">📄 Generar catálogo</button>
+              <div style="height:1px;background:var(--border);margin:3px 0"></div>
+              <button onclick="limpiarCarrito()"  class="cart-menu-item" style="color:var(--red)">🧹 Limpiar carrito</button>
+            </div>
+          </div>
+          <button class="btn-close-x" onclick="toggleCart()">✕</button>
+        </div>
+      </div>
+
+      <!-- Badge descuento activo -->
+      <div id="btnDescInfo"
+           style="display:none;background:var(--amber);color:var(--dark);
+                  font-size:11px;font-weight:800;padding:6px 12px;
+                  text-align:center;cursor:pointer"
+           onclick="quitarDescuento()"></div>
+
+      <!-- Ítems del carrito -->
+      <div class="cart-items" id="cartItems">
+        <div class="cart-empty">El carrito está vacío</div>
+      </div>
+
+      <!-- Pie del carrito -->
+      <div class="cart-footer">
+        <div class="cart-totals">
+          <div class="total-row"><span>Subtotal</span><span id="posSubtotal">S/ 0.00</span></div>
+          <div class="total-row"><span>IGV (18%)</span><span id="posIgv">S/ 0.00</span></div>
+          <div class="total-main"><span>Total</span><span id="posTotal">S/ 0.00</span></div>
+        </div>
+        <div class="cart-actions">
+          <button class="btn-cobro btn-rapido" id="btnRapido" onclick="abrirCobro('rapido')" disabled>⚡ RÁPIDO</button>
+          <button class="btn-cobro btn-pagar"  id="btnPagar"  onclick="abrirCobro('normal')" disabled>💳 PAGAR</button>
+          <button class="btn-cancelar-cart" onclick="cancelarVenta()">🗑️ Cancelar venta</button>
+        </div>
+      </div>
+
+    </aside><!-- /cart-drawer -->
+  </div><!-- /pos-body -->
+</div>
+
+<!-- INVENTARIO -->
+<div class="page" id="pageInventario">
+    <div class="page-chrome">
+    <div class="top-mod-bar"><span class="top-mod-title na-li-host"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg> Inventario</span><div class="ocr-purchase-actions"><button class="top-btn-nuevo" type="button" onclick="document.getElementById('mOcrPurchaseSource').classList.add('open')">OCR compras</button><button class="top-btn-nuevo" id="invPhotosBtn" type="button" onclick="NuevoAmanecerImageBatch.open()">Cargar fotos</button><button class="top-btn-nuevo" type="button" onclick="abrirModalProd()">+ Nuevo</button></div></div>
+    <div class="ocr-purchase-status" id="ocrPurchaseStatus" role="status" aria-live="polite">Toma una foto o sube una imagen, PDF o documento.</div>
+    <div class="tabs-wrap">
+        <button class="tab active" onclick="invSetTab(this,'todos')">Todos <span class="tbadge teal" id="invB0">0</span></button>
+        <button class="tab na-li-host" onclick="invSetTab(this,'critico')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4M12 17h.01"/></svg> Crítico <span class="tbadge red" id="invB1">0</span></button>
+        <button class="tab na-li-host" onclick="invSetTab(this,'sugerencia')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg> Sugerencia de Compra <span class="tbadge amber" id="invB4">0</span></button>
+        <button class="tab na-li-host" onclick="invSetTab(this,'vencimiento')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Por vencer <span class="tbadge amber" id="invB2">0</span></button>
+        <button class="tab na-li-host" onclick="invSetTab(this,'vencidos')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg> Vencidos <span class="tbadge red" id="invB3">0</span></button>
+    </div>
+    <div class="filter-bar">
+        <div class="search-box"><svg class="na-li na-li-search" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="invSearch" placeholder="Buscar producto, SKU..." oninput="invRender()"></div>
+        <select class="f-select" id="invCat" onchange="invRender()"></select>
+    </div>
+    <div class="stats-strip">
+        <div class="ss teal"><div class="ss-num" id="invS0">0</div><div class="ss-lbl">Total prods.</div></div>
+        <div class="ss red"><div class="ss-num" id="invS1">0</div><div class="ss-lbl">Stock crítico</div></div>
+        <div class="ss amber"><div class="ss-num" id="invS2">0</div><div class="ss-lbl">Por vencer</div></div>
+        <div class="ss green"><div class="ss-num" id="invS3">S/0</div><div class="ss-lbl">Costo inv.</div></div>
+        <div class="ss teal"><div class="ss-num" id="invS4">S/0</div><div class="ss-lbl">Valor venta</div></div>
+        <div class="ss green"><div class="ss-num" id="invS5">S/0</div><div class="ss-lbl">Ganancia pot.</div></div>
+    </div>
+    </div>
+    <div class="table-wrap"><div class="table-card"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Precio</th><th>Vencimiento</th><th>Stock</th><th>Acciones</th></tr></thead><tbody id="invBody"></tbody></table></div></div>
+</div>
+
+<!-- CLIENTES -->
+<div class="page" id="pageClientes">
+    <div class="page-chrome">
+    <div class="top-mod-bar"><span class="top-mod-title"><svg class="na-li na-li-title" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>Clientes y Créditos</span><span id="cliAuthorityBadge" hidden></span><button class="top-btn-nuevo" onclick="abrirModalCli()">+ Cliente</button></div>
+    <div class="tabs-wrap">
+        <button class="tab active" onclick="cliSetTab(this,'todos')">Todos <span class="tbadge teal" id="cliB0">0</span></button>
+        <button class="tab" onclick="cliSetTab(this,'vencidos')"><svg class="na-li na-li-dot red" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="6" fill="currentColor" stroke="none"/></svg>Vencidos <span class="tbadge red" id="cliB1">0</span></button>
+        <button class="tab" onclick="cliSetTab(this,'proximos')"><svg class="na-li na-li-dot amber" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="6" fill="currentColor" stroke="none"/></svg>Próximos <span class="tbadge amber" id="cliB2">0</span></button>
+        <button class="tab" onclick="cliSetTab(this,'vigentes')"><svg class="na-li na-li-dot green" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="6" fill="currentColor" stroke="none"/></svg>Vigentes <span class="tbadge teal" id="cliB3">0</span></button>
+    </div>
+    <div class="filter-bar">
+        <div class="search-box"><svg class="na-li na-li-search" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="cliSearch" placeholder="Buscar cliente o DNI..." oninput="cliRender()"></div>
+        <select class="f-select" id="cliSort" onchange="cliRender()"><option value="deuda">Mayor deuda</option><option value="nombre">Nombre A-Z</option></select>
+    </div>
+    <div class="stats-strip">
+        <div class="ss teal"><div class="ss-num" id="cliS0">0</div><div class="ss-lbl">Clientes</div></div>
+        <div class="ss red"><div class="ss-num" id="cliS1">S/0</div><div class="ss-lbl">Total deuda</div></div>
+        <div class="ss amber"><div class="ss-num" id="cliS2">0</div><div class="ss-lbl">Vencidos</div></div>
+        <div class="ss green"><div class="ss-num" id="cliS3">S/0</div><div class="ss-lbl">Cobrado hoy (todos los medios)</div></div>
+    </div>
+    </div>
+    <div class="cli-list" id="cliList"></div>
+</div>
+
+<!-- CAJA -->
+<div class="page" id="pageCaja">
+    <div class="page-chrome">
+    <div class="top-mod-bar"><span class="top-mod-title na-li-host"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> Caja del Día</span><span style="font-size:11px;font-weight:700;color:var(--slate)" id="cajFechaLbl"></span></div>
+    <div class="tabs-wrap">
+        <button class="tab active na-li-host" onclick="cajSetTab(this,'resumen')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3v18h18"/><path d="M8 17v-5M13 17V7M18 17v-8"/></svg> Resumen</button>
+        <button class="tab na-li-host" onclick="cajSetTab(this,'movimientos')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M8 12h8M8 16h5"/></svg> Movimientos</button>
+        <button class="tab na-li-host" onclick="cajSetTab(this,'cierre')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Cierre</button>
+    </div>
+    </div>
+    <div id="cajContent" style="flex:1;overflow-y:auto;display:flex;flex-direction:column"></div>
+</div>
+
+<!-- VENTAS -->
+<div class="page" id="pageVentas">
+    <div class="page-chrome">
+    <div class="top-mod-bar"><span class="top-mod-title na-li-host"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3v18h18"/><path d="M8 17v-5M13 17V7M18 17v-8"/></svg> Ventas e Historial</span></div>
+    <div class="tabs-wrap">
+        <button class="tab active na-li-host" onclick="ventasSetTab(this,'hoy')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Hoy</button>
+        <button class="tab na-li-host" onclick="ventasSetTab(this,'semana')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg> Semana</button>
+        <button class="tab na-li-host" onclick="ventasSetTab(this,'historial')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> Historial</button>
+        <button class="tab na-li-host" onclick="ventasSetTab(this,'productos')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1Z"/></svg> Top prods.</button>
+        <button class="tab na-li-host" onclick="ventasSetTab(this,'reportes')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg> Reportes</button>
+    </div>
+    <div class="filter-bar" id="ventasFilterBar">
+        <div class="search-box"><svg class="na-li na-li-search" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="ventasSearch" placeholder="Buscar venta..." oninput="ventasRender()"></div>
+        <select class="f-select" id="ventasMetodo" onchange="ventasRender()"><option value="">Todos</option><option value="efectivo">Efectivo</option><option value="yape">Yape</option><option value="plin">Plin</option><option value="transferencia">Transferencia</option><option value="credito">Crédito</option><option value="mixto">Pago mixto</option></select>
+    </div>
+    <div class="sales-report-controls" id="ventasReportControls" hidden>
+        <div class="sales-report-control">
+            <label for="salesReportPeriod">Período</label>
+            <select id="salesReportPeriod" onchange="_naF8ReportPeriodChanged()">
+                <option value="today">Hoy</option>
+                <option value="week">Esta semana</option>
+                <option value="month" selected>Este mes</option>
+                <option value="previousMonth">Mes anterior</option>
+                <option value="year">Este año</option>
+                <option value="custom">Personalizado</option>
+            </select>
+        </div>
+        <div class="sales-report-control date" id="salesReportFromWrap">
+            <label for="salesReportFrom">Desde</label>
+            <input type="date" id="salesReportFrom" onchange="_naF8CustomRangeChanged()" lang="es-PE">
+        </div>
+        <div class="sales-report-control date" id="salesReportToWrap">
+            <label for="salesReportTo">Hasta</label>
+            <input type="date" id="salesReportTo" onchange="_naF8CustomRangeChanged()" lang="es-PE">
+        </div>
+        <div class="sales-report-control">
+            <label for="salesReportView">Vista</label>
+            <select id="salesReportView" onchange="ventasRender()">
+                <option value="resumen">Resumen general</option>
+                <option value="productos">Por producto</option>
+                <option value="clientes">Por cliente</option>
+                <option value="dias">Por día</option>
+                <option value="meses">Por mes</option>
+            </select>
+        </div>
+        <button class="sales-report-export" type="button" onclick="_naF8ExportReport()">⬇️ Exportar</button>
+        <div class="sales-report-range" id="salesReportRangeLabel">—</div>
+    </div>
+    <div class="v-kpi-row" id="ventasKPI"></div>
+    </div>
+    <div id="ventasContent" style="flex:1;overflow-y:auto;display:flex;flex-direction:column"></div>
+</div>
+
+<!-- PRÓXIMAMENTE -->
+<div class="page" id="pageProximamente">
+    <h1>Próximamente</h1>
+    <div class="na-prox-grid" id="naProximamenteGrid"></div>
+</div>
+
+<div class="page" id="pageHistorialCompras">
+  <div class="hc-shell">
+    <h1>Historial de compras por producto</h1>
+    <p class="hc-note">Consulta de solo lectura · Solo dueño · Fechas en hora de Lima</p>
+    <p class="hc-denied" data-hc-denied role="alert">Sin permiso. Pídele acceso al dueño.</p>
+    <section data-hc-content hidden aria-label="Consultar compras por producto">
+      <label class="hc-search-label" for="hcProductSearch">Buscar producto</label>
+      <input
+        class="hc-search"
+        id="hcProductSearch"
+        type="search"
+        data-hc-search
+        autocomplete="off"
+        placeholder="Nombre o código del producto"
+      >
+      <div class="hc-products" data-hc-products role="group" aria-label="Productos encontrados"></div>
+      <p class="hc-note" data-hc-status role="status" aria-live="polite"></p>
+      <button class="hc-retry" type="button" data-hc-retry hidden>Volver a intentar</button>
+      <section data-hc-result aria-live="polite" aria-label="Historial y resumen del producto"></section>
+    </section>
+  </div>
+</div>
+
+<div class="page" id="pageEtiquetasPrecios">
+  <div class="etq-shell">
+    <h1>Etiquetas e impresión de precios</h1>
+    <p class="etq-note">Solo lectura · No cambia productos, stock ni ventas</p>
+    <label class="etq-field" for="etqSearch">Buscar producto (nombre o código)</label>
+    <input class="etq-search" id="etqSearch" type="search" autocomplete="off" placeholder="Nombre o código" data-etq-search>
+    <div class="etq-matches" data-etq-matches aria-live="polite"></div>
+    <h2>Productos elegidos</h2>
+    <p class="etq-note" data-etq-empty>Aún no eliges productos.</p>
+    <ul class="etq-selected" data-etq-selected></ul>
+    <label class="etq-field" for="etqFormat">Formato</label>
+    <select id="etqFormat" data-etq-format>
+      <option value="chica">Chica (38 × 25 mm)</option>
+      <option value="mediana" selected>Mediana (50 × 30 mm)</option>
+      <option value="a4">A4 · 24 por hoja (3 × 8)</option>
+    </select>
+    <h2>Vista previa · <span data-etq-count>0 etiquetas</span></h2>
+    <p class="etq-note etq-cap" data-etq-cap role="status" hidden></p>
+    <div class="etq-preview-wrap"><div class="etq-sheet etq-format-mediana" data-etq-sheet></div></div>
+    <button class="etq-print" type="button" data-etq-print disabled>Imprimir</button>
+  </div>
+</div>
+
+<div class="page" id="pageSugerenciaCompra" aria-labelledby="sugerenciaCompraTitle">
+  <div class="sc-shell">
+    <header>
+      <h1 id="sugerenciaCompraTitle">Sugerencia de compra</h1>
+      <p class="sc-description">Qué pedir a cada proveedor según el stock mínimo y lo vendido en los últimos 30 días. Ajusta las cantidades antes de exportar o imprimir; no cambia productos ni stock.</p>
+    </header>
+    <div class="sc-controls" data-sc-controls hidden>
+      <button type="button" data-sc-recalc>Recalcular</button>
+      <button type="button" data-sc-reset disabled>Usar sugeridos</button>
+      <button type="button" data-sc-export>Exportar CSV</button>
+      <button type="button" data-sc-print>Imprimir</button>
+    </div>
+    <p class="sc-status" data-sc-status role="status" aria-live="polite"></p>
+    <div data-sc-content></div>
+  </div>
+</div>
+
+<div class="page" id="pageEdicionPrecios" aria-labelledby="edicionPreciosTitle">
+  <div class="pm-shell">
+    <header>
+      <h1 id="edicionPreciosTitle">Edición masiva de precios</h1>
+      <p class="pm-description">Cambia el precio de venta de muchos productos a la vez, por % o monto, o calcúlalo con un margen sobre el costo. Revisa la vista previa antes de aplicar. No cambia el stock ni las ventas.</p>
+    </header>
+    <p class="pm-status" data-pm-status role="status" aria-live="polite"></p>
+    <div data-pm-main hidden>
+      <div class="pm-controls">
+        <label>Buscar<input type="search" data-pm-search aria-label="Buscar producto" placeholder="Nombre del producto"></label>
+        <label>Categoría<select data-pm-category aria-label="Categoría"><option value="">Todas las categorías</option></select></label>
+        <label>Tipo de cambio<select data-pm-mode aria-label="Tipo de cambio"><option value="porcentaje">Subir o bajar %</option><option value="monto">Sumar o restar S/</option><option value="margen">Margen sobre costo (recargo) %</option></select></label>
+        <label>Valor<input type="number" step="0.01" inputmode="decimal" data-pm-value aria-label="Valor" placeholder="Ej. 10 o -5"></label>
+        <button type="button" data-pm-apply disabled>Aplicar</button>
+      </div>
+      <div data-pm-content></div>
+      <button type="button" class="pm-undo" data-pm-undo hidden>Deshacer último lote</button>
+      <div class="pm-log-box" data-pm-log></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pageAjustesInventario" aria-labelledby="ajustesInventarioTitle">
+  <div class="aj-shell">
+    <header>
+      <h1 id="ajustesInventarioTitle">Ajustes de inventario</h1>
+      <p class="aj-description">Registra mermas, roturas, vencidos y correcciones de stock con motivo, usuario y nota. No cambia ventas ni pagos.</p>
+    </header>
+    <p class="aj-status" data-aj-status role="status" aria-live="polite"></p>
+    <div data-aj-main hidden>
+      <form class="aj-form" data-aj-form novalidate>
+        <label class="aj-wide">Buscar producto
+          <input type="search" data-aj-search autocomplete="off" placeholder="Nombre o código">
+        </label>
+        <label class="aj-wide">Producto
+          <select data-aj-product required></select>
+        </label>
+        <label>Tipo
+          <select data-aj-type>
+            <option value="merma">Merma</option>
+            <option value="rotura">Rotura</option>
+            <option value="vencido">Vencido</option>
+            <option value="correccion">Corrección</option>
+          </select>
+        </label>
+        <p class="aj-lot-note aj-wide" data-aj-lot-note role="note" hidden></p>
+        <label data-aj-direction-wrap hidden>Corrección
+          <select data-aj-direction>
+            <option value="restar">Restar stock</option>
+            <option value="sumar">Sumar stock</option>
+          </select>
+        </label>
+        <label>Cantidad
+          <input type="text" data-aj-qty inputmode="decimal" autocomplete="off" spellcheck="false" required>
+        </label>
+        <label class="aj-wide">Nota
+          <textarea data-aj-note maxlength="300" placeholder="Detalle del ajuste (opcional)"></textarea>
+        </label>
+        <button type="submit" class="aj-submit aj-wide" data-aj-submit>Registrar ajuste</button>
+        <p class="aj-message aj-wide" data-aj-message role="status" aria-live="polite"></p>
+      </form>
+      <h2>Reporte de ajustes (solo dueño)</h2>
+      <button type="button" data-aj-export>Exportar CSV</button>
+      <div data-aj-report></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pageProductosSinMovimiento" aria-labelledby="productosSinMovimientoTitle">
+  <div class="psm-shell">
+    <header>
+      <h1 id="productosSinMovimientoTitle">Productos sin movimiento</h1>
+      <p class="psm-description">Productos activos sin ventas en el período, con su stock actual. Solo lectura.</p>
+    </header>
+    <div class="psm-controls" data-psm-controls hidden>
+      <label>Período
+        <select data-psm-period aria-label="Período">
+          <option value="30" selected>Últimos 30 días</option>
+          <option value="60">Últimos 60 días</option>
+          <option value="90">Últimos 90 días</option>
+        </select>
+      </label>
+      <label class="psm-check"><input type="checkbox" data-psm-no-stock> Incluir sin stock</label>
+      <button type="button" data-psm-refresh>Actualizar reporte</button>
+      <button type="button" data-psm-export>Exportar CSV</button>
+    </div>
+    <p class="psm-status" data-psm-status role="status" aria-live="polite"></p>
+    <div data-psm-content></div>
+  </div>
+</div>
+
+<div class="page" id="pageValorizacion">
+    <header class="val-header">
+        <div class="val-heading">
+            <h1>Valorización de inventario</h1>
+            <p>Consulta de solo lectura · Solo dueño</p>
+        </div>
+        <button type="button" class="val-refresh" data-valorizacion-refresh>Actualizar</button>
+    </header>
+    <div class="val-content">
+        <p class="val-explanation">Unidades físicas del stock en memoria, incluidos lotes y unidades sin lote. Valor calculado con el costo y precio actuales por unidad. Los productos sin costo se indican aparte.</p>
+        <div data-valorizacion-report></div>
+    </div>
+</div>
+
+<div class="page" id="pageVentasStock" aria-labelledby="ventasStockTitle">
+  <div class="vs-shell">
+    <header><h1 id="ventasStockTitle">Ventas con stock</h1>
+      <p class="vs-description">Consulta las ventas y la cobertura del stock para priorizar la reposición.</p></header>
+    <div class="vs-controls" data-vs-controls hidden>
+      <label>Período<select data-vs-period aria-label="Período">
+        <option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="90">Últimos 90 días</option>
+      </select></label>
+      <label>Categoría<select data-vs-category aria-label="Categoría"><option value="*">Todas las categorías</option></select></label>
+      <label>Buscar producto<input type="search" data-vs-search aria-label="Buscar producto" placeholder="Nombre o código"></label>
+      <button type="button" data-vs-refresh>Actualizar reporte</button>
+      <button type="button" data-vs-export>Exportar CSV</button>
+    </div>
+    <p class="vs-method">Cobertura = stock ÷ promedio diario vendido. Reponer: cobertura &lt; 7 días o stock ≤ mínimo (con stock y mínimo positivos). Se excluyen ventas anuladas. Los productos fuera del catálogo figuran sin control.</p>
+    <p class="vs-status" data-vs-status role="status" aria-live="polite"></p>
+    <div data-vs-content></div>
+  </div>
+</div>
+<div class="page" id="pageReporteArqueo" aria-labelledby="reporteArqueoTitle">
+  <div class="ra-shell">
+    <header><h1 id="reporteArqueoTitle">Reporte de arqueo de caja por fechas</h1>
+      <p class="ra-description">Consulta y descarga los cierres de caja de un rango de fechas. Solo lectura, con fechas y horas de Lima.</p></header>
+    <div class="ra-controls" data-ra-controls hidden>
+      <label>Desde<input type="date" data-ra-desde aria-label="Desde"></label>
+      <label>Hasta<input type="date" data-ra-hasta aria-label="Hasta"></label>
+      <label>Cajero<select data-ra-cajero aria-label="Cajero"><option value="">Todos los cajeros</option></select></label>
+      <button type="button" data-ra-export>Exportar CSV</button>
+    </div>
+    <p class="ra-status" data-ra-status role="status" aria-live="polite"></p>
+    <div data-ra-content></div>
+    <section class="rmp-section" data-rmp-section aria-labelledby="reporteMedioPagoTitle" hidden>
+      <details class="rmp-details" data-rmp-details>
+      <summary><h2 id="reporteMedioPagoTitle">Movimientos por medio de pago por turno</h2></summary>
+      <p class="ra-description">Ventas y cobros de cada turno cerrado, separados por medio de pago. Solo lectura, con fechas de Lima.</p>
+      <div class="rmp-controls" data-rmp-controls hidden>
+        <label>Desde<input type="date" data-rmp-desde aria-label="Desde (medios de pago)"></label>
+        <label>Hasta<input type="date" data-rmp-hasta aria-label="Hasta (medios de pago)"></label>
+        <label>Cajero<select data-rmp-cajero aria-label="Cajero"><option value="">Todos</option></select></label>
+        <button type="button" data-rmp-export>Exportar CSV</button>
+      </div>
+      <p class="ra-status" data-rmp-status role="status" aria-live="polite"></p>
+      <div data-rmp-content></div>
+      </details>
+    </section>
+    <section class="pt-section" data-pt-section aria-labelledby="panelTesoreriaTitle" hidden>
+      <details class="pt-details" data-pt-details>
+      <summary><h2 id="panelTesoreriaTitle">Panel de tesorería</h2></summary>
+      <p class="ra-description">Efectivo en cada caja abierta y lo cobrado por Yape, Plin y transferencia pendiente de acreditar. Solo lectura.</p>
+      <p class="ra-status" data-pt-status role="status" aria-live="polite"></p>
+      <div data-pt-content></div>
+      </details>
+    </section>
+  </div>
+</div>
+<div class="page" id="pageClienteHistorial" aria-labelledby="clienteHistorialTitle">
+  <div class="ch-shell">
+    <header>
+      <h1 id="clienteHistorialTitle">Historial de compras por cliente</h1>
+      <p class="ch-description">Consulta cuánto consumió un cliente y los productos que compró.</p>
+    </header>
+    <div class="ch-controls" data-ch-controls hidden>
+      <label>Buscar por nombre o DNI
+        <input type="search" data-ch-search aria-label="Buscar por nombre o DNI" placeholder="Nombre o DNI" autocomplete="off">
+      </label>
+      <div class="ch-filter-row">
+        <label>Cliente
+          <select data-ch-customer aria-label="Cliente"><option value="">Selecciona un cliente</option></select>
+        </label>
+        <label>Desde
+          <input type="date" data-ch-from aria-label="Desde">
+        </label>
+        <label>Hasta
+          <input type="date" data-ch-to aria-label="Hasta">
+        </label>
+        <p class="ch-date-hint" data-ch-date-hint hidden>Sin límite de fechas</p>
+        <label>Vendedor
+          <select data-ch-seller aria-label="Vendedor"><option value="">Todos</option></select>
+        </label>
+      </div>
+      <label>Período
+        <select data-ch-period aria-label="Período">
+          <option value="30" selected>Últimos 30 días</option>
+          <option value="90">Últimos 90 días</option>
+          <option value="365">Últimos 365 días</option>
+          <option value="all">Todo el historial</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </label>
+      <button type="button" data-ch-refresh>Actualizar reporte</button>
+      <button type="button" data-ch-export disabled hidden>Exportar CSV</button>
+    </div>
+    <p class="ch-method">Consulta de solo lectura. Se excluyen ventas anuladas. Total consumido = total registrado de las ventas; importe por producto = subtotal de la línea o precio vendido × cantidad. Los abonos no se cuentan como compras.</p>
+    <p class="ch-status" data-ch-status role="status" aria-live="polite"></p>
+    <div data-ch-content></div>
+  </div>
+</div>
+<div class="page" id="pageKardex" aria-labelledby="kardexTitle">
+  <div class="kardex-shell">
+    <header>
+      <h1 id="kardexTitle">Kardex valorizado por producto</h1>
+      <p>Consulta entradas, salidas y saldo de stock en unidades físicas.</p>
+    </header>
+    <div data-kardex-controls hidden>
+      <div class="kardex-filters">
+        <label>Producto<input type="search" data-kardex-search aria-label="Buscar producto" placeholder="Nombre o código" autocomplete="off"></label>
+        <label>Desde<input type="date" data-kardex-from aria-label="Desde"></label>
+        <label>Hasta<input type="date" data-kardex-to aria-label="Hasta"></label>
+      </div>
+      <div class="kardex-products" data-kardex-products aria-label="Productos encontrados"></div>
+      <div class="kardex-actions">
+        <button type="button" data-kardex-refresh>Actualizar Kardex</button>
+        <button type="button" data-kardex-export disabled>Exportar CSV</button>
+      </div>
+    </div>
+    <p class="kardex-method">El saldo inicial se calcula desde el stock actual y el historial disponible. El saldo al cierre corresponde al rango elegido; el stock actual se muestra por separado. Se conservan ventas y devoluciones registradas; las ventas anuladas sin movimiento se excluyen.</p>
+    <p class="kardex-method" data-kardex-cost-method hidden>Promedio ponderado por unidades físicas con costo conocido: cada entrada con costo recalcula el promedio y cada salida usa el promedio vigente. Las entradas sin costo usan costo estimado si hay promedio; de lo contrario, quedan sin costo y no suman valor. El último costo del producto no se aplica al historial anterior. La valorización depende del historial disponible.</p>
+    <p data-kardex-status role="status" aria-live="polite"></p>
+    <div data-kardex-content></div>
+  </div>
+</div>
+
+<div class="page" id="pageRotacionAbc" aria-labelledby="rotacionAbcTitle">
+  <div class="abc-shell">
+    <header>
+      <h1 id="rotacionAbcTitle">Rotación ABC por categoría</h1>
+      <p class="abc-description">Identifica los productos que concentran el importe vendido de cada categoría.</p>
+    </header>
+    <div class="abc-controls" data-abc-controls hidden>
+      <label>Período
+        <select data-abc-period aria-label="Período">
+          <option value="30" selected>Últimos 30 días</option>
+          <option value="90">Últimos 90 días</option>
+        </select>
+      </label>
+      <label>Categoría
+        <select data-abc-category aria-label="Categoría">
+          <option value="*">Todas las categorías</option>
+        </select>
+      </label>
+      <button type="button" data-abc-refresh>Actualizar reporte</button>
+    </div>
+    <p class="abc-method">ABC se calcula dentro de cada categoría: A reúne los primeros productos hasta alcanzar el 80% del importe; B continúa hasta el 95%; C reúne el resto. El producto que alcanza cada corte cierra esa clase. Los productos sin ventas son C. Importe = precio vendido × cantidad, como en Reportes. Se excluyen ventas anuladas.</p>
+    <p class="abc-status" data-abc-status role="status" aria-live="polite"></p>
+    <div data-abc-content></div>
+  </div>
+</div>
+
+<div class="page" id="pageClientesFrecuencia" aria-labelledby="clientesFrecuenciaTitle">
+  <div class="cf-shell">
+    <header>
+      <h1 id="clientesFrecuenciaTitle">Frecuencia de compra del cliente</h1>
+      <p class="cf-description">Consulta cada cuánto compran tus clientes y quiénes podrían volver.</p>
+    </header>
+    <div class="cf-controls" data-cf-controls hidden>
+      <label>Período
+        <select data-cf-period aria-label="Período">
+          <option value="90" selected>Últimos 90 días</option>
+          <option value="180">Últimos 180 días</option>
+          <option value="365">Últimos 365 días</option>
+        </select>
+      </label>
+      <label>Buscar cliente
+        <input type="search" data-cf-search aria-label="Buscar cliente" placeholder="Nombre del cliente" autocomplete="off">
+      </label>
+      <button type="button" data-cf-refresh>Actualizar reporte</button>
+    </div>
+    <p class="cf-method">Cada (días) es el promedio entre compras del período, en días calendario de Lima. Al día: no supera ese promedio. Por volver: lo supera. Inactivo: supera el doble o lleva más de 60 días sin comprar. Una sola compra: aún no hay promedio (si supera 60 días, es Inactivo). Se cuentan también compras del mismo día. Se excluyen ventas anuladas y sin cliente. Importe = precio vendido × cantidad, como en Reportes.</p>
+    <p class="cf-status" data-cf-status role="status" aria-live="polite"></p>
+    <div data-cf-content></div>
+  </div>
+</div>
+
+<div class="page" id="pageReporteProductosVencer" aria-labelledby="reporteProductosVencerTitle">
+  <div class="rpv-shell">
+    <header>
+      <h1 id="reporteProductosVencerTitle">Reporte de productos por vencer</h1>
+      <p class="rpv-description">Revisa primero los lotes vencidos y luego los que vencen pronto.</p>
+    </header>
+    <div class="rpv-controls" data-rpv-controls hidden>
+      <label>Horizonte
+        <select data-rpv-horizon aria-label="Horizonte">
+          <option value="30" selected>Próximos 30 días</option>
+          <option value="60">Próximos 60 días</option>
+          <option value="90">Próximos 90 días</option>
+        </select>
+      </label>
+      <label>Lote
+        <input type="search" data-rpv-lot autocomplete="off" placeholder="Filtrar por lote" aria-label="Filtrar por lote">
+      </label>
+      <button type="button" data-rpv-refresh>Actualizar reporte</button>
+      <button type="button" data-rpv-export>Exportar CSV</button>
+    </div>
+    <p class="rpv-method">Solo consulta: se muestran lotes cargados con stock mayor a cero. Los vencidos siempre se incluyen. El horizonte incluye hoy y su último día, según el calendario de Lima. Stock se expresa en la unidad física de cada producto.</p>
+    <p class="rpv-status" data-rpv-status role="status" aria-live="polite"></p>
+    <p class="rpv-summary" data-rpv-summary hidden></p>
+    <div data-rpv-content></div>
+  </div>
+</div>
+
+<div class="page" id="pageReporteDeuda">
+    <header class="rd-header">
+        <h1>Reporte de deuda</h1>
+        <p>Clientes con saldo pendiente. Toca un cliente para abrir su ficha.</p>
+    </header>
+    <div class="rd-toolbar">
+        <button type="button" class="rd-back" data-rd-back>Volver a Clientes</button>
+        <label data-rd-owner-control>Ordenar por
+            <select data-rd-sort>
+                <option value="saldo">Saldo pendiente: mayor a menor</option>
+                <option value="vencida">Deuda vencida: mayor a menor</option>
+            </select>
+        </label>
+    </div>
+    <p class="rd-status" role="status" aria-live="polite" data-rd-status></p>
+    <div class="rd-content" data-rd-content></div>
+</div>
+
+<div class="page" id="pageCodigosDuplicados">
+    <header class="cd-header">
+        <h1>Códigos duplicados</h1>
+        <button class="cd-button" type="button" data-cd-back>Volver a Inventario</button>
+        <button class="cd-button" type="button" data-cd-refresh data-cd-owner hidden>Actualizar lista</button>
+    </header>
+    <p class="cd-intro" data-cd-owner hidden>Las fotos de esos códigos no se asignan solas porque el código pertenece a más de un producto. Se corrige editando el producto y revisando sus códigos. Esta lista es de solo lectura.</p>
+    <p class="cd-status" data-cd-status role="status" aria-live="polite"></p>
+    <div class="cd-list" data-cd-list></div>
+</div>
+
+<!-- GASTOS -->
+<div class="page" id="pageGastos">
+    <div class="page-chrome">
+    <div class="top-mod-bar"><span class="top-mod-title na-li-host"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> Gastos y Egresos</span><button class="top-btn-nuevo" onclick="abrirModalGasto()">+ Gasto</button></div>
+    <div class="tabs-wrap">
+        <button class="tab active na-li-host" onclick="gasSetTab(this,'hoy')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Hoy</button>
+        <button class="tab na-li-host" onclick="gasSetTab(this,'semana')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg> Semana</button>
+        <button class="tab na-li-host" onclick="gasSetTab(this,'todos')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> Todos</button>
+    </div>
+    <div class="stats-strip">
+        <div class="ss red"><div class="ss-num" id="gasS0">S/0</div><div class="ss-lbl">Total gastos</div></div>
+        <div class="ss amber"><div class="ss-num" id="gasS1">0</div><div class="ss-lbl">Registros</div></div>
+        <div class="ss teal"><div class="ss-num" id="gasS2">S/0</div><div class="ss-lbl">Mayor gasto</div></div>
+        <div class="ss green"><div class="ss-num" id="gasS3">—</div><div class="ss-lbl">Categoría top</div></div>
+    </div>
+    <div class="filter-bar">
+        <div class="search-box"><svg class="na-li na-li-search" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="gasSearch" placeholder="Buscar gasto..." oninput="gasRender()"></div>
+        <select class="f-select" id="gasCatFilter" onchange="gasRender()"><option value="">Todas</option><option value="Servicios">Servicios</option><option value="Proveedor">Proveedor</option><option value="Operativo">Operativo</option><option value="Personal">Personal</option><option value="Transporte">Transporte</option><option value="Otro">Otro</option></select>
+    </div>
+    </div>
+    <div id="gasContent" style="flex:1;overflow-y:auto;padding:12px 13px;display:flex;flex-direction:column;gap:7px"></div>
+</div>
+
+<!-- CONFIGURACIÓN -->
+<div class="page" id="pageConfig">
+    <div class="top-mod-bar cfg-topbar-simple">
+        <div class="cfg-topbar-title-wrap">
+            <button class="cfg-menu-toggle" type="button" onclick="toggleCfgMenu()" aria-label="Abrir menú de configuración">☰</button>
+            <span class="top-mod-title na-li-host"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.8l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg> Configuración del sistema</span>
+        </div>
+        <button class="top-btn-nuevo" onclick="guardarConfig()" style="background: var(--teal);">💾 Guardar todo</button>
+    </div>
+    <div class="cfg-mobile-overlay" id="cfgMenuOverlay" onclick="toggleCfgMenu(false)"></div>
+    <div class="cfg-layout cfg-shell" style="display:flex; flex:1; overflow:hidden;">
+        <div class="cfg-sidebar" id="cfgSidebar">
+            <div class="cfg-sidebar-search"><input type="text" id="cfgSearchCat" placeholder="🔍 Buscar ajuste..." oninput="filterCfgCategories()"></div>
+            <button class="cfg-cat-btn active" data-cfgcat="negocio" onclick="switchCfgCategory('negocio')"><span>🏪</span><div><strong>Negocio</strong><small>Datos y perfil comercial</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="pos" onclick="switchCfgCategory('pos')"><span>🛒</span><div><strong>Punto de Venta</strong><small>Reglas, stock y mayorista</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="apariencia" onclick="switchCfgCategory('apariencia')"><span>🎨</span><div><strong>Apariencia</strong><small>Tema, fuente y colores</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="ticket" onclick="switchCfgCategory('ticket')"><span>🧾</span><div><strong>Ticket</strong><small>Impresión y mensaje final</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="control" onclick="switchCfgCategory('control')"><span>🛡️</span><div><strong>Control maestro</strong><small>Bloqueos y seguridad</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="reseteo" onclick="switchCfgCategory('reseteo')"><span>⚠️</span><div><strong>Reseteo</strong><small>Limpieza por módulos</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="importar" onclick="switchCfgCategory('importar')"><span>📥</span><div><strong>Importar datos</strong><small>Catálogo y respaldos</small></div></button>
+            <button class="cfg-cat-btn" data-cfgcat="info" onclick="switchCfgCategory('info')"><span>ℹ️</span><div><strong>Sistema</strong><small>Estado y versión</small></div></button>
+        </div>
+        <div class="cfg-content" id="cfgContent"></div>
+    </div>
+</div>
+
+<!-- MODALES -->
+<div class="modal-overlay" id="mOcrPurchaseSource" style="z-index:390"><div class="modal" style="max-width:440px"><div class="mhead teal"><div class="mhead-title">OCR compras</div><button class="btn-close-m" type="button" aria-label="Cerrar opciones OCR" onclick="document.getElementById('mOcrPurchaseSource').classList.remove('open')">✕</button></div><div class="mbody ocr-source-options"><input type="file" id="ocrPurchaseCamera" accept="image/*" capture="environment" hidden><input type="file" id="ocrPurchaseFile" accept="image/png,image/jpeg,image/webp" hidden><input type="file" id="ocrPurchaseDocument" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden><button type="button" class="mbtn mbtn-ok" onclick="document.getElementById('ocrPurchaseCamera').click()">Tomar foto</button><button type="button" class="mbtn mbtn-ok" onclick="document.getElementById('ocrPurchaseFile').click()">Subir imagen</button><button type="button" class="mbtn mbtn-ok" onclick="document.getElementById('ocrPurchaseDocument').click()">Subir PDF o documento</button><p>Lectura automática · JPG, PNG, WEBP, PDF y Word (.docx). Máximo 20 MB y 30 páginas PDF.</p><button type="button" id="ocrPurchaseStart" hidden>Reintentar lectura</button></div></div></div>
+<div class="modal-overlay" id="mOcrPurchaseReview" style="z-index:391"><div class="modal" style="max-width:820px"><div class="mhead teal"><div><div class="mhead-title">Verificar datos</div><div style="font-size:11px;margin-top:2px">Verifica si los datos son correctos antes de guardar</div></div><button class="btn-close-m" type="button" id="ocrPurchaseClose">✕</button></div><div class="mbody"><div id="ocrReviewStatus" role="status" aria-live="polite"></div><details class="ocr-source-preview"><summary>Ver documento original</summary><div id="ocrPurchaseSource"></div></details><details><summary>Texto leído</summary><pre class="ocr-purchase-raw" id="ocrPurchaseRawText"></pre></details><div id="ocrPurchaseReviewRows"></div><div class="mbtns"><button class="mbtn mbtn-cancel" type="button" onclick="document.getElementById('ocrPurchaseClose').click()">Cerrar</button><button class="mbtn mbtn-ok" type="button" id="ocrPurchaseApply">Confirmar y guardar</button></div></div></div></div>
+<div class="modal-overlay" id="mCobro">
+  <div class="modal pay-modal">
+    <div class="pay-modal-head">
+      <div>
+        <div class="pay-modal-title">Cobrar venta</div>
+        <div class="pay-modal-sub">Selecciona el método y confirma el pago</div>
+      </div>
+      <button class="pay-close" onclick="cerrarModal('mCobro')" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="pay-modal-body">
+      <div class="pay-total-card">
+        <div class="pay-total-label">Total a cobrar</div>
+        <div class="pay-total-value" id="mCobroTotal">S/ 0.00</div>
+      </div>
+
+      <div class="pay-section-label">Método de pago</div>
+      <div class="pm-grid pay-methods">
+        <button type="button" class="pm-btn active" data-method="efectivo" onclick="selPM(this)"><span class="pmi"><span class="pmi-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="12" y="7" width="31" height="23" rx="2"/><rect x="5" y="17" width="31" height="23" rx="2"/><circle cx="20.5" cy="28.5" r="5.5"/><path d="M9 22v2m23 9v2m-20-2 2 2m14-16-2 2"/></svg></span></span><span class="pml">Efectivo</span></button>
+        <button type="button" class="pm-btn" data-method="yape" data-digital-group="true" onclick="selPM(this)" aria-pressed="false" aria-describedby="mDigitalMethodHint"><span class="pmi"><span class="pmi-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="19" y="5" width="20" height="38" rx="4"/><path d="M25 10h8m-7 27h6"/><path class="digital-arrow" d="M3 21h13m-5-6 6 6-6 6"/></svg></span></span><span class="pm-copy"><span class="pml">Pago digital</span><small class="pms" id="mDigitalMethodHint">Yape, Plin o transferencia</small></span></button>
+        <button type="button" class="pm-btn" data-method="credito" onclick="selPM(this)"><span class="pmi"><span class="pmi-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M14 5h19l7 7v31H14z"/><path d="M33 5v8h7M20 21h14M20 28h14M20 35h10"/></svg></span></span><span class="pml">Crédito</span></button>
+        <button type="button" class="pm-btn" data-method="mixto" onclick="selPM(this)"><span class="pmi"><span class="pmi-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 14h32"/><path d="m14 28-6 6 6 6M8 34h32"/><path d="m34 8 6 6-6 6"/></svg></span></span><span class="pml">Dividir pago</span></button>
+      </div>
+
+      <details class="pay-client-details" id="mClienteDetails">
+        <summary><span>Cliente</span><small>Opcional</small></summary>
+        <select class="fs" id="mVentaCliente"><option value="">Sin cliente</option></select>
+      </details>
+
+      <div id="mEfSection" class="pay-cash-section">
+        <div id="mCashSimple" class="cash-simple-actions">
+          <div class="cash-inline-note" id="mCashInlineNote">Monto exacto listo para cobrar.</div>
+          <button type="button" class="cash-other-btn" onclick="toggleOtherCashAmounts(true)">
+            <span><i class="na-ic na-ic-cash" aria-hidden="true"></i></span>
+            <span><strong>Otros montos</strong><small>Ingresar efectivo y calcular vuelto</small></span>
+            <span class="cash-other-arrow">›</span>
+          </button>
+        </div>
+        <div id="mCashAdvanced" class="pay-panel cash-advanced-panel" hidden>
+          <div class="pay-amount-head">
+            <label for="mMontoRec">Efectivo recibido</label>
+            <button type="button" class="cash-exact-btn" onclick="setMontoExacto(true)">Usar monto exacto</button>
+          </div>
+          <div class="pay-amount-input-wrap">
+            <span>S/</span>
+            <input class="fi-big pay-amount-input" id="mMontoRec" min="0" inputmode="decimal" oninput="calcCambio()" placeholder="Otro monto" step="0.10" type="number"/>
+          </div>
+          <div id="mCashQuickInline" class="cash-quick-inline"></div>
+          <div class="cash-quick-row pay-quick-row">
+            <button type="button" data-cash="20" onclick="setMontoRecibido(20)">20</button>
+            <button type="button" data-cash="50" onclick="setMontoRecibido(50)">50</button>
+            <button type="button" data-cash="100" onclick="setMontoRecibido(100)">100</button>
+            <button type="button" data-cash="200" onclick="setMontoRecibido(200)">200</button>
+          </div>
+          <div class="pay-change-row">
+            <span>Vuelto</span>
+            <strong id="mCambio">S/ 0.00</strong>
+          </div>
+        </div>
+      </div>
+
+      <div id="mCreditoSection" class="pay-panel pay-alt-panel" style="display:none">
+        <div class="fg"><div class="fl">Cliente del crédito <span class="req">*</span></div><select class="fs" id="mCreditoCliente"><option value="">Selecciona un cliente</option></select></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Fecha de vencimiento <span class="req">*</span></div><input class="fi" id="mCreditoVence" type="date"/></div>
+      </div>
+
+      <div id="mDigitalSection" class="pay-panel pay-alt-panel" style="display:none">
+        <div class="digital-channel-label">¿Cómo pagó?</div>
+        <div class="digital-channel-list" id="mDigitalChannels" role="group" aria-label="Canal de pago digital">
+          <button type="button" class="digital-channel-btn active" data-digital-method="yape" aria-pressed="true" onclick="selPM(this)">Yape</button>
+          <button type="button" class="digital-channel-btn" data-digital-method="plin" aria-pressed="false" onclick="selPM(this)">Plin</button>
+          <button type="button" class="digital-channel-btn" data-digital-method="transferencia" aria-pressed="false" onclick="selPM(this)">Transferencia</button>
+        </div>
+        <label class="digital-payment-confirmation" for="mDigitalVerified">
+          <input type="checkbox" id="mDigitalVerified" onchange="_naValidatePaymentForm()">
+          <span>He verificado que el pago fue recibido</span>
+        </label>
+        <div class="fg" style="margin-bottom:0"><div class="fl" id="mDigitalLabel">Número de operación (opcional)</div><input autocomplete="off" class="fi" id="mDigitalRef" inputmode="numeric" placeholder="Ej. 12345678"/></div>
+      </div>
+
+      <div id="mMixedSection" class="pay-panel pay-alt-panel" style="display:none">
+        <div class="pay-section-label" style="margin-bottom:9px">Dividir el pago</div>
+        <div class="mixed-pay-grid">
+          <div class="mixed-pay-card">
+            <label for="mMixedCash">Efectivo recibido</label>
+            <div class="mixed-pay-input"><span>S/</span><input id="mMixedCash" type="number" min="0" step="0.10" inputmode="decimal" placeholder="0.00" oninput="calcMixedPayment()"></div>
+            <div class="mixed-quick-row">
+              <button type="button" data-mixed-cash="10" onclick="setMixedCash(10)">10</button>
+              <button type="button" data-mixed-cash="20" onclick="setMixedCash(20)">20</button>
+              <button type="button" data-mixed-cash="50" onclick="setMixedCash(50)">50</button>
+              <button type="button" data-mixed-cash="100" onclick="setMixedCash(100)">100</button>
+            </div>
+          </div>
+          <div class="mixed-pay-card">
+            <label>Resto por pago digital</label>
+            <div class="mixed-pay-value" id="mMixedDigitalAmount">S/ 0.00</div>
+          </div>
+        </div>
+        <div class="mixed-method-row">
+          <div><div class="fl">Pago digital</div><select class="fs" id="mMixedDigitalMethod" onchange="calcMixedPayment()"><option value="yape">Yape</option><option value="plin">Plin</option><option value="transferencia">Transferencia</option></select></div>
+          <div><div class="fl">Número de operación (opcional)</div><input class="fi" id="mMixedRef" autocomplete="off" inputmode="numeric" placeholder="Ej. 12345678" oninput="calcMixedPayment()"></div>
+        </div>
+        <label class="digital-payment-confirmation" for="mMixedDigitalVerified">
+          <input type="checkbox" id="mMixedDigitalVerified" onchange="_naValidatePaymentForm()">
+          <span>He verificado que el pago fue recibido</span>
+        </label>
+        <div class="mixed-pay-summary"><span id="mMixedSummaryText">Ingresa cuánto paga en efectivo.</span><strong id="mMixedSummaryTotal">S/ 0.00</strong></div>
+      </div>
+
+      <div id="mPaymentHint" class="payment-hint pay-hint" aria-live="polite"></div>
+    </div>
+
+    <div class="pay-modal-footer">
+      <button class="pay-btn pay-btn-secondary" onclick="cerrarModal('mCobro')">Cancelar</button>
+      <button class="pay-btn pay-btn-primary" id="mBtnConf" onclick="confirmarVenta()">Confirmar venta</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="mCobroRapido">
+  <div class="modal pay-modal quick-pay-modal">
+    <div class="pay-modal-head">
+      <div>
+        <div class="pay-modal-title">Pago rapido</div>
+        <div class="pay-modal-sub">Selecciona como se recibio el pago</div>
+      </div>
+      <button class="pay-close" onclick="cerrarModal('mCobroRapido')" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="pay-modal-body">
+      <div class="pay-total-card">
+        <div class="pay-total-label">Total a cobrar</div>
+        <div class="pay-total-value" id="mQuickPaymentTotal">S/ 0.00</div>
+      </div>
+
+      <p class="quick-pay-intro">La venta se registrará inmediatamente al seleccionar una opción.</p>
+
+      <label class="digital-payment-confirmation quick-payment-confirmation" for="mQuickDigitalVerified">
+        <input type="checkbox" id="mQuickDigitalVerified" onchange="_naQuickPaymentVerificationChanged()">
+        <span>He verificado que el pago fue recibido</span>
+      </label>
+      <div id="mQuickPaymentHint" class="payment-hint" aria-live="polite"></div>
+
+      <div class="quick-pay-options">
+        <button type="button" class="quick-pay-option cash" id="mQuickCash" onclick="confirmarPagoRapido('efectivo')">
+          <span class="quick-pay-icon">&#128181;</span>
+          <strong>Efectivo exacto</strong>
+          <small>Registra el total recibido sin calcular vuelto.</small>
+        </button>
+
+        <button type="button" class="quick-pay-option transfer" id="mQuickTransfer" onclick="confirmarPagoRapido('transferencia')">
+          <span class="quick-pay-icon">&#127974;</span>
+          <strong>Transferencia completa</strong>
+          <small>Registra el total transferido; el número de operación es opcional.</small>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="mVentaLibre"><div class="modal"><div class="mhead amber"><div><div class="mhead-title">➕ Venta libre / VARIOS</div><div style="font-size:10px;font-weight:700;opacity:.85;margin-top:2px">Artículo no registrado en el inventario</div></div><button class="btn-close-m" onclick="cerrarModal('mVentaLibre')">✕</button></div><div class="mbody">
+    <div class="free-sale-note">Esta línea se guardará dentro de la venta con fecha, hora y cajero, pero no modificará el inventario. Úsala para un artículo ocasional que todavía no está registrado.</div>
+    <div class="fg"><div class="fl">Nombre del artículo <span class="req">*</span></div><input class="fi" id="vlNombre" maxlength="120" value="VARIOS" placeholder="VARIOS"></div>
+    <div class="frow"><div class="fg"><div class="fl">Precio unitario (S/) <span class="req">*</span></div><input class="fi" id="vlPrecio" type="number" min="0.01" step="0.10" inputmode="decimal" placeholder="0.00" oninput="actualizarResumenVentaLibre()"></div><div class="fg"><div class="fl">Cantidad <span class="req">*</span></div><input class="fi" id="vlCantidad" type="number" min="1" max="9999" step="1" inputmode="numeric" value="1" oninput="actualizarResumenVentaLibre()"></div></div>
+    <div class="fg"><div class="fl">Código o referencia (opcional)</div><input class="fi" id="vlCodigo" maxlength="160" placeholder="Código leído o referencia interna"></div>
+    <div class="free-sale-summary"><div><span>Tipo</span><strong>Venta libre</strong></div><div><span>Subtotal</span><strong id="vlSubtotal">S/ 0.00</strong></div></div>
+    <div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mVentaLibre')">Cancelar</button><button class="mbtn mbtn-ok amber" id="vlConfirmar" onclick="confirmarVentaLibre()">➕ Agregar al carrito</button></div>
+</div></div></div>
+
+<div class="modal-overlay" id="mProd"><div class="modal"><div class="mhead teal"><div class="mhead-title" id="mProdTitle"><i class="na-ic na-ic-plus" aria-hidden="true"></i> Nuevo producto</div><button class="btn-close-m" aria-label="Cerrar" onclick="cerrarModal('mProd')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="mbody">
+    <div class="prod-unified">
+        <input type="checkbox" id="pManualCode" hidden checked>
+
+        <details class="inv-form-section" open><summary>Datos básicos</summary><div class="inv-section-body">
+        <div class="fg">
+            <div class="fl">Nombre <span class="req">*</span></div>
+            <input class="fi" id="pNombre" placeholder="Ej: cuates x 44 gr" oninput="_naF12ProductNameChanged()">
+        </div>
+
+        <div class="prod-unified-grid2" id="pCodeFields">
+            <div class="fg"><div class="fl">SKU</div><input class="fi" id="pSku" placeholder="Código interno"></div>
+            <div class="fg"><div class="fl">Código de barras</div><input class="fi" id="pBarcode" inputmode="numeric" placeholder="Escanear o escribir"></div>
+        </div>
+
+        <div class="prod-unified-grid2">
+            <div class="fg">
+                <div class="fl">Categoría</div>
+                <div class="prod-category-line"><select class="fs" id="pCat"></select><button type="button" class="prod-new-cat-btn" onclick="toggleNewCategoryField()">+ Nueva</button></div>
+            </div>
+            <div class="fg">
+                <div class="fl">Icono o emoji</div>
+                <div class="product-icon-actions inv-icon-choices"><details id="pIconMenu"><summary>Elegir</summary><div class="inv-icon-menu"><button type="button" class="product-icon-action active" id="pIconAutoBtn" onclick="_naF12EnableAutoEmoji();document.getElementById('pIconMenu').open=false">Automático</button><button type="button" class="product-icon-action" onclick="abrirCreadorIcono();document.getElementById('pIconMenu').open=false">Crear icono</button><button type="button" class="product-icon-action" onclick="abrirSelectorEmoji();document.getElementById('pIconMenu').open=false">Emoji manual</button><label for="pIcon">Escribir emoji</label><input class="fi" id="pIcon" placeholder="📦" maxlength="12" oninput="_naF12ManualIconChanged()"><span class="product-icon-mode" id="pIconMode">Automático</span></div></details><button type="button" class="product-icon-action" onclick="document.getElementById('pImagen').click()">Subir imagen</button></div>
+            </div>
+        </div>
+
+        <div id="newCatWrap" style="display:none"><div class="cat-create-box"><input class="fi" id="pCatNueva" placeholder="Ej: Snacks premium" maxlength="40"><button type="button" class="cat-mini-btn fill" onclick="agregarCategoriaProducto()">Agregar</button></div></div>
+
+        <div class="fg">
+            <div class="fl">Imagen del producto</div>
+            <div class="prod-image-line"><button type="button" class="prod-image-remove" id="pRemoveImageBtn" onclick="_naF12RemoveProductImage()" hidden><i class="na-ic na-ic-trash" aria-hidden="true"></i> Quitar</button><div id="imgPreview" class="prod-image-preview">📦</div></div>
+            <input type="file" id="pImagen" accept="image/*" capture="environment" onchange="previewImagen()" style="display:none">
+        </div>
+
+        </div></details><details class="inv-form-section"><summary>Precios</summary><div class="inv-section-body">
+        <div class="prod-unified-grid2">
+            <div class="fg"><div class="fl">Costo (S/) <span class="req">*</span></div><input class="fi" id="pCosto" type="number" inputmode="decimal" placeholder="0.00" step="0.01" min="0" oninput="calcMargen()"></div>
+            <div class="fg"><div class="fl">Precio venta (S/) <span class="req">*</span></div><input class="fi" id="pPrecio" type="number" inputmode="decimal" placeholder="0.00" step="0.01" min="0" oninput="calcMargen()"></div>
+        </div>
+
+        <div class="prod-margin"><strong><i class="na-ic na-ic-swap" aria-hidden="true"></i> Margen de ganancia</strong><span id="mgVal">—</span></div>
+
+        <div class="prod-unified-grid2">
+            <div class="fg"><div class="fl">Precio por caja (S/)</div><input class="fi" id="pPrecioCaja" type="number" inputmode="decimal" placeholder="0.00" step="0.01" min="0"></div>
+            <div class="fg"><div class="fl">Unidades por caja (precio mayorista)</div><input class="fi" id="pUnidCaja" type="number" inputmode="numeric" placeholder="24" min="1"></div>
+        </div>
+
+        <div id="pPriceHistory" hidden></div>
+
+        </div></details><details class="inv-form-section"><summary>Inventario</summary><div class="inv-section-body">
+        <div id="pInventoryFields">
+            <div class="prod-unified-grid2">
+                <div class="fg"><div class="fl" id="pStockLabel">Stock inicial</div><input class="fi" id="pStock" type="number" inputmode="numeric" placeholder="0" min="0"><button type="button" class="inv-form-action" id="pAdjustStock" hidden onclick="_naProductMovement(true)">Ajustar stock</button></div>
+                <div class="fg"><div class="fl">Stock mínimo</div><input class="fi" id="pStockMin" type="number" inputmode="numeric" placeholder="5" min="0"></div>
+            </div>
+        </div>
+
+        <!-- NUEVO FASE 9: presentación de compra para calcular reposición inteligente. -->
+        <div class="prod-unified-grid2">
+            <div class="fg"><div class="fl">Unidad de compra</div><select class="fs" id="pUnidadCompra"><option value="unidad">Unidad</option><option value="caja">Caja</option><option value="paquete">Paquete</option><option value="sixpack">Sixpack</option><option value="fardo">Fardo</option><option value="docena">Docena</option><option value="bolsa">Bolsa</option><option value="otro">Otro</option></select></div>
+            <div class="fg"><div class="fl">Unidades por presentación</div><input class="fi" id="pFactorCompra" type="number" inputmode="decimal" placeholder="1" min="0.001" step="0.001"><div class="field-help">Ejemplo: 1 caja = 24 unidades de venta.</div></div>
+        </div>
+
+        <div class="fg"><div class="fl">Fecha vencimiento</div><input class="fi" id="pVenc" type="date" readonly hidden><div id="pExpiryDisplay"></div><div id="pLotList"></div><div class="field-help" id="pExpiryHelp">Sin lotes. El vencimiento se registra al ingresar lotes.</div><button type="button" class="inv-form-action" id="pManageLots" onclick="_naProductMovement(false)">Gestionar lotes / registrar ingreso</button></div>
+
+        </div></details>
+        <details class="prod-advanced inv-form-section">
+            <summary>Opciones avanzadas</summary>
+            <div class="prod-advanced-body">
+                <div class="prod-advanced-row">
+                    <div class="fg"><div class="fl">Marca</div><input class="fi" id="pMarca" placeholder="Sin marca"></div>
+                    <div class="fg"><div class="fl">Unidad de venta</div><select class="fs" id="pUnidad"><option value="unidad">Unidad</option><option value="paquete">Paquete</option><option value="caja">Caja</option><option value="botella">Botella</option><option value="lata">Lata</option><option value="bolsa">Bolsa</option><option value="kilogramo">Kilogramo</option><option value="gramo">Gramo</option><option value="litro">Litro</option><option value="mililitro">Mililitro</option><option value="docena">Docena</option><option value="rollo">Rollo</option><option value="servicio">Servicio</option><option value="otro">Otro</option></select></div>
+                </div>
+                <div class="alt-code-box">
+                    <div class="alt-code-head">
+                        <div><div class="alt-code-title">Códigos de barras alternativos</div><div class="alt-code-help">Registra hasta 10 códigos de barras. Pulsa “Añadir otro código” para crear una fila nueva.</div></div>
+                        <span class="alt-code-count" id="pAltCodeCount">0/10</span>
+                    </div>
+                    <div class="alt-code-list" id="pAltCodesList"></div>
+                    <button type="button" class="alt-code-add" id="pAddAltCodeBtn" onclick="addAltBarcodeField()">＋ Añadir otro código de barras</button>
+                </div>
+                <div class="fg"><div class="fl">Descripción</div><textarea class="fi" id="pDescripcion" style="height:74px;resize:vertical" placeholder="Notas o presentación del producto"></textarea></div>
+                <div class="fg"><div class="fl">Estado del producto</div><select class="fs" id="pActivo"><option value="true">ACTIVO — visible normalmente</option><option value="false">DESCONTINUADO — visible solo al buscar</option></select><div class="field-help">Reactivar conserva el producto y reinicia de forma segura su periodo de visibilidad.</div></div>
+                <div class="prod-advanced-row">
+                    <label class="prod-inline-check"><input type="checkbox" id="pIncluyeIGV" checked><span>Incluye IGV</span></label>
+                    <div class="prod-stock-toggle"><strong>Controlar inventario</strong><div class="prod-yesno"><button type="button" id="pInvYes" onclick="setProductInventoryControl(true)">Sí</button><button type="button" id="pInvNo" onclick="setProductInventoryControl(false)">No</button></div></div>
+                </div>
+                <input type="checkbox" id="pControlInventario" checked hidden>
+                <div class="prod-advanced-row">
+                    <div class="fg"><div class="fl">Tipo de impuesto</div><select class="fs" id="pTipoImpuesto"><option value="gravado">IGV — Gravado 18%</option><option value="exonerado">Exonerado</option><option value="inafecto">Inafecto</option><option value="gratuito">Transferencia gratuita</option></select></div>
+                    <div class="fg"><div class="fl">Impuesto complementario</div><select class="fs" id="pImpuestoComplementario"><option value="">Ninguno</option><option value="isc">ISC</option><option value="icbper">ICBPER — Bolsa plástica</option></select></div>
+                </div>
+                <details id="pWholesaleDetails" hidden></details>
+            </div>
+        </details>
+
+        <div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mProd')">Cancelar</button><button class="mbtn mbtn-ok" onclick="guardarProd()"><i class="na-ic na-ic-save" aria-hidden="true"></i> Guardar</button></div>
+    </div>
+</div></div></div>
+<div class="modal-overlay" id="mMovInv"><div class="modal"><div class="mhead teal"><div class="mhead-title"><i class="na-ic na-ic-box" aria-hidden="true"></i> Registrar movimiento</div><button class="btn-close-m" aria-label="Cerrar" onclick="cerrarModal('mMovInv')"><svg class="na-li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="mbody"><div style="background:#f8fafc;border-radius:9px;padding:11px;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span id="mMovIcon" style="font-size:22px">📦</span><div><div id="mMovNombre" style="font-size:13px;font-weight:800"></div><div id="mMovStock" style="font-size:11px;color:var(--slate);font-weight:600"></div></div></div><div class="mov-type-row"><div class="mov-type-btn active entrada" data-type="entrada" onclick="setMovType(this,'entrada')"><div class="mti"><i class="na-ic na-ic-in" aria-hidden="true"></i></div><div class="mtl">Entrada</div></div><div class="mov-type-btn salida" data-type="salida" onclick="setMovType(this,'salida')"><div class="mti"><i class="na-ic na-ic-out" aria-hidden="true"></i></div><div class="mtl">Salida</div></div></div><div class="fg"><div class="fl">Cantidad <span class="req">*</span></div><input class="fi-big" id="mMovCant" type="number" placeholder="0" min="1"></div><div class="fg" style="margin-top:12px"><div class="fl">Motivo</div><select class="fs" id="mMovMotivo"><option>Compra a proveedor</option><option>Devolución</option><option>Ajuste de inventario</option><option>Merma / daño</option><option>Producto vencido</option></select><button type="button" id="mMovPurchaseLink" class="inv-form-action" onclick="cerrarModal('mMovInv');NA_PURCHASES.open()">Registrar como compra (con proveedor y documento)</button></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mMovInv')">Cancelar</button><button class="mbtn mbtn-ok" onclick="guardarMovInv()"><i class="na-ic na-ic-check" aria-hidden="true"></i> Registrar</button></div></div></div></div>
+
+<div class="modal-overlay" id="mCli"><div class="modal"><div class="mhead teal"><div class="mhead-title" id="mCliTitle">Nuevo cliente</div><button class="btn-close-m" onclick="cerrarModal('mCli')">✕</button></div><div class="mbody"><div class="fg"><div class="fl">Nombre completo <span class="req">*</span></div><input class="fi" id="cNombre" placeholder="Ej: María López García"></div><div class="frow"><div class="fg"><div class="fl">DNI / RUC</div><input class="fi" id="cDni" placeholder="12345678" maxlength="11"></div><div class="fg"><div class="fl">WhatsApp / Teléfono</div><input class="fi" id="cTel" type="tel" placeholder="+51 987654321" maxlength="32"></div></div><div class="fg"><div class="fl">Dirección</div><input class="fi" id="cDir" placeholder="Jr. Los Pinos 123"></div><div class="fg"><div class="fl">Línea de crédito (opcional)</div><input class="fi" id="cLinea" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Vacío = línea automática"></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mCli')">Cancelar</button><button class="mbtn mbtn-ok" onclick="guardarCli()">Guardar</button></div></div></div></div>
+
+<div class="modal-overlay" id="mCred"><div class="modal"><div class="mhead purple"><div class="mhead-title"><i class="na-ic na-ic-clip" aria-hidden="true"></i> Nuevo crédito</div><button class="btn-close-m" onclick="cerrarModal('mCred')">✕</button></div><div class="mbody"><div style="background:var(--purple-light);border-radius:9px;padding:10px 12px;margin-bottom:13px;display:flex;align-items:center;gap:10px"><div id="mCredAv" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--white)"></div><div id="mCredNom" style="font-size:13px;font-weight:800"></div></div><div class="fg"><div class="fl">Tipo <span class="req">*</span></div><select class="fs" id="crTipo"><option value="venta_credito">Venta a crédito</option><option value="contrato_privado">Préstamo / Contrato</option></select></div><div class="fg"><div class="fl">Descripción <span class="req">*</span></div><input class="fi" id="crDesc" placeholder="Ej: Compra accesorios, préstamo..."></div><div class="frow"><div class="fg"><div class="fl">Monto (S/) <span class="req">*</span></div><input class="fi" id="crMonto" type="number" placeholder="0.00" min="0.01" step="0.50"></div><div class="fg"><div class="fl">Fecha vence <span class="req">*</span></div><input class="fi" id="crVence" type="date"></div></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mCred')">Cancelar</button><button class="mbtn mbtn-ok purple" onclick="guardarCred()"><i class="na-ic na-ic-check" aria-hidden="true"></i> Registrar</button></div></div></div></div>
+
+<div class="modal-overlay" id="mPagoCred"><div class="modal"><div class="mhead green"><div class="mhead-title"><i class="na-ic na-ic-cash" aria-hidden="true"></i> Registrar pago</div><button class="btn-close-m" onclick="cerrarModal('mPagoCred')">✕</button></div><div class="mbody"><div class="pago-info-box" id="pagoInfoBox"></div><div class="fg"><div class="fl">Monto del abono (S/) <span class="req">*</span></div><input class="fi-big" id="pagoMonto" type="number" placeholder="0.00" min="0.01" step="0.01" oninput="calcAbono()" style="margin-bottom:10px"></div><div class="fg"><div class="fl">Método de pago</div><select class="fs" id="pagoMetodo" onchange="_naCreditPaymentMethodChanged()"><option value="efectivo">Efectivo</option><option value="yape">Yape</option><option value="plin">Plin</option><option value="transferencia">Transferencia</option></select></div><div class="fg" id="pagoOperacionWrap" hidden><div class="fl">Número de operación <span class="req">*</span></div><input class="fi" id="pagoOperacion" maxlength="80" autocomplete="off" placeholder="Ej: 00078257" oninput="_naUpdateCreditPaymentPreview()"><div class="credit-status-note">Se valida para impedir registrar dos veces la misma operación digital.</div></div><div class="credit-pay-meta"><div class="credit-pay-chip"><span>Clasificación horaria</span><strong id="pagoHorario">—</strong></div><div class="credit-pay-chip"><span>Cajero que registra</span><strong id="pagoCajero">—</strong></div></div><div class="credit-breakdown-preview" id="pagoDesglosePreview"><div class="credit-breakdown-title">Desglose del abono</div><div class="credit-status-note">Ingresa un monto para ver cómo se distribuirá entre los productos.</div></div><div class="abono-prev"><span class="abp-lbl"><i class="na-ic na-ic-cash" aria-hidden="true"></i> Saldo restante</span><span class="abp-val" id="abonoSaldo">S/ —</span></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mPagoCred')">Cancelar</button><button class="mbtn mbtn-ok green" id="pagoConfirmBtn" onclick="confirmarPago()"><i class="na-ic na-ic-check" aria-hidden="true"></i> Confirmar</button></div></div></div></div>
+<div class="modal-overlay" id="mCreditoDetalle" style="z-index:320"><div class="modal" style="max-width:680px"><div class="mhead purple"><div class="mhead-title">📄 Detalle del crédito</div><button class="btn-close-m" onclick="cerrarModal('mCreditoDetalle')">✕</button></div><div class="mbody" id="creditoDetalleContent"></div></div></div>
+
+<!-- NUEVO FASE 9: detalle y simulador de sugerencia de compra. -->
+<div class="modal-overlay" id="mSugerenciaCompra" style="z-index:330"><div class="modal purchase-modal"><div class="mhead teal"><div class="mhead-title"><i class="na-ic na-ic-cart" aria-hidden="true"></i> Sugerencia de Compra</div><button class="btn-close-m" onclick="cerrarModal('mSugerenciaCompra')">✕</button></div><div class="mbody" id="purchaseSuggestionDetail"></div></div></div>
+
+<div class="modal-overlay" id="mApertura"><div class="modal"><div class="mhead teal"><div class="mhead-title">🌅 Apertura de caja</div><button class="btn-close-m" onclick="cerrarModal('mApertura')">✕</button></div><div class="mbody"><div class="apertura-box"><div class="ap-label">¿Con cuánto efectivo inicia el turno?</div><div class="ap-hint">Cuenta el dinero físico antes de abrir</div></div><div class="fg"><div class="fl">Fondo inicial (S/) <span class="req">*</span></div><input class="fi-big" id="cajFondo" type="number" placeholder="0.00" min="0" step="0.50"></div><div class="fg"><div class="fl">Cajero <span class="req">*</span></div><select class="fs" id="cajCajero" aria-label="Seleccionar cajero"></select><div class="cashier-field-hint">La venta y todos los movimientos del turno quedarán vinculados al ID del cajero seleccionado.</div></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mApertura')">Cancelar</button><button class="mbtn mbtn-ok" onclick="abrirCaja()"><i class="na-ic na-ic-unlock" aria-hidden="true"></i> Abrir caja</button></div></div></div></div>
+
+<div class="modal-overlay" id="mMovCaja"><div class="modal"><div class="mhead" id="mMovCajaHead"><div class="mhead-title" id="mMovCajaTit">Registrar movimiento</div><button class="btn-close-m" onclick="cerrarModal('mMovCaja')">✕</button></div><div class="mbody"><div class="fg"><div class="fl">Monto (S/) <span class="req">*</span></div><input class="fi-big" id="cajMovMonto" type="number" placeholder="0.00" min="0.01" step="0.50"></div><div class="fg"><div class="fl">Concepto <span class="req">*</span></div><input class="fi" id="cajMovDesc" placeholder=""></div><div class="fg"><div class="fl">Categoría</div><select class="fs" id="cajMovCat"></select></div><div class="fg"><div class="fl">Método</div><select class="fs" id="cajMovMetodo"><option value="efectivo">Efectivo</option><option value="yape">Yape</option><option value="plin">Plin</option><option value="transferencia">Transferencia</option></select></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mMovCaja')">Cancelar</button><button class="mbtn mbtn-ok" id="cajMovBtn" onclick="guardarMovCaja()"><i class="na-ic na-ic-check" aria-hidden="true"></i> Registrar</button></div></div></div></div>
+
+<div class="modal-overlay" id="mCierre"><div class="modal"><div class="mhead dark"><div class="mhead-title"><i class="na-ic na-ic-lock" aria-hidden="true"></i> Cerrar caja</div><button class="btn-close-m" onclick="cerrarModal('mCierre')">✕</button></div><div class="mbody"><div class="cierre-box" id="cierreBox"></div><div class="fg"><div class="fl">Efectivo contado (S/) <span class="req">*</span></div><input class="fi-big" id="cajContado" type="number" placeholder="0.00" step="0.50" oninput="calcDif()"></div><div class="dif-banner" id="difBanner"><div style="font-size:11px;font-weight:700;margin-bottom:3px" id="difLbl"></div><div style="font-size:19px;font-weight:800" id="difVal"></div></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mCierre')">Cancelar</button><button class="mbtn mbtn-ok dark" onclick="cerrarCaja()"><i class="na-ic na-ic-lock" aria-hidden="true"></i> Confirmar cierre</button></div></div></div></div>
+
+<div class="modal-overlay" id="mTicket" style="z-index:300"><div class="modal" style="max-width:520px"><div class="mhead teal" style="align-items:center"><div class="mhead-title"><i class="na-ic na-ic-receipt" aria-hidden="true"></i> Ticket de venta</div><div style="display:flex;align-items:center;gap:8px"><button onclick="toggleEditor()" id="btnEditorToggle" style="background:rgba(255,255,255,.2);border:none;color:var(--white);padding:5px 10px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif">✏️ Diseñar</button><button class="btn-close-m" onclick="cerrarModal('mTicket')">✕</button></div></div><div id="editorPanel" style="display:none;border-bottom:2px solid var(--border);background:var(--bg)">
+  <div class="ticket-editor-grid">
+    <div>
+      <div class="fl">Ancho del papel</div>
+      <select class="fs" id="tkAncho" onchange="ticketWidthChanged()">
+        <option value="30mm">30 mm (muy angosto)</option>
+        <option value="40mm">40 mm (angosto)</option>
+        <option value="50mm">50 mm (compacto)</option>
+        <option value="58mm">58 mm (térmico común)</option>
+        <option value="80mm" selected>80 mm (térmico estándar)</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
+    <div id="tkCustomWidthWrap" style="display:none">
+      <div class="fl">Ancho personalizado (mm)</div>
+      <input class="fi" id="tkCustomMm" type="number" min="20" max="120" step="1" value="60" oninput="renderTicketPreview()">
+    </div>
+    <div>
+      <div class="fl">Fuente</div>
+      <select class="fs" id="tkFuente" onchange="renderTicketPreview()">
+        <option value="'Courier New',monospace" selected>Monoespaciada térmica</option>
+        <option value="'Lucida Console',monospace">Monoespaciada compacta</option>
+        <option value="Arial,sans-serif">Arial</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Tamaño de vista previa</div>
+      <select class="fs" id="tkTamano" onchange="ticketPreviewSizeChanged()">
+        <option value="9px">Muy pequeño (9px)</option>
+        <option value="10px">Compacto (10px)</option>
+        <option value="11px" selected>Pequeño (11px)</option>
+        <option value="12px">Normal térmico (12px)</option>
+        <option value="13px">Grande (13px)</option>
+        <option value="15px">Muy grande (15px)</option>
+        <option value="custom">Personalizado</option>
+      </select>
+    </div>
+    <div id="tkCustomPreviewWrap" style="display:none">
+      <div class="fl">Tamaño personalizado (px)</div>
+      <input class="fi" id="tkCustomPreviewPx" type="number" min="7" max="24" step="1" value="11" oninput="renderTicketPreview()">
+    </div>
+    <div>
+      <div class="fl">Alineación del negocio</div>
+      <select class="fs" id="tkAlign" onchange="renderTicketPreview()">
+        <option value="center" selected>Centrado</option>
+        <option value="left">Izquierda</option>
+        <option value="right">Derecha</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Alineación de datos generales</div>
+      <select class="fs" id="tkInfoAlign" onchange="renderTicketPreview()">
+        <option value="left" selected>Izquierda</option>
+        <option value="center">Centrado</option>
+        <option value="right">Derecha</option>
+        <option value="split">Etiqueta izquierda / dato derecha</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Alineación de totales y pago</div>
+      <select class="fs" id="tkPaymentAlign" onchange="renderTicketPreview()">
+        <option value="split" selected>Etiqueta izquierda / monto derecha</option>
+        <option value="left">Izquierda</option>
+        <option value="center">Centrado</option>
+        <option value="right">Derecha</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Alineación del mensaje final</div>
+      <select class="fs" id="tkFooterAlign" onchange="renderTicketPreview()">
+        <option value="center" selected>Centrado</option>
+        <option value="left">Izquierda</option>
+        <option value="right">Derecha</option>
+      </select>
+    </div>
+    <div>
+      <div class="fl">Distribución del contenido</div>
+      <select class="fs" id="tkLayout" onchange="renderTicketPreview()">
+        <option value="auto" selected>Automática según el ancho</option>
+        <option value="compact">Compacta / abreviada</option>
+        <option value="full">Completa</option>
+      </select>
+    </div>
+    <div class="ticket-width-info" id="tkWidthInfo">80 mm · aproximadamente 48 caracteres por línea</div><div class="ticket-width-info" style="background:var(--blue-light);color:var(--blue)">El tamaño de vista previa solo cambia cómo se ve en pantalla; no modifica la impresión térmica.</div>
+  </div>
+  <div class="ticket-editor-grid ticket-business-grid">
+    <div><div class="fl">Nombre del negocio</div><input class="fi" id="tkNegocio" value="MULTISERVICIOS NUEVO AMANECER" oninput="renderTicketPreview()"></div>
+    <div><div class="fl">RUC / DNI</div><input class="fi" id="tkRuc" value="" oninput="renderTicketPreview()"></div>
+    <div><div class="fl">Dirección</div><input class="fi" id="tkDireccion" value="Puerto Súngaro - Huánuco" oninput="renderTicketPreview()"></div>
+    <div><div class="fl">Teléfono</div><input class="fi" id="tkTelefono" value="" oninput="renderTicketPreview()"></div>
+    <div style="grid-column:1/-1"><div class="fl">Mensaje de pie</div><input class="fi" id="tkPie" value="¡GRACIAS POR SU COMPRA! | Su preferencia nos motiva. | ¡Vuelva pronto!" oninput="renderTicketPreview()"></div>
+  </div>
+  <div class="ticket-options-box">
+    <div class="ticket-options-title">Elementos y adaptación del ticket</div>
+    <label><input type="checkbox" id="tkShowLogo" checked onchange="renderTicketPreview()"> Encabezado destacado</label>
+    <label><input type="checkbox" id="tkShowNum" checked onchange="renderTicketPreview()"> N.º de ticket</label>
+    <label><input type="checkbox" id="tkShowOperation" checked onchange="renderTicketPreview()"> N.º de operación</label>
+    <label><input type="checkbox" id="tkShowIGV" onchange="this.dataset.naUserSet='1';renderTicketPreview()"> Desglosar IGV</label>
+    <label><input type="checkbox" id="tkShowCurrency" checked onchange="renderTicketPreview()"> Mostrar S/</label>
+    <label><input type="checkbox" id="tkShowUnitPrice" checked onchange="renderTicketPreview()"> Precio unitario</label>
+    <label><input type="checkbox" id="tkShowPayment" checked onchange="renderTicketPreview()"> Forma de pago</label>
+    <label><input type="checkbox" id="tkShowReceived" checked onchange="renderTicketPreview()"> Recibido y vuelto</label>
+    <label><input type="checkbox" id="tkShowSep" checked onchange="renderTicketPreview()"> Líneas separadoras</label>
+  </div>
+
+  <!-- NUEVO FASE 11: editor seguro por zonas. El orden se controla sin coordenadas absolutas. -->
+  <div class="ticket-zone-panel" id="tkZoneEditor">
+    <div class="ticket-zone-head">
+      <div><strong>🧩 Editor por zonas</strong><span>Ordena, oculta y adapta cada bloque. Los botones ↑ ↓ funcionan también en teléfono; en computadora puedes arrastrar las zonas.</span></div>
+      <span class="ticket-zone-status" id="tkZoneStatus">6 zonas activas</span>
+    </div>
+    <div class="ticket-zone-presets">
+      <button type="button" onclick="ticketZonePreset('compacto')">58 mm compacto</button>
+      <button type="button" onclick="ticketZonePreset('clasico')">Clásico equilibrado</button>
+      <button type="button" onclick="ticketZonePreset('detallado')">80 mm detallado</button>
+      <button type="button" onclick="ticketZonePreset('minimo')">Ticket mínimo</button>
+    </div>
+    <div class="ticket-zone-list" id="tkZoneList"></div>
+    <div class="ticket-zone-foot"><span>Las líneas, espacios y alineación se adaptan al ancho térmico seleccionado. No se usan posiciones por píxeles que puedan desordenar la impresión.</span><button type="button" class="ticket-zone-reset" onclick="ticketZoneReset()">↺ Restablecer zonas</button></div>
+  </div>
+  <div class="ticket-thermal-note"><strong>Adaptación automática:</strong> en papel angosto se abrevian las etiquetas, se eliminan columnas que no caben y los productos ocupan varias líneas sin cortar los importes.</div>
+</div><div style="padding:14px;background:#f1f5f9;overflow-y:auto;max-height:420px"><div id="tkPreviewWrap" style="margin:0 auto;transition:all .2s"><div class="ticket-body" id="ticketBody" style="border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1)"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border)"><button onclick="cerrarModal('mTicket')" style="background:#f1f5f9;border:none;padding:14px;font-size:13px;font-weight:800;color:var(--slate);cursor:pointer;font-family:'Nunito',sans-serif">Cerrar</button><button onclick="imprimirTicket()" style="background:var(--teal);border:none;padding:14px;font-size:13px;font-weight:800;color:var(--white);cursor:pointer;font-family:'Nunito',sans-serif">🖨 Imprimir</button></div></div></div>
+
+<div class="modal-overlay" id="mPrinter" style="z-index:340">
+  <div class="modal printer-modal">
+    <div class="mhead teal">
+      <div>
+        <div class="mhead-title">🖨️ Seleccionar impresora</div>
+        <div class="printer-head-sub">Elige Bluetooth mediante app, cable USB/OTG o impresión del sistema</div>
+      </div>
+      <button class="btn-close-m" onclick="cerrarModal('mPrinter')">✕</button>
+    </div>
+    <div class="mbody printer-body">
+      <div class="printer-status-banner" id="printerStatusBanner">
+        <div class="printer-status-icon" id="printerStatusIcon">⚪</div>
+        <div>
+          <div class="printer-status-title" id="printerStatusTitle">Sin impresora conectada</div>
+          <div class="printer-status-sub" id="printerStatusSub">Selecciona una opción para imprimir el ticket.</div>
+        </div>
+      </div>
+
+      <div class="printer-device-panel">
+        <div class="printer-device-head">
+          <div>
+            <div class="printer-device-title">📡 Dispositivos disponibles</div>
+            <div class="printer-device-sub" id="printerBluetoothSummary">Comprobando Bluetooth y permisos…</div>
+          </div>
+          <button class="printer-refresh-btn" onclick="actualizarDispositivosBluetooth(true)">↻ Actualizar</button>
+        </div>
+        <div class="printer-device-list" id="printerBluetoothDevices">
+          <div class="printer-device-empty">Todavía no hay impresoras autorizadas para este POS.</div>
+        </div>
+        <button class="printer-search-btn" id="printerSearchBluetoothBtn" onclick="buscarImpresoraBluetooth()">🔍 Buscar impresora Bluetooth</button>
+        <div class="printer-device-note">La página puede mostrar dispositivos autorizados por Chrome. Android no entrega automáticamente toda la lista de equipos vinculados sin que primero elijas uno en el selector.</div>
+      </div>
+
+      <div class="printer-settings-row">
+        <label>
+          <span>Velocidad</span>
+          <select class="fs" id="printerBaud" onchange="guardarAjustesImpresora()">
+            <option value="9600">9600 bps</option>
+            <option value="19200">19200 bps</option>
+            <option value="38400">38400 bps</option>
+            <option value="57600">57600 bps</option>
+            <option value="115200">115200 bps</option>
+          </select>
+        </label>
+        <label class="printer-check">
+          <input type="checkbox" id="printerAutoCut" onchange="guardarAjustesImpresora()">
+          <span>Corte automático</span>
+        </label>
+      </div>
+
+      <div class="printer-options-grid">
+        <div class="printer-option-card bluetooth" id="printerBluetoothAppCard">
+          <div class="printer-option-top">
+            <div class="printer-option-icon">🔵</div>
+            <span class="printer-option-badge">ANDROID</span>
+          </div>
+          <div class="printer-option-title">Bluetooth mediante app</div>
+          <div class="printer-option-desc">Envía el ticket al menú Compartir de Android para abrirlo con una aplicación de impresión térmica Bluetooth instalada.</div>
+          <button class="printer-option-btn" onclick="compartirTicketBluetooth()">📤 Compartir con app Bluetooth</button>
+        </div>
+
+        <div class="printer-option-card bluetooth" id="printerBluetoothDirectCard" style="display:none">
+          <div class="printer-option-top">
+            <div class="printer-option-icon">🖥️</div>
+            <span class="printer-option-badge">BLUETOOTH SPP</span>
+          </div>
+          <div class="printer-option-title">Bluetooth directo</div>
+          <div class="printer-option-desc">Busca impresoras térmicas compatibles con puerto serial Bluetooth SPP y permite imprimir directamente.</div>
+          <button class="printer-option-btn" onclick="imprimirPorConexion('bluetooth')">🔍 Buscar y conectar</button>
+        </div>
+
+        <div class="printer-option-card usb">
+          <div class="printer-option-top">
+            <div class="printer-option-icon">🔌</div>
+            <span class="printer-option-badge">USB / OTG</span>
+          </div>
+          <div class="printer-option-title">Cable</div>
+          <div class="printer-option-desc">Conecta la impresora por USB, adaptador OTG o puerto serial compatible.</div>
+          <button class="printer-option-btn" onclick="imprimirPorConexion('usb')">🔗 Conectar e imprimir</button>
+        </div>
+
+        <div class="printer-option-card system">
+          <div class="printer-option-top">
+            <div class="printer-option-icon">📱</div>
+            <span class="printer-option-badge">RECOMENDADO</span>
+          </div>
+          <div class="printer-option-title">Impresión del sistema</div>
+          <div class="printer-option-desc">Abre el panel de impresión de Android, Windows o Chrome para elegir una impresora instalada.</div>
+          <button class="printer-option-btn" onclick="imprimirTicketSistema()">🖨️ Abrir impresión</button>
+        </div>
+      </div>
+
+      <div class="printer-help" id="printerCompatibilityInfo"></div>
+      <button class="printer-disconnect" id="printerDisconnectBtn" onclick="desconectarImpresora()" style="display:none">⛔ Desconectar impresora</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="mGasto"><div class="modal"><div class="mhead"><div class="mhead-title"><i class="na-ic na-ic-receipt" aria-hidden="true"></i> Registrar gasto</div><button class="btn-close-m" onclick="cerrarModal('mGasto')">✕</button></div><div class="mbody"><div class="fg"><div class="fl">Concepto <span class="req">*</span></div><input class="fi" id="gasDesc" placeholder="Ej: Pago luz, compra útiles..."></div><div class="frow"><div class="fg"><div class="fl">Monto (S/) <span class="req">*</span></div><input class="fi-big" id="gasMonto" type="number" placeholder="0.00" min="0.01" step="0.50" style="font-size:18px"></div><div class="fg"><div class="fl">Fecha</div><input class="fi" id="gasFecha" type="date" lang="es-PE"></div></div><div class="fg"><div class="fl">Categoría</div><select class="fs" id="gasCat"><option value="Servicios">Servicios (luz, agua, internet)</option><option value="Proveedor">Pago a proveedor</option><option value="Operativo">Operativo (útiles, bolsas)</option><option value="Personal">Personal / Sueldo</option><option value="Transporte">Transporte / Flete</option><option value="Otro">Otro</option></select></div><div class="fg"><div class="fl">Método de pago</div><select class="fs" id="gasMetodo"><option value="efectivo">Efectivo</option><option value="yape">Yape</option><option value="plin">Plin</option><option value="transferencia">Transferencia</option></select></div><div class="fg"><div class="fl">Nota</div><input class="fi" id="gasNota" placeholder="Opcional..."></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mGasto')">Cancelar</button><button class="mbtn mbtn-ok" onclick="guardarGasto()"><i class="na-ic na-ic-save" aria-hidden="true"></i> Registrar</button></div></div></div></div>
+
+
+<div id="securityLockScreen" aria-hidden="true">
+  <div class="security-lock-card">
+    <div class="security-lock-icon">🔐</div>
+    <div class="security-lock-title">Sistema bloqueado</div>
+    <div class="security-lock-sub">Ingresa el PIN maestro para continuar utilizando POS Cliente 001.</div>
+    <input id="securityUnlockPin" class="security-pin-input" type="password" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="••••" onkeydown="if(event.key==='Enter')securityUnlock()">
+    <button class="security-unlock-btn" onclick="securityUnlock()">🔓 Desbloquear sistema</button>
+    <div id="securityUnlockMsg"></div>
+  </div>
+</div>
+
+<div class="toast" id="gToast"></div>
+
+<script src="js/core/theme-state.js"></script>
+<script src="js/ui/na-line-icons.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/core/lima-time.js"></script>
+<script src="js/core/seller-labels.js"></script>
+<script src="js/sync/outbox.js"></script>
+<script src="js/adapters/canonical-ui-adapter.js"></script>
+<script src="js/config/pos-permissions.js"></script>
+<script src="js/config/pos-roles-client.js"></script>
+<script src="js/config/pos-employee-toggles.js"></script>
+<script src="js/config/employee-perms-client.js"></script>
+<script src="js/sync/canonical-client.js"></script>
+<script src="js/legacy-inline/inline-01.js"></script>
+<script src="js/modules/ticket/legacy.js"></script>
+<script src="js/legacy-inline/inline-02.js"></script>
+<script src="js/sync/cache-identity-guard.js"></script>
+<script src="js/modules/ticket/overrides.js"></script>
+<script src="js/legacy-inline/inline-03.js"></script>
+<script src="js/modules/ventas-espera.js"></script>
+<script src="js/inventory/stock-lots.js"></script>
+<script src="js/inventory/presentaciones.js"></script>
+<script src="js/sync/canonical-sale-intent.js"></script>
+<script src="js/sync/canonical-sale-outbox.js"></script>
+<script src="js/sync/canonical-sale-projection.js"></script>
+<script src="js/sync/canonical-sale-integration.js"></script>
+<script src="js/core/state.js"></script>
+
+<div id="naConfirm" class="na-confirm-overlay" aria-hidden="true">
+  <div class="na-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="naConfirmTitle">
+    <div class="na-confirm-head">
+      <div class="na-confirm-icon" id="naConfirmIcon">⚠️</div>
+      <div>
+        <div class="na-confirm-title" id="naConfirmTitle">Confirmar acción</div>
+        <div class="na-confirm-sub" id="naConfirmSub">Verifica esta acción antes de continuar.</div>
+      </div>
+    </div>
+    <div class="na-confirm-body" id="naConfirmBody">¿Deseas continuar?</div>
+    <div class="na-confirm-actions">
+      <button type="button" class="na-confirm-btn cancel" id="naConfirmCancel">Cancelar</button>
+      <button type="button" class="na-confirm-btn ok" id="naConfirmOk">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVO FASE 7: evaluación de crédito del cliente -->
+<div class="modal-overlay" id="mEvaluacionCredito" style="z-index:330">
+  <div class="modal" style="max-width:720px">
+    <div class="mhead purple"><div class="mhead-title"><i class="na-ic na-ic-bars" aria-hidden="true"></i> Evaluación y línea de crédito</div><button class="btn-close-m" onclick="cerrarModal('mEvaluacionCredito')">✕</button></div>
+    <div class="mbody" id="evaluacionCreditoContent"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="mLineaCreditoManual" style="z-index:340">
+  <div class="modal" style="max-width:520px">
+    <div class="mhead purple"><div class="mhead-title"><i class="na-ic na-ic-card" aria-hidden="true"></i> Ajustar línea de crédito</div><button class="btn-close-m" onclick="cerrarModal('mLineaCreditoManual')">✕</button></div>
+    <div class="mbody">
+      <div class="credit-modal-summary" id="lineaManualResumen"></div>
+      <div class="fg"><div class="fl">Línea manual asignada (S/) <span class="req">*</span></div><input class="fi-big" id="lineaManualMonto" type="number" inputmode="decimal" min="0" max="1000000" step="0.50" onfocus="if(Number(this.value)===0)this.value=''" oninput="actualizarAdvertenciaLineaManual()"></div>
+      <div id="lineaManualAdvertencia" class="credit-manual-warning"></div>
+      <div class="mbtns" style="flex-wrap:wrap"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mLineaCreditoManual')">Cancelar</button><button class="mbtn mbtn-cancel" id="btnLineaAutomatica" onclick="restaurarLineaCreditoAutomatica()">↩ Usar cálculo automático</button><button class="mbtn mbtn-ok purple" onclick="guardarLineaCreditoManual()">💾 Aplicar línea</button></div>
+    </div>
+  </div>
+</div>
+
+
+<script id="na-fase7-credit-js" src="js/legacy-inline/inline-04.js"></script>
+
+<script id="na-fase8-reportes-js" src="js/legacy-inline/inline-05.js"></script>
+
+<script id="na-fase9-sugerencia-js" src="js/legacy-inline/inline-06.js"></script>
+
+<div class="modal-overlay" id="mMasterPermissions" style="z-index:380"><div class="modal" style="max-width:760px"><div class="mhead purple"><div class="mhead-title">🔐 Permisos del cajero</div><button class="btn-close-m" onclick="cerrarModal('mMasterPermissions')">✕</button></div><div class="mbody" id="masterPermissionsContent"></div></div></div>
+<div class="modal-overlay" id="mMasterSales" style="z-index:375"><div class="modal" style="max-width:900px"><div class="mhead dark"><div class="mhead-title"><i class="na-ic na-ic-bars" aria-hidden="true"></i> Administración trazable de ventas</div><button class="btn-close-m" onclick="cerrarModal('mMasterSales')">✕</button></div><div class="mbody" id="masterSalesContent"></div></div></div>
+
+<script src="js/legacy-inline/inline-07.js"></script>
+
+<script src="js/modules/ticket/zones.js"></script>
+
+
+<!-- MEJORA FASE 12: selector de emojis e iconos personalizados -->
+
+<div class="modal-overlay" id="mEmojiPicker" style="z-index:360"><div class="modal" style="max-width:620px"><div class="mhead teal"><div class="mhead-title">😀 Elegir emoji</div><button class="btn-close-m" onclick="cerrarModal('mEmojiPicker')">✕</button></div><div class="mbody"><input class="emoji-picker-search" id="emojiPickerSearch" placeholder="Buscar: bebida, arroz, limpieza, cable..." oninput="_naF12RenderEmojiPicker(this.value)"><div class="emoji-auto-card"><div><strong>Sugerencia automática</strong><small id="emojiAutoReason">Según el nombre del producto</small></div><button type="button" class="emoji-choice emoji-auto-preview" id="emojiAutoChoice" onclick="_naF12ChooseAutoSuggestion()">📦</button></div><div class="emoji-grid" id="emojiPickerGrid"></div></div></div></div>
+
+<div class="modal-overlay" id="mIconDesigner" style="z-index:370"><div class="modal" style="max-width:760px"><div class="mhead purple"><div class="mhead-title">🎨 Crear icono personalizado</div><button class="btn-close-m" onclick="cerrarModal('mIconDesigner')">✕</button></div><div class="mbody"><div class="icon-designer-layout"><div class="icon-canvas-wrap"><canvas id="iconDesignerCanvas" width="256" height="256" aria-label="Lienzo para crear icono"></canvas></div><div class="icon-designer-controls"><div class="icon-control-grid"><div class="icon-control-card"><label>Fondo</label><input type="color" id="iconBgColor" value="#00bca4" oninput="_naF12DesignerReset()"></div><div class="icon-control-card"><label>Trazo y texto</label><input type="color" id="iconFgColor" value="#ffffff"></div><div class="icon-control-card"><label>Forma</label><select class="fs" id="iconShape" onchange="_naF12DesignerReset()"><option value="rounded">Redondeado</option><option value="circle">Círculo</option><option value="square">Cuadrado</option><option value="transparent">Transparente</option></select></div><div class="icon-control-card"><label>Pincel <span id="iconBrushValue">12</span> px</label><input type="range" id="iconBrush" min="2" max="40" value="12" oninput="document.getElementById('iconBrushValue').textContent=this.value"></div></div><div class="icon-designer-row"><input class="fi" id="iconText" maxlength="3" placeholder="Iniciales, ej: NA"><button type="button" class="icon-designer-btn" onclick="_naF12DesignerAddText()">Añadir texto</button></div><div class="icon-designer-row"><button type="button" class="icon-designer-btn" onclick="document.getElementById('iconUpload').click()">🖼️ Cargar icono</button><button type="button" class="icon-designer-btn danger" onclick="_naF12DesignerReset()">Limpiar</button></div><input type="file" id="iconUpload" accept="image/png,image/jpeg,image/webp,image/gif" hidden onchange="_naF12DesignerLoadImage(this)"><div class="icon-designer-hint">Dibuja con el mouse o el dedo. También puedes añadir iniciales o cargar una imagen pequeña. El resultado se optimiza antes de guardarlo en el producto.</div></div></div><div class="mbtns"><button class="mbtn mbtn-cancel" onclick="cerrarModal('mIconDesigner')">Cancelar</button><button class="mbtn mbtn-ok purple" onclick="_naF12SaveCustomIcon()">💾 Usar este icono</button></div></div></div></div>
+
+<script src="js/legacy-inline/inline-08.js"></script>
+
+<script src="js/legacy-inline/inline-09.js"></script>
+<script id="na-security-sales-render" src="js/legacy-inline/inline-10.js"></script>
+<script id="na-security-cash-render" src="js/legacy-inline/inline-11.js"></script>
+<script id="na-security-credit-render" src="js/legacy-inline/inline-12.js"></script>
+<div class="modal-overlay" id="productImageBatchModal" role="dialog" aria-modal="true" aria-labelledby="productImageBatchTitle" style="display:none"><div class="modal" style="max-width:760px;width:95vw"><div class="mhead teal"><span class="mhead-title" id="productImageBatchTitle">Fotos múltiples</span><button class="btn-close-m" onclick="NuevoAmanecerImageBatch.close()">✕</button></div><div class="mbody"><p>Las fotos se guardan en este dispositivo. Usa Exportar grupo de fotos para llevarlas a otro teléfono o PC.</p><label for="productImageBatchFiles">Seleccionar paquete de fotos</label><input id="productImageBatchFiles" type="file" accept=".json,.zip,image/png,image/jpeg,image/webp" multiple><label for="productImageBatchFolder">Seleccionar carpeta</label><input id="productImageBatchFolder" type="file" webkitdirectory multiple><label style="display:block;margin:12px 0"><input id="productImageBatchReplace" type="checkbox"> Reemplazar fotos existentes</label><p id="productImageBatchStorage" role="alert" hidden style="margin:8px 0;padding:8px 10px;border-radius:8px;background:#fef3c7;color:#92400e;font-weight:700"></p><p id="productImageBatchStatus" role="status" aria-live="polite"></p><div style="max-height:300px;overflow:auto"><table style="width:100%"><thead><tr><th>Códigos</th><th>Producto</th><th>Estado</th></tr></thead><tbody id="productImageBatchRows"></tbody></table></div></div><div class="mbtns" style="padding:0 18px 18px"><button class="mbtn mbtn-cancel" id="productImageBatchExport">Exportar grupo de fotos</button><button class="mbtn mbtn-cancel" id="productImageBatchUndo">Deshacer último grupo de fotos</button><button class="mbtn mbtn-ok" id="productImageBatchApply" style="grid-column:1/-1">Guardar fotos listas</button></div></div></div>
+<script src="js/products/image-batch.js"></script>
+<script src="js/inventory/mobile-inventory.js"></script>
+<script id="na-security-image-preview" src="js/legacy-inline/inline-13.js"></script>
+<script id="na-security-ticket-print" src="js/modules/ticket/secure-print.js"></script>
+<script id="na-security-pos-render" src="js/legacy-inline/inline-14.js"></script>
+<script id="na-security-expense-render" src="js/legacy-inline/inline-15.js"></script>
+<script src="js/legacy-inline/inline-16.js"></script>
+<script src="js/navigation/menu-navigation.js"></script>
+<script src="js/inventory/codigos-duplicados.js"></script>
+<script src="js/modules/edicion-masiva-productos.js"></script>
+<script src="js/motion/core.js"></script>
+<script src="js/motion/page-transitions.js"></script>
+<script src="js/motion/scroll-motion.js"></script>
+<script src="js/motion/lab-parity-bridge.js"></script>
+<script src="js/motion/modal-motion.js"></script>
+<script src="js/motion/feedback-motion.js"></script>
+<script src="js/motion/cart-motion.js"></script>
+<script src="js/modules/client-credit-accounts-v2.js"></script>
+<script src="js/modules/clientes-reporte-deuda.js"></script>
+<script src="js/modules/clientes-deudores-caja.js"></script>
+<script src="js/modules/clonar-venta.js"></script>
+<script src="js/modules/clientes-importar.js"></script>
+<script src="js/sync/canonical-sale-view.js"></script>
+<script src="js/sync/canonical-credit-payment-bridge.js"></script>
+<script src="js/sync/canonical-payment-annul-bridge.js"></script>
+<script src="js/products/price-history.js"></script>
+<script src="js/products/price-history-ui.js"></script>
+<script src="js/sync/canonical-product-bridge.js"></script>
+<script src="js/sync/canonical-customer-bridge.js"></script>
+<script src="js/sync/canonical-customer-credit-policy-bridge.js"></script>
+<script src="js/sync/canonical-inventory-bridge.js"></script>
+<script src="js/sync/canonical-cash-bridge.js"></script>
+<script src="js/sync/canonical-expense-bridge.js"></script>
+<script src="js/sync/canonical-cash-history.js"></script>
+<script src="js/sync/canonical-status-banner.js"></script>
+<script src="js/compat/legacy-globals.js"></script>
+<script src="js/app.js"></script>
+<script src="js/modules/ticket/share-receipt.js"></script>
+<script src="js/modules/ticket/share-receipt-ui.js"></script>
+<!-- Sonda de rendimiento de caja (#432): solo bajo demanda (?perf=1|true|yes o localStorage.na_cash_perf="1"). Sin la condición no se descarga ni se ejecuta. -->
+<script>(function(){var r=window;try{var q=new URLSearchParams(r.location.search).get('perf');if(q==='1'||q==='true'||q==='yes'||(r.localStorage&&r.localStorage.getItem('na_cash_perf')==='1')){var s=document.createElement('script');s.src='js/perf/cash-perf-probe.js';(document.body||document.documentElement).appendChild(s);return;}}catch(_){}r.NA_CASH_PERF=Object.freeze({active:false,reason:'gate_off'});})();</script>
+<script src="js/canon-pos-reference-ui.js"></script>
+<script src="js/canon-phone-sale.js"></script>
+<script src="js/canon-desktop-dashboard.js"></script>
+<script src="js/modules/proximamente.js"></script>
+<script src="js/modules/valorizacion-inventario.js"></script>
+<script src="js/modules/rotacion-abc.js"></script>
+<script src="js/modules/clientes-frecuencia.js"></script>
+<script src="js/modules/reporte-productos-vencer.js"></script>
+<script src="js/modules/cliente-historial-compras.js"></script>
+<script src="js/modules/kardex.js"></script>
+<script src="js/modules/cobro-qr-yape-plin.js"></script>
+<script src="js/modules/ventas-stock.js"></script>
+<script src="js/modules/reporte-arqueo.js"></script>
+<script src="js/modules/reporte-medio-pago.js"></script>
+<script src="js/modules/panel-tesoreria.js"></script>
+<script src="js/inventory/historial-compras.js"></script>
+<script src="js/products/costo-compra-ficha.js"></script>
+<script src="js/modules/etiquetas-precios.js"></script>
+<script src="js/modules/catalogo-pos.js"></script>
+<script src="js/modules/productos-sin-movimiento.js"></script>
+<script src="js/modules/sugerencia-compra.js"></script>
+<script src="js/modules/ajustes-inventario.js"></script>
+<script src="js/modules/precios-masivos.js"></script>
+<script src="js/modules/stock-negativo.js"></script>
+<script src="js/config/config-e2.js"></script>
+<script src="js/config/employee-perms-ui.js"></script>
+<script src="js/config/config-g.js"></script>
+<script src="js/config/pos-reviews-client.js"></script>
+<script src="js/config/pos-annul-client.js"></script>
+<script src="js/modules/discount-sheet.js"></script>
+<script src="js/config/pos-sale-note-client.js"></script>
+<script src="js/config/pos-purchases-client.js"></script>
+<script src="js/inventory/stock-lots-ui.js"></script>
+<script src="js/config/pos-dni-lookup-client.js"></script>
+<script src="js/config/config-v9-boot.js"></script>
+<script src="js/core/lazy-assets.js"></script>
+<!-- OCR de compras y catálogo de referencia (~900 KB): mismo código, cargado al usar "OCR compras" (js/core/lazy-assets.js). -->
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/vendor/tesseract-6.0.1/tesseract.min.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/catalog/reference-catalog-data.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/catalog/reference-catalog.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-extract.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-document-extract.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-parse.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-reference-matcher.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-purchase-engine.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-purchase-review.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-purchase-apply.js"></script>
+<script type="text/x-na-lazy" data-na-lazy="ocr" src="js/ocr/ocr-purchase-integration.js"></script>
+<script>
+// CANON-PWA-UPDATE-001: actualización visible, accionable y de recarga única.
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  window.addEventListener('load', function () {
+    var PWA_UPDATE_FAIL_MS = 120000;
+    var hadController = !!navigator.serviceWorker.controller;
+    var reloadingForWorkerUpdate = false;
+    var updateBusy = false;
+    var updateFallbackTimer = 0;
+    var updateInstallTimer = 0;
+    var watchedInstalling = null;
+    var stopInstallWatch = null;
+    var updateFailed = false;
+    var updateRetried = false;
+    var updateDismissed = false;
+    var updateAttempt = 0;
+    var pwaRegistration = null;
+    var prompt = document.getElementById('pwaUpdatePrompt');
+    var status = document.getElementById('pwaUpdateStatus');
+    var action = document.getElementById('pwaUpdateAction');
+    var later = document.getElementById('pwaUpdateLater');
+    // "Más tarde": el aviso se oculta (el punto del encabezado sigue avisando) y vuelve al regresar a Inicio.
+    var updateSnoozed = false;
+    var versionPending = false;
+    var saleWaitTimer = 0;
+
+    function setUpdateUi(message, state, buttonLabel, buttonEnabled, passive) {
+      if (!prompt || !status || !action) return;
+      prompt.dataset.state = state || 'ready';
+      status.textContent = String(message || '');
+      action.textContent = buttonLabel || 'Actualizar ahora';
+      action.disabled = buttonEnabled === false;
+      if (passive && updateSnoozed) return;
+      // El aviso no aparece encima de una ventana abierta, con carrito o con un cobro/abono/compra/cierre en
+      // curso: espera a que termine y entonces se muestra.
+      if (passive && quietNeeded()) { waitQuiet(); return; }
+      prompt.hidden = false;
+    }
+    var quietTimer = 0;
+    function quietNeeded() {
+      try { if (document.querySelector('.modal-overlay.open, .pin-overlay.open, .na-pin-overlay, .na-review-overlay, .na-ds-overlay, .na-confirm-overlay.open')) return true; } catch (_) {}
+      // Abono a medio escribir en la ficha (monto o referencia con texto).
+      try { var am = document.getElementById('naV2BatchAmount'), rf = document.getElementById('naV2BatchReference'); if ((am && String(am.value || '').trim()) || (rf && String(rf.value || '').trim())) return true; } catch (_) {}
+      return moneyOpInProgress();
+    }
+    function waitQuiet() {
+      if (quietTimer || typeof window.setInterval !== 'function') return;
+      quietTimer = window.setInterval(function () {
+        if (quietNeeded() || !versionPending || updateSnoozed) return;
+        window.clearInterval(quietTimer); quietTimer = 0;
+        if (prompt) prompt.hidden = false;
+      }, 1500);
+    }
+
+    // Una venta en curso (carrito con productos o cobro guardándose) nunca se pierde por actualizar:
+    // la recarga espera a que el carrito quede vacío y el cobro termine.
+    // Solo cuenta lo que se está ENVIANDO ahora (o el carrito en pantalla): lo guardado en el aparato
+    // (ventas en cola o en revisión, compra trabada, cierre rechazado) sobrevive a la recarga igual.
+    // El abono «no confirmado» tampoco bloquea: tras recargar conserva su id y la ficha lo muestra en ámbar.
+    function moneyOpInProgress() {
+      try { if (typeof posProc !== 'undefined' && posProc) return true; } catch (_) {}
+      try { if (typeof cart !== 'undefined' && cart && cart.length > 0) return true; } catch (_) {}
+      try { var ob = window.NuevoAmanecerCanonicalSaleOutbox; if (ob && ob.busy && ob.busy()) return true; } catch (_) {}
+      try { var cb = window.NuevoAmanecerCanonicalCashBridge; if (cb && cb.closing && cb.closing()) return true; } catch (_) {}
+      try { var cp = window.NuevoAmanecerCanonicalCreditPaymentBridge; if (cp && cp.busy && cp.busy()) return true; } catch (_) {}
+      try { if (window.NAPurchaseBusy && window.NAPurchaseBusy()) return true; } catch (_) {}
+      try { if (window.NAOcrBusy && window.NAOcrBusy()) return true; } catch (_) {}
+      try { if (window.NAWorkBusy && window.NAWorkBusy()) return true; } catch (_) {}
+      return false;
+    }
+    // Cuántas cosas guardadas quedan por revisar (no impiden recargar).
+    // Cuenta ids únicos: una misma venta puede estar en la cola, en el diario y en revisión a la vez.
+    function pendingToReview() {
+      var ids = {};
+      function add(k) { if (k) ids[String(k)] = 1; }
+      try { var ob = window.NuevoAmanecerCanonicalSaleOutbox; if (ob) {
+        (ob.snapshot().intents || []).forEach(function (x) { add(x && (x.sale_id || x.operation_id)); });
+        ((ob.quarantine && ob.quarantine().entries) || []).forEach(function (e) { if (e.status === 'QUARANTINED') add(e.intent && (e.intent.sale_id || e.intent.operation_id) || e.id); }); } } catch (_) {}
+      try { var cl = window.NuevoAmanecerCanonical, pr = cl && cl.pendingSnapshot && cl.pendingSnapshot(); if (pr) { var pl = pr.payload || {}; add(pl.sale_id || pl.operation_id || pr.command); } } catch (_) {}
+      try { var po = JSON.parse(localStorage.getItem('na_purchase_pending_ops_v2') || '{}'); Object.keys(po || {}).forEach(function (k) { add('compra:' + k); }); } catch (_) {}
+      return Object.keys(ids).length;
+    }
+    function readyText() { var nr = pendingToReview(); return nr ? 'Versión nueva: recarga. Quedan ' + nr + ' por revisar (se conservan).' : 'Hay una versión nueva, recarga.'; }
+    // Si la cola cambia mientras el aviso está a la vista, el número se actualiza.
+    ['na:canonical-sale-projection', 'na:canonical-updated', 'storage'].forEach(function (ev) {
+      window.addEventListener(ev, function () { if (versionPending && status && prompt && prompt.dataset.state === 'ready') status.textContent = readyText(); });
+    });
+    var saleInProgress = moneyOpInProgress;
+
+    function afterSaleFinishes(callback) {
+      if (!saleInProgress()) { callback(); return; }
+      if (saleWaitTimer || typeof window.setInterval !== 'function') return;
+      saleWaitTimer = window.setInterval(function () {
+        if (saleInProgress()) return;
+        window.clearInterval(saleWaitTimer);
+        saleWaitTimer = 0;
+        callback();
+      }, 1000);
+    }
+
+    function markVersionPending(message, downloading) {
+      if (!hadController) return;
+      if (updateFailed || updateDismissed) return;
+      if (updateBusy) return;
+      versionPending = true;
+      // Mientras se descarga, el botón no acepta clics: antes el primer clic esperaba la
+      // instalación (hasta 15 s) y parecía no responder.
+      if (downloading) setUpdateUi(message || 'Descargando la versión nueva…', 'working', 'Descargando…', false, true);
+      else { setUpdateUi(message || readyText(), 'ready', 'Recargar', true, true); }
+      try { window.dispatchEvent(new CustomEvent('na:version-update-pending')); } catch (_) {}
+    }
+
+    function clearInstallWatch() {
+      window.clearTimeout(updateInstallTimer);
+      updateInstallTimer = 0;
+      if (stopInstallWatch) stopInstallWatch();
+      stopInstallWatch = null;
+      watchedInstalling = null;
+    }
+    function failPwaUpdate() {
+      if (!hadController || updateFailed || updateDismissed || reloadingForWorkerUpdate) return;
+      clearInstallWatch();
+      window.clearTimeout(updateFallbackTimer);
+      var passive = !updateBusy;
+      updateBusy = false;
+      updateFailed = true;
+      updateAttempt++;
+      if (updateRetried) {
+        // Solo se descarta en esta página: la próxima apertura vuelve a comprobar la versión.
+        updateDismissed = true;
+        versionPending = false;
+        window.clearInterval(quietTimer); quietTimer = 0;
+        if (prompt) prompt.hidden = true;
+        return;
+      }
+      versionPending = true;
+      setUpdateUi('No se pudo actualizar', 'error', 'Reintentar', true, passive);
+    }
+    function watchInstalling(registration) {
+      var installing = registration.installing;
+      if (!installing || !hadController || updateFailed || updateDismissed || watchedInstalling === installing) return;
+      clearInstallWatch();
+      watchedInstalling = installing;
+      markVersionPending('Descargando la versión nueva…', true);
+      function inspect() {
+        if (installing.state === 'installed' || installing.state === 'activated') {
+          clearInstallWatch();
+          if (installing.state === 'installed') markVersionPending();
+        } else if (installing.state === 'redundant') failPwaUpdate();
+      }
+      if (typeof installing.addEventListener === 'function') {
+        installing.addEventListener('statechange', inspect);
+        installing.addEventListener('error', failPwaUpdate);
+        stopInstallWatch = function () {
+          if (typeof installing.removeEventListener !== 'function') return;
+          installing.removeEventListener('statechange', inspect);
+          installing.removeEventListener('error', failPwaUpdate);
+        };
+      }
+      updateInstallTimer = window.setTimeout(failPwaUpdate, PWA_UPDATE_FAIL_MS);
+      inspect();
+    }
+    async function checkPwaUpdate(registration) {
+      var attempt = updateAttempt;
+      try {
+        await registration.update();
+        return attempt === updateAttempt;
+      } catch (error) {
+        if (attempt === updateAttempt && (watchedInstalling || updateBusy || (updateRetried && updateInstallTimer))) failPwaUpdate();
+        return false;
+      }
+    }
+    async function retryPwaUpdate() {
+      updateFailed = false;
+      updateRetried = true;
+      updateAttempt++;
+      clearInstallWatch();
+      setUpdateUi('Descargando la versión nueva…', 'working', 'Descargando…', false);
+      updateInstallTimer = window.setTimeout(failPwaUpdate, PWA_UPDATE_FAIL_MS);
+      if (!await checkPwaUpdate(pwaRegistration) || updateFailed || updateDismissed || reloadingForWorkerUpdate) return;
+      if (pwaRegistration.waiting) {
+        clearInstallWatch();
+        markVersionPending();
+      } else if (pwaRegistration.installing && pwaRegistration.installing.state !== 'redundant') {
+        watchInstalling(pwaRegistration);
+      } else {
+        clearInstallWatch();
+        versionPending = false;
+        if (prompt) prompt.hidden = true;
+      }
+    }
+
+    if (later) {
+      later.addEventListener('click', function () {
+        updateSnoozed = true;
+        if (prompt) prompt.hidden = true;
+      });
+    }
+    var home = document.getElementById('pageMenu');
+    if (home && typeof MutationObserver === 'function') {
+      new MutationObserver(function () {
+        if (!updateSnoozed || !versionPending || updateBusy || !home.classList.contains('active') || saleInProgress()) return;
+        updateSnoozed = false;
+        if (prompt) prompt.hidden = false;
+      }).observe(home, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    function activateWorker(registration, worker) {
+      var candidate = registration && registration.waiting ? registration.waiting : worker;
+      if (!candidate || typeof candidate.postMessage !== 'function') return false;
+      candidate.postMessage({ type: 'NA_ACTIVATE_UPDATE' });
+      return true;
+    }
+
+    function waitUntilInstalled(registration, worker) {
+      return new Promise(function (resolve) {
+        if (!worker) {
+          resolve(false);
+          return;
+        }
+
+        var settled = false;
+        var timer = 0;
+        function finish(ok) {
+          if (settled) return;
+          settled = true;
+          window.clearTimeout(timer);
+          if (typeof worker.removeEventListener === 'function') {
+            worker.removeEventListener('statechange', inspect);
+            worker.removeEventListener('error', failed);
+          }
+          resolve(ok);
+        }
+        function inspect() {
+          if (worker.state === 'installed' || worker.state === 'activated') {
+            finish(activateWorker(registration, worker));
+          } else if (worker.state === 'redundant') {
+            finish(false);
+          }
+        }
+        function failed() { finish(false); }
+
+        inspect();
+        if (settled) return;
+        if (typeof worker.addEventListener !== 'function') {
+          finish(false);
+          return;
+        }
+        worker.addEventListener('statechange', inspect);
+        worker.addEventListener('error', failed);
+        timer = window.setTimeout(function () { finish(false); }, PWA_UPDATE_FAIL_MS);
+      });
+    }
+
+    function enableManualUpdateMode() {
+      var controller = navigator.serviceWorker.controller;
+      if (!controller || typeof controller.postMessage !== 'function') return;
+      try { controller.postMessage({ type: 'NA_ENABLE_MANUAL_UPDATES' }); } catch (_) {}
+    }
+
+    // Recarga automática (no pedida): además espera a que la cola de ventas/abonos quede vacía.
+    // Si el cajero tocó «Actualizar ahora» (updateBusy), lo guardado sobrevive a la recarga y no se espera.
+    function queuedWork() {
+      if (updateBusy) return false;
+      try { var ob = window.NuevoAmanecerCanonicalSaleOutbox, sn = ob && ob.snapshot && ob.snapshot(); if (sn && sn.intents && sn.intents.length) return true; } catch (_) {}
+      try { var cl = window.NuevoAmanecerCanonical; if (cl && cl.pendingSnapshot && cl.pendingSnapshot()) return true; } catch (_) {}
+      return false;
+    }
+    function scheduleReload() {
+      clearInstallWatch();
+      enableManualUpdateMode();
+      if (!hadController || reloadingForWorkerUpdate) return;
+      reloadingForWorkerUpdate = true;
+      window.clearTimeout(updateFallbackTimer);
+      if (saleInProgress()) {
+        setUpdateUi('Actualización lista. Se aplicará al terminar la venta en curso.', 'working', 'Esperando la venta…', false);
+      }
+      afterSaleFinishes(function () {
+        // Tampoco recarga con una ventana abierta (cliente a medio escribir, Cobrar, abono): espera a que se cierre.
+        if (quietNeeded() || queuedWork()) { var qt = window.setInterval(function () { if (quietNeeded() || queuedWork()) return; window.clearInterval(qt); setUpdateUi('Actualización lista. Recargando…', 'success', 'Recargando…', false); window.setTimeout(function () { window.location.reload(); }, 80); }, 1000); return; }
+        setUpdateUi('Actualización lista. Recargando…', 'success', 'Recargando…', false);
+        window.setTimeout(function () {
+          window.location.reload();
+        }, 80);
+      });
+    }
+
+    navigator.serviceWorker.addEventListener('controllerchange', function () { scheduleReload(); try { showBuild(); } catch (_) {} });
+    // Versión instalada visible en Configuración (para saber si el celular ya tiene la última).
+    function showBuild() {
+      var c = navigator.serviceWorker.controller, host = document.getElementById('pageConfig');
+      if (!c || !host || typeof MessageChannel !== 'function') return;
+      var ch = new MessageChannel();
+      ch.port1.onmessage = function (e) {
+        var h = e.data && e.data.buildHash; if (!h) return;
+        var el = document.getElementById('naBuildVersion');
+        if (!el) { el = document.createElement('div'); el.id = 'naBuildVersion'; el.style.cssText = 'font-size:12px;opacity:.6;text-align:center;padding:12px 0'; host.appendChild(el); }
+        el.textContent = 'Versión de la app: ' + String(h).slice(0, 12);
+      };
+      try { c.postMessage({ type: 'NA_BUILD_DIAGNOSTIC' }, [ch.port2]); } catch (_) {}
+    }
+    showBuild();
+
+    if (action) {
+      action.addEventListener('click', runPwaUpdate);
+    }
+
+    var pwaUpdateQueued = false;
+    async function runPwaUpdate() {
+        if (updateBusy) return;
+        if (updateDismissed) return;
+        if (saleInProgress()) {
+          setUpdateUi('Termina o vacía la venta en curso: la app se actualizará sola después.', 'working', 'Esperando la venta…', false);
+          afterSaleFinishes(runPwaUpdate);
+          return;
+        }
+        if (!pwaRegistration) {
+          // El registro aún no terminó: se recuerda el clic y se aplica al registrarse.
+          pwaUpdateQueued = true;
+          setUpdateUi('Preparando la actualización…', 'working', 'Actualizando…', false);
+          return;
+        }
+        if (updateFailed) { retryPwaUpdate(); return; }
+        updateBusy = true;
+        var attempt = updateAttempt;
+        window.clearTimeout(updateFallbackTimer);
+        setUpdateUi('Buscando la versión nueva…', 'working', 'Actualizando…', false);
+
+        try {
+          if (!pwaRegistration.waiting && !pwaRegistration.installing && typeof pwaRegistration.update === 'function') {
+            if (!await checkPwaUpdate(pwaRegistration)) return;
+          }
+
+          var worker = pwaRegistration.waiting || pwaRegistration.installing || null;
+          if (pwaRegistration.waiting) {
+            setUpdateUi('Aplicando la versión nueva…', 'working', 'Actualizando…', false);
+            if (!activateWorker(pwaRegistration, pwaRegistration.waiting)) {
+              throw new Error('UPDATE_WORKER_NOT_ACTIVATABLE');
+            }
+          } else if (worker) {
+            setUpdateUi('Descargando la actualización…', 'working', 'Actualizando…', false);
+            var ready = await waitUntilInstalled(pwaRegistration, worker);
+            if (!ready) throw new Error('UPDATE_INSTALL_TIMEOUT');
+          } else {
+            // No hay versión esperando (p. ej. ya se activó y la recarga automática esperaba la cola):
+            // el botón simplemente recarga; lo guardado en el aparato sobrevive con sus mismos ids.
+            setUpdateUi('Recargando…', 'success', 'Recargando…', false);
+            window.setTimeout(function () { window.location.reload(); }, 80);
+            return;
+          }
+
+          if (attempt === updateAttempt) updateFallbackTimer = window.setTimeout(scheduleReload, 3500);
+        } catch (error) {
+          if (attempt === updateAttempt) failPwaUpdate();
+          console.warn('No se pudo aplicar la nueva versión del POS.', error);
+        }
+    }
+
+    // El shell PWA se registra cuando la app ya puede vender (o como máximo a los 6 s): en la primera
+    // apertura su precarga ya no compite con el arranque, y tras un deploy la descarga de la versión
+    // nueva empieza con la venta ya disponible.
+    function whenReadyToSell(start) {
+      var started = false;
+      function go() {
+        if (started) return;
+        started = true;
+        if (typeof window.removeEventListener === 'function') window.removeEventListener('na:canonical-updated', check);
+        if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(start, { timeout: 1500 });
+        else start();
+      }
+      function check() {
+        try {
+          var canonical = window.NuevoAmanecerCanonical;
+          var state = canonical && typeof canonical.sourceState === 'function' ? canonical.sourceState() : null;
+          // 'pending'/'validating' = todavía no se puede vender; cualquier estado final libera el registro.
+          if (state && /^(?:current|remote-older|offline|stale|unavailable)$/.test(String(state.validation))) go();
+        } catch (_) { go(); }
+      }
+      window.addEventListener('na:canonical-updated', check);
+      check();
+      window.setTimeout(go, 6000);
+    }
+
+    whenReadyToSell(function () { navigator.serviceWorker.register('sw.js', { scope: './', updateViaCache: 'none' }).then(function (registration) {
+      pwaRegistration = registration;
+      enableManualUpdateMode();
+      if (pwaUpdateQueued) { pwaUpdateQueued = false; runPwaUpdate(); }
+
+      if (registration.waiting) markVersionPending();
+      if (registration.installing) watchInstalling(registration);
+      if (typeof registration.addEventListener === 'function') {
+        registration.addEventListener('updatefound', function () {
+          watchInstalling(registration);
+        });
+        registration.addEventListener('error', failPwaUpdate);
+      }
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') checkPwaUpdate(registration);
+      });
+      window.addEventListener('online', function () {
+        checkPwaUpdate(registration);
+      });
+
+      return checkPwaUpdate(registration);
+    }).catch(function (error) {
+      console.warn('No se pudo registrar el shell PWA.', error);
+    }); });
+  });
+}
+</script>
+<!-- Asistente: el servidor decide; se apaga por aparato en Configuración (solo Admin) o con ?asistente=0 -->
+<script src="js/modules/asistente/asistente-loader.js" defer></script>
+<!-- WORK: isolated optional interface on the canonical POS. -->
+<script src="js/work-host.js" defer></script>
+</body>
+</html>

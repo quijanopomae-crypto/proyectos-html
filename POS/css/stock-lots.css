@@ -1,0 +1,42 @@
+.na-lots-receipt { margin: 12px 0; border: 1px solid var(--border); border-radius: 12px; padding: 12px; min-width: 0; }
+.na-lots-receipt label { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.na-lots-receipt input[type="checkbox"] { width: 24px; height: 24px; }
+.na-lot-input-row { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)) auto; gap: 8px; margin: 12px 0; }
+.na-lot-input-row label { display: flex; flex-direction: column; align-items: stretch; font-size: 13px; }
+.na-lots-receipt input, .na-lots-receipt button,
+.na-pur-line .na-pur-lot, .na-pur-line .na-pur-expiry { min-height: 44px; box-sizing: border-box; max-width: 100%; border-radius: 8px; padding: 8px; }
+.na-lots-receipt input { width: 100%; min-width: 0; border: 1px solid var(--border); font-size: 16px; background: var(--white); color: var(--dark); }
+.na-lots-receipt button { cursor: pointer; background: var(--teal-dark); color: var(--white); border: 0; padding: 8px 14px; }
+.na-lots-receipt [hidden], .na-lots-receipt[hidden] { display: none !important; }
+.na-pur-box .na-pur-line { grid-template-columns: minmax(0,2fr) minmax(60px,1fr) minmax(80px,1fr) 44px; }
+.na-pur-box .na-pur-line .na-pur-lot { grid-column: 1 / 3; }
+.na-pur-box .na-pur-line .na-pur-expiry { grid-column: 3 / 5; }
+.na-pur-box .na-pur-line .na-pur-del { grid-column: 4; grid-row: 1; min-height: 44px; }
+.na-pur-line .na-pur-lot, .na-pur-line .na-pur-expiry { flex: 1 1 140px; min-width: 0; }
+@media (max-width: 768px) {
+  .na-pur-box .na-pur-line { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 44px; }
+  .na-pur-box .na-pur-line .na-pur-prod { grid-column: 1 / 3; grid-row: 1; }
+  .na-pur-box .na-pur-line .na-pur-del { grid-column: 3; }
+  .na-pur-box .na-pur-line .na-pur-lot { grid-column: 1 / -1; }
+  .na-pur-box .na-pur-line .na-pur-expiry { grid-column: 1 / -1; }
+  .na-lot-input-row { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .na-lot-input-row label:first-child { grid-column: 1 / -1; }
+}
+
+.na-lots-receipt :focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+body.dark .na-lots-receipt { color-scheme: dark; }
+body.dark .na-lots-receipt button { color: var(--bg); }
+
+.na-pur-box .na-pur-ocr {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0 14px;
+  min-height: 44px;
+  font: inherit;
+  font-weight: 800;
+  color: #0f766e;
+  background: #f1f5f9;
+  cursor: pointer;
+}
