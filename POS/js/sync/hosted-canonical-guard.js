@@ -1,11 +1,11 @@
 (function (root) {
   'use strict';
 
-  var HOSTED_SUFFIX = '.cliente-001.sin-configurar.invalid';
+  // The hosted URL is defined by the runtime configuration, not a fixed vendor suffix.
   var BINDING_KEY = 'na_canonical_binding';
   var CREDENTIALS_KEY = 'na_cloud_sync_credentials';
   var config = root.NA_HOSTED_CONFIG || null;
-  var isHosted = !!(root.location && root.location.hostname.endsWith(HOSTED_SUFFIX));
+  var isHosted = !!(root.location && /^\/app(?:\/|$)/.test(root.location.pathname));
 
   if (!isHosted) return;
 
