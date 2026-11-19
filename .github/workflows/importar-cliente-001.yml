@@ -1,0 +1,139 @@
+name: Copia independiente POS Cliente 001
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/importar-cliente-001.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  importacion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repositorio de destino
+        uses: actions/checkout@v4
+      - name: Importar copia sin datos ni infraestructura compartida
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "quijanopomae-crypto/proyectos-html"
+          git clone --quiet --single-branch --branch feature/v1.3-mobile-cloud --depth 1 https://github.com/quijanopomae-crypto/nuevo-amanecer-pos.git "$RUNNER_TEMP/origen"
+          SRC="$RUNNER_TEMP/origen"
+          test "$(git -C "$SRC" rev-parse HEAD)" = fa708d4def27da0f6cf75b2617592237ae9dda60 || { echo "La fuente cambio: detener por seguridad"; exit 1; }
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
+          cp -a "$SRC/POS" ./POS
+          mkdir -p tools infra/database evidence/v1.2
+          for d in cloudflare-lab cloudflare-pos-web pos-local; do cp -a "$SRC/tools/$d" tools/; done
+          cp -a "$SRC/infra/database/migrations" infra/database/
+          cp "$SRC/evidence/v1.2/production-package-files.json" evidence/v1.2/
+          cp -a "$SRC/tests" .
+          cp "$SRC/package.json" "$SRC/package-lock.json" "$SRC/INICIAR_POS.cmd" .
+          rm -rf tools/cloudflare-lab/private tools/cloudflare-pos-web/_site
+          find tools -type f \( -name '.env' -o -name '.env.*' -o -name '.dev.vars*' -o -name 'wrangler*.jsonc' -o -name 'wrangler*.toml' \) -delete
+          mkdir -p tools/cloudflare-prod
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root=Path('.')
+          suffixes={'.html','.js','.mjs','.cjs','.ts','.json','.jsonc','.css','.yaml','.yml','.md','.sql','.webmanifest','.cmd','.ps1','.txt','.svg'}
+          for dn in ('POS','tools','infra','tests','evidence'):
+              for p in (root/dn).rglob('*'):
+                  if not p.is_file() or p.suffix.lower() not in suffixes: continue
+                  try: text=p.read_text(encoding='utf-8')
+                  except (UnicodeError,OSError): continue
+                  edited=re.sub(r'(?i)(?:[a-z0-9-]+\.)?nuevo-amanecer-pos\.workers\.dev','cliente-001.sin-configurar.invalid',text)
+                  edited=edited.replace('nuevo-amanecer-pos-prod','cliente-001-pos-api').replace('nuevo-amanecer-pos-web','cliente-001-pos-web')
+                  edited=edited.replace('nuevo-amanecer-prod-v2','cliente-001-pos-db')
+                  if dn=='POS': edited=edited.replace('Nuevo Amanecer','POS Cliente 001')
+                  if edited!=text: p.write_text(edited,encoding='utf-8')
+          for dn in ('POS','tools'):
+              for p in (root/dn).rglob('*'):
+                  if not p.is_file() or p.suffix.lower() not in suffixes: continue
+                  try: text=p.read_text(encoding='utf-8')
+                  except UnicodeError: continue
+                  if 'nuevo-amanecer-pos.workers.dev' in text.lower(): raise SystemExit('Enlace original sin aislar: '+str(p))
+          PY
+          cat > tools/cloudflare-prod/wrangler.jsonc <<'EOF'
+          {
+            "name": "cliente-001-pos-api",
+            "main": "../cloudflare-lab/src/worker-entry.js",
+            "compatibility_date": "2026-09-01",
+            "workers_dev": true,
+            "vars": {
+              "RUNTIME_ENVIRONMENT": "production",
+              "CANONICAL_RUNTIME_ENABLED": "disabled"
+            },
+            "d1_databases": [{
+              "binding": "DB",
+              "database_name": "cliente-001-pos-db",
+              "database_id": "REEMPLAZAR_CON_D1_EXCLUSIVA_DEL_CLIENTE",
+              "migrations_dir": "../../infra/database/migrations"
+            }]
+          }
+          EOF
+          cat > tools/cloudflare-pos-web/wrangler.jsonc <<'EOF'
+          {
+            "name": "cliente-001-pos-web",
+            "main": "./src/worker.js",
+            "compatibility_date": "2026-09-24",
+            "workers_dev": true,
+            "assets": {
+              "directory": "./_site",
+              "binding": "ASSETS",
+              "run_worker_first": ["/", "/app", "/app/", "/health", "/auth/*", "/read/*", "/features/*", "/commands/*", "/imports/*", "/sync/operations*", "/settings"],
+              "html_handling": "none",
+              "not_found_handling": "none"
+            },
+            "vars": {
+              "HOSTED_ENVIRONMENT": "production",
+              "CANON_API_ORIGIN": "https://cliente-001.sin-configurar.invalid"
+            },
+            "services": [{"binding": "CANON_BACKEND", "service": "cliente-001-pos-api"}]
+          }
+          EOF
+          cat > .gitignore <<'EOF'
+          node_modules/
+          .env
+          .env.*
+          .dev.vars*
+          .wrangler/
+          *.sqlite
+          *.sqlite3
+          customer-data/
+          tools/cloudflare-lab/private/
+          tools/cloudflare-pos-web/_site/
+          EOF
+          cat > README.md <<'EOF'
+          # POS Cliente 001 - Copia aislada
+
+          Copia de codigo fuente tomada del POS Nuevo Amanecer.
+          Origen fijo: fa708d4def27da0f6cf75b2617592237ae9dda60
+
+          **ESTADO: NO APTO PARA OPERAR, SIN NUBE HABILITADA.**
+          Los endpoints conocidos del negocio original se sustituyeron por dominios invalidos.
+          Los workflows de produccion originales, secretos y datos no fueron importados.
+          NO compartir credenciales, respaldos o base de datos con el POS original.
+
+          ## Almacenamiento propio pendiente
+          1. Crear D1 de cliente: cliente-001-pos-db (vacia).
+          2. Reemplazar el ID ficticio en tools/cloudflare-prod/wrangler.jsonc.
+          3. Aplicar migraciones desde infra/database/migrations y verificar integridad.
+          4. Crear secreto POS_ACTIVATION_SECRET nuevo, exclusivo del cliente.
+          5. Crear respaldos R2 exclusivos y probar restauracion.
+          6. Desplegar Workers propios API y web; configurar CANON_API_ORIGIN exclusivo.
+          7. Probar login, ventas, caja, inventario, credito, sincronizacion y recuperacion.
+          8. Habilitar runtime solo tras verificaciones, sin acceso al entorno original.
+          9. Hacer privado el repositorio antes de personalizarlo con datos comerciales.
+
+          El contenido del proyecto anterior sale de main, pero el historial Git
+          anterior sigue siendo consultable. Una purga real exige recrear el repo.
+          EOF
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          test ! -f Nuevo_Amanecer_WORK_Clientes_Cuenta_Integrado.html
+          test -f POS/index.html
+          test -f infra/database/migrations/0010_session_auth.sql
+          git commit -m "Cliente 001: reemplazar proyecto anterior por POS aislado"
+          git push origin HEAD:main
