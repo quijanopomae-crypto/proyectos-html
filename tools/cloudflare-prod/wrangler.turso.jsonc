@@ -9,5 +9,8 @@
     "RUNTIME_ENVIRONMENT": "production",
     "CANONICAL_RUNTIME_ENABLED": "disabled",
     "DB_PROVIDER": "turso"
+  },
+  "secrets": {
+    "required": ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN", "POS_ACTIVATION_SECRET"]
   }
 }
