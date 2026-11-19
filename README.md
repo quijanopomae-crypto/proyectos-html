@@ -21,3 +21,10 @@ NO compartir credenciales, respaldos o base de datos con el POS original.
 
 El contenido del proyecto anterior sale de main, pero el historial Git
 anterior sigue siendo consultable. Una purga real exige recrear el repo.
+
+## Proxima etapa: Cloudflare del cliente
+
+Ver [guia de instalacion y D1 independiente](docs/CLIENTE_001_CLOUDFLARE.md).
+La validacion offline de migraciones y activacion esta automatizada en
+`.github/workflows/cliente-001-offline-ci.yml`.
+No entregar ni usar el POS para ventas reales hasta terminar la nube exclusiva.
