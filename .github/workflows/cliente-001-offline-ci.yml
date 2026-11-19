@@ -47,7 +47,9 @@ jobs:
           assert turso['vars']['DB_PROVIDER']=='turso'
           assert turso['vars']['CANONICAL_RUNTIME_ENABLED']=='disabled'
           assert 'd1_databases' not in turso
-          assert 'TURSO_AUTH_TOKEN' not in turso
-          assert 'TURSO_DATABASE_URL' not in turso
+          assert sorted(turso['secrets']['required']) == sorted(['TURSO_DATABASE_URL','TURSO_AUTH_TOKEN','POS_ACTIVATION_SECRET'])
+          assert 'TURSO_AUTH_TOKEN' not in turso.get('vars', {})
+          assert 'TURSO_DATABASE_URL' not in turso.get('vars', {})
+          assert 'POS_ACTIVATION_SECRET' not in turso.get('vars', {})
           print('D1 en espera y Turso preparado sin secretos ni escrituras dobles: OK')
           PY
