@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { createClient } from '@libsql/client';
 import worker from '../../tools/cloudflare-lab/src/worker.js';
+import { getDatabase } from '../../tools/cloudflare-lab/src/database-binding.js';
 import {
   client001InitializationAvailable,
   initializeEmptyCanon,
@@ -54,6 +55,7 @@ const initialize = (requestBody) => initializeEmptyCanon(
 let auth;
 
 try {
+  console.log('fase: esquema y aislamiento');
   assert.equal(await count('__cliente001_schema_migrations'), 37);
   assert.deepEqual(
     { mode: (await control()).mode, revision: Number((await control()).revision) },
@@ -66,12 +68,14 @@ try {
   );
   assert.equal(isolated.status, 404);
 
+  console.log('fase: trigger de transicion directa');
   await assert.rejects(
     client.execute("UPDATE canonical_control SET mode='ACTIVE',revision=revision+1,authority_epoch=authority_epoch+1 WHERE id=1"),
     /gate_p_control/,
   );
   assert.equal((await control()).mode, 'LEGACY');
 
+  console.log('fase: sesion de dueno');
   const activation = await worker.fetch(
     new Request('https://cliente-001-canon-temp.test/auth/activate', {
       method: 'POST',
@@ -89,12 +93,22 @@ try {
   assert.ok(session?.device_id);
   auth = { principalId: session.device_id, credentialHash: tokenHash, posRole: 'owner' };
 
+  const db = getDatabase(env);
+  const batch = db.batch.bind(db);
+  let batchError;
+  db.batch = async (statements) => {
+    try { return await batch(statements); }
+    catch (error) { batchError = error; throw error; }
+  };
+
+  console.log('fase: rollback forzado');
   await client.execute(
     "CREATE TRIGGER client001_temp_forced_abort BEFORE INSERT ON canonical_promotions BEGIN SELECT RAISE(ABORT,'client001_temp_rollback'); END",
   );
   try {
     const failed = await initialize(body);
     assert.equal(failed.status, 409);
+    assert.match(String(batchError?.message), /client001_temp_rollback/);
     assert.equal((await control()).mode, 'LEGACY');
     for (const table of ['import_runs', 'canonical_promotions', 'canonical_initial_authority', 'canonical_assertions']) {
       assert.equal(await count(table), 0, table + ' must roll back');
@@ -103,6 +117,7 @@ try {
     await client.execute('DROP TRIGGER IF EXISTS client001_temp_forced_abort');
   }
 
+  console.log('fase: inicializacion valida');
   const created = await initialize(body);
   assert.equal(created.status, 201, await created.clone().text());
   const receipt = await created.json();
@@ -123,6 +138,7 @@ try {
   assert.equal(Number(promotion.sealed_revision), 0);
   assert.equal(Number(promotion.candidate_revision), 0);
 
+  console.log('fase: idempotencia e inmutabilidad');
   const repeated = await initialize(body);
   assert.equal(repeated.status, 200);
   assert.deepEqual(await repeated.json(), receipt);

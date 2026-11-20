@@ -73,10 +73,21 @@ export async function initializeEmptyCanon(request, env, auth, json) {
     minimum_client_contract: 'a6-gate-c-v1',
   };
   const receiptJson = stableStringify(receipt);
-  const emptyTables = names.filter(name => !EXEMPT_TABLES.has(name));
-  const emptyPredicate = emptyTables.map(name => `NOT EXISTS(SELECT 1 FROM "${name}")`).join(' AND ');
   const assertion = 'client001:init:' + body.operation_id;
   const complete = assertion + ':complete';
+  // Keep each empty-store check below Turso's SQL expression-depth limit.
+  // All checks run in the same transaction as the authority transition.
+  const emptyTables = names.filter(name => !EXEMPT_TABLES.has(name) && name !== 'canonical_assertions');
+  const emptyChecks = [];
+  const assertionIds = [assertion, complete];
+  for (let index = 0; index < emptyTables.length; index += 16) {
+    const group = emptyTables.slice(index, index + 16);
+    const id = assertion + ':empty:' + index;
+    assertionIds.push(id);
+    emptyChecks.push(db.prepare(`INSERT INTO canonical_assertions(assertion_id,ok)
+      SELECT ?1,CASE WHEN ${group.map(name => `NOT EXISTS(SELECT 1 FROM "${name}")`).join(' AND ')}
+      THEN 1 ELSE 0 END`).bind(id));
+  }
   const statements = [
     db.prepare(`INSERT INTO canonical_assertions(assertion_id,ok)
       SELECT ?1,CASE WHEN EXISTS(
@@ -92,8 +103,9 @@ export async function initializeEmptyCanon(request, env, auth, json) {
             WHERE role.device_id=d.device_id AND role.pos_role='empleado')
       ) AND (SELECT COUNT(*) FROM __cliente001_schema_migrations)=37
         AND EXISTS(SELECT 1 FROM __cliente001_schema_migrations WHERE name=?4)
-        AND ${emptyPredicate} THEN 1 ELSE 0 END`)
+        AND NOT EXISTS(SELECT 1 FROM canonical_assertions) THEN 1 ELSE 0 END`)
       .bind(assertion, auth.principalId, auth.credentialHash, MIGRATION),
+    ...emptyChecks,
     db.prepare(`INSERT INTO import_runs
       (import_id,source_hash,manifest_hash,transform_version,device_id,status,source_files,sources_json,row_count,report_json)
       VALUES (?1,?2,?3,?4,?5,'PASS',1,?6,0,?7)`)
@@ -137,7 +149,8 @@ export async function initializeEmptyCanon(request, env, auth, json) {
           AND a.operation_id=?3 AND a.request_hash=?4 AND a.principal_id=?5
       ) THEN 1 ELSE 0 END`)
       .bind(complete, PROMOTION_ID, body.operation_id, requestHash, auth.principalId),
-    db.prepare('DELETE FROM canonical_assertions WHERE assertion_id IN (?1,?2)').bind(assertion, complete),
+    db.prepare(`DELETE FROM canonical_assertions WHERE assertion_id IN (${assertionIds.map((_, index) => `?${index + 1}`).join(',')})`)
+      .bind(...assertionIds),
   ];
   try { await db.batch(statements); }
   catch {

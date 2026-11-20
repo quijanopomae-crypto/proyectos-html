@@ -1,8 +1,8 @@
 # Cliente 001: primera autoridad CANON de tienda vacia
 
-Estado al 20/11/2026: implementacion y pruebas **solo locales**. En este trabajo
-no se han aplicado estas migraciones a Turso remoto, cambiado datos remotos ni
-desplegado Workers con este procedimiento.
+Estado al 20/11/2026: implementacion local y prueba en la base Turso temporal
+`cliente-001-canon-temp-pr1-20261120`. No se ha consultado ni modificado la
+base de produccion, desplegado Workers ni habilitado el runtime comercial.
 
 ## Contrato de inicializacion
 
@@ -48,9 +48,8 @@ node --check scripts/client-001-migrate/migrate.mjs
 La prueba de inicializacion usa el Worker real y el adaptador HTTP libSQL, pero
 intercepta el transporte y ejecuta SQL en SQLite en memoria. Comprueba permisos,
 aislamiento Turso/D1, rechazo de datos previos, rollback, reintentos y una
-secuencia de producto, inventario, caja, venta, credito y pago. No demuestra
-todavia que los triggers y las transacciones funcionen identicamente en Turso
-remoto. Esa comprobacion precede cualquier habilitacion comercial real.
+secuencia de producto, inventario, caja, venta, credito y pago. La comprobacion
+de transacciones y triggers en Turso remoto se resume a continuacion.
 
 ## Verificacion en Turso temporal
 
@@ -74,7 +73,33 @@ credenciales temporales solo en variables del proceso, ejecutar en este orden:
    los hashes de las 37 migraciones y la autoridad `ACTIVE` son coherentes.
 
 No ejecutar estos comandos con el token o URL de produccion. Esta verificacion
-no despliega Workers y deja `CANONICAL_RUNTIME_ENABLED=disabled`.
+no despliega Workers y deja `CANONICAL_RUNTIME_ENABLED=disabled`. El verificador
+del paso 2 parte de `LEGACY`; para repetirlo se necesita otra base temporal
+vacia.
+
+### Resultado observado el 20/11/2026
+
+- El migrador aplico 0001 a 0037 en la base temporal vacia y dejo
+  `canonical_control` en `LEGACY`, revision 0.
+- Turso impidio el cambio SQL directo `LEGACY -> ACTIVE` con `gate_p_control`.
+  Un trigger de aborto temporal produjo el error esperado
+  `client001_temp_rollback`; la transaccion retiro fuente, promocion,
+  autoridad y aserciones, dejando el control en `LEGACY`.
+- La siguiente inicializacion devolvio `201`, registro una sola autoridad,
+  promocion `COMMITTED` y fuente `PASS` de cero filas. El mismo pedido devolvio
+  `200` con el mismo recibo; otro `operation_id` devolvio `409`. Los triggers
+  rechazaron modificar o borrar la autoridad. Productos, clientes y ventas
+  permanecieron vacios.
+- Una consulta de solo lectura en la consola de esa base mostro 37 migraciones,
+  `ACTIVE`, revision 3, epoca 3 y una autoridad. La consulta de integridad
+  usada por el migrador para relacionar control, autoridad, promocion y fuente
+  devolvio `authority_ok=1`.
+- La reejecucion final del migrador por CLI se intento, pero la conexion al
+  host temporal agoto el tiempo antes de completar la lectura. Las consultas
+  anteriores verifican el estado posterior a la inicializacion; no sustituyen
+  la comprobacion de hashes que hace ese migrador. La ruta publica permanecio
+  cerrada (`404`) para la URL temporal; el verificador invoco el inicializador
+  y adaptador Turso del Worker de forma directa.
 
 ## Secuencia de produccion, pendiente de autorizacion
 
@@ -97,19 +122,36 @@ y recibir autorizacion expresa para modificar produccion:
    usando `tools/cloudflare-prod/wrangler.turso.jsonc`: Turso principal, sin
    binding D1 y `CANONICAL_RUNTIME_ENABLED=disabled`. No desplegar la web ni
    habilitar ventas durante esta fase.
-4. En el URL verificado de esa API, llamar `POST /auth/activate` con el
-   secreto de activacion para obtener una sesion de dueño. Conservar fuera del
-   repositorio un `operation_id` unico y enviar una sola vez
-   `POST /commands/canonical.initialize-empty` con
+4. En la URL verificada de esa API, llamar `POST /auth/activate` con la cabecera
+   `x-activation-secret: <POS_ACTIVATION_SECRET>` y exigir `200` con
+   `session_token`. Conservar fuera del repositorio un `operation_id` unico y
+   enviar `POST /commands/canonical.initialize-empty` con cabeceras
+   `Authorization: Bearer <session_token>` y `Content-Type: application/json`,
+   y cuerpo
    `{"client_id":"cliente-001","operation_id":"<id>","expected_control_revision":0}`.
    Aceptar `201` o `200` solo si el recibo coincide; ante duda reintentar
    exactamente el mismo pedido. Ante `409`, detenerse y diagnosticar sin
    modificar `canonical_control` manualmente.
-5. Verificar en solo lectura: `canonical_control` en `ACTIVE`, revision y
-   epoch 3; una fila inmutable en `canonical_initial_authority`; promocion
-   `cliente-001-empty-canon` en `COMMITTED`; fuente
-   `cliente-001-empty-source` con cero filas; `import_staging`, productos,
-   clientes y ventas todavia vacios. Repetir el migrador para validar la
-   autoridad registrada.
+5. Verificar en solo lectura con el siguiente resumen: una fila con
+   `migrations=37`, `mode=ACTIVE`, `revision=3`, `authority_epoch=3`,
+   `active_promotion_id=cliente-001-empty-canon`, `authorities=1` y
+   `staging_rows=products=customers=sales=0`.
+
+   ```sql
+   SELECT (SELECT COUNT(*) FROM __cliente001_schema_migrations) AS migrations,
+          mode, revision, authority_epoch, active_promotion_id,
+          (SELECT COUNT(*) FROM canonical_initial_authority) AS authorities,
+          (SELECT COUNT(*) FROM import_staging) AS staging_rows,
+          (SELECT COUNT(*) FROM products) AS products,
+          (SELECT COUNT(*) FROM customers) AS customers,
+          (SELECT COUNT(*) FROM sales) AS sales
+   FROM canonical_control WHERE id=1;
+   ```
+
+   Confirmar tambien `import_runs.import_id='cliente-001-empty-source'`,
+   `status='PASS'`, `row_count=0`, y
+   `canonical_promotions.promotion_id='cliente-001-empty-canon'`,
+   `status='COMMITTED'`, `candidate_revision=sealed_revision=0`. Repetir el
+   migrador para comprobar hashes y la relacion completa de autoridad.
 6. Mantener `CANONICAL_RUNTIME_ENABLED=disabled` tras la inicializacion. La
    habilitacion comercial requiere una comprobacion y decision separadas.
