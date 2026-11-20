@@ -6,7 +6,22 @@ on:
       - POS/js/sync/hosted-canonical-guard.js
       - tests/client-001/**
       - infra/database/migrations/**
+      - scripts/client-001-migrate/**
       - tools/cloudflare-prod/wrangler.turso.jsonc
+      - tools/cloudflare-lab/src/client-001-canon-init.js
+      - tools/cloudflare-lab/src/worker.js
+      - tools/cloudflare-lab/src/turso-d1-adapter.js
+      - tools/cloudflare-lab/src/database-binding.js
+      - .github/workflows/cliente-001-offline-ci.yml
+  pull_request:
+    paths:
+      - POS/js/sync/hosted-canonical-guard.js
+      - tests/client-001/**
+      - infra/database/migrations/**
+      - scripts/client-001-migrate/**
+      - tools/cloudflare-prod/wrangler.turso.jsonc
+      - tools/cloudflare-lab/src/client-001-canon-init.js
+      - tools/cloudflare-lab/src/worker.js
       - tools/cloudflare-lab/src/turso-d1-adapter.js
       - tools/cloudflare-lab/src/database-binding.js
       - .github/workflows/cliente-001-offline-ci.yml
@@ -30,6 +45,12 @@ jobs:
         run: node --test tools/cloudflare-lab/test/turso-d1-adapter.test.mjs
       - name: Comprobar migraciones en SQLite descartable
         run: python3 tests/client-001/migraciones_sqlite.py
+      - name: Probar inicializacion CANON de tienda vacia
+        run: node --test tests/client-001/canon-initialization.test.mjs
+      - name: Validar sintaxis del migrador y verificador Turso
+        run: |
+          node --check scripts/client-001-migrate/migrate.mjs
+          node --check scripts/client-001-migrate/verify-temporary.mjs
       - name: Confirmar configuracion sin D1 real ni runtime activo
         shell: bash
         run: |
