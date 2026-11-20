@@ -12,7 +12,7 @@
   },
   "vars": {
     "HOSTED_ENVIRONMENT": "production",
-    "CANON_API_ORIGIN": "https://cliente-001.sin-configurar.invalid"
+    "CANON_API_ORIGIN": "https://cliente-001-pos-api.cristian-quijano-poma.workers.dev"
   },
   "services": [{"binding": "CANON_BACKEND", "service": "cliente-001-pos-api"}]
 }
