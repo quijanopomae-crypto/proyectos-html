@@ -7,8 +7,8 @@ import sqlite3
 
 root = Path(__file__).resolve().parents[2]
 migrations = sorted((root / "infra/database/migrations").glob("*.sql"))
-if len(migrations) < 36:
-    raise SystemExit(f"Solo {len(migrations)} migraciones: se esperaban 36 o mas")
+if len(migrations) != 37 or migrations[-1].name != "0037_canonical_empty_bootstrap.sql":
+    raise SystemExit(f"Migraciones inesperadas: {len(migrations)}; se esperaban 37 hasta 0037")
 
 conn = sqlite3.connect(":memory:")
 for migration in migrations:

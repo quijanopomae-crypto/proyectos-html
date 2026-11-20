@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   migrar:
-    name: Aplicar 36 migraciones a la base exclusiva
+    name: Aplicar 37 migraciones a la base exclusiva
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

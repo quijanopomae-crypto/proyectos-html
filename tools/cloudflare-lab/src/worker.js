@@ -6,6 +6,7 @@ import { getDatabase } from './database-binding.js';
 // mismo operation_id + payload_hash distinto = conflict (409), nunca se sobrescribe.
 import { A5_A4_QUARANTINE_TRANSFORM_VERSION, A5_TRANSFORM_VERSION, buildManifest, stableStringify as stableImportStringify } from './a5-import-core.js';
 import { handleA6, isA6Path, canonicalRuntimeDenied } from './a6-canonical.js';
+import { client001InitializationAvailable, initializeEmptyCanon } from './client-001-canon-init.js';
 import { createCanonicalSale, createCanonicalCreditAccount, canUseCanonicalSaleFastPath, CANONICAL_CLIENT_CONTRACT } from './a6-commerce.js';
 import { createCanonicalFinancial, createCanonicalPaymentBatch, FINANCIAL_COMMANDS } from './a6-financial.js';
 import { createCanonicalExpense, reviseCanonicalExpense, employeeCashExpenseAllowed, EXPENSE_COMMAND } from './a6-expenses.js';
@@ -258,6 +259,14 @@ export default {
         return await createSale(request, env);
       }
       const financialCommand = url.pathname.startsWith('/commands/') ? url.pathname.slice('/commands/'.length) : '';
+      if (financialCommand === 'canonical.initialize-empty') {
+        if (!client001InitializationAvailable(env)) return json({ error: 'not_found' }, 404);
+        if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405, { allow: 'POST, OPTIONS' });
+        const auth = await authorizeSession(request, env);
+        if (auth instanceof Response) return auth;
+        if (auth.posRole !== 'owner') return json({ error: 'forbidden_role' }, 403);
+        return initializeEmptyCanon(request, env, auth, json);
+      }
       if (financialCommand === SALE_ANNUL_COMMAND) {
         if (request.method !== 'POST' && request.method !== 'GET') return json({ error: 'method_not_allowed' }, 405, { allow: 'GET, POST, OPTIONS' });
         const auth = await authorizeSession(request, env);

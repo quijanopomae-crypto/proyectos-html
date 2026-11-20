@@ -33,13 +33,16 @@ Configuracion candidata: `tools/cloudflare-prod/wrangler.turso.jsonc`.
    `tools/cloudflare-prod/wrangler.turso.jsonc`, tras los controles.
 
 ## Migraciones
-- Hay 36 migraciones en `infra/database/migrations`.
+- Hay 37 migraciones en `infra/database/migrations`.
 - Pasaron una prueba en SQLite descartable; **aun no en Turso remoto**.
 - No usar `wrangler d1 migrations apply` para Turso: ese comando es exclusivo de D1.
-- Se necesita un migrador Turso independiente que registre migraciones aplicadas,
-  reanude sin repetirlas y pruebe restricciones, triggers, atomicidad e idempotencia.
+- El migrador independiente `scripts/client-001-migrate/migrate.mjs` registra los hashes,
+  reanuda sin repetir migraciones y comprueba `LEGACY` inicial o una autoridad `ACTIVE`
+  respaldada por la inicializacion vacia. No se ejecuto contra Turso remoto en
+  esta preparacion.
 - Una base vacia inicia la autoridad `LEGACY`; no poner `ACTIVE` manualmente.
-  Validar el procedimiento de primera activacion CANON antes de la primera venta.
+  El procedimiento y sus pruebas locales se describen en
+  `docs/CLIENTE_001_CANON_INICIALIZACION.md`.
 
 ## Pruebas de salida antes de operar
 - Autorizacion por roles y activacion exclusiva.

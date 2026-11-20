@@ -1,5 +1,11 @@
 # Cliente 001 - Instalacion de nube independiente
 
+> **Plan D1 historico, suspendido.** Los pasos de este documento que conectan
+> o migran D1 no se deben ejecutar. La arquitectura vigente usa Turso como
+> base principal, deja D1 desconectada y reserva los Workers para Cliente 001.
+> Consultar `docs/CLIENTE_001_TURSO.md` y
+> `docs/CLIENTE_001_CANON_INICIALIZACION.md`.
+
 Estado comprobado el 19/11/2026:
 - Copia de codigo en quijanopomae-crypto/proyectos-html.
 - Pruebas offline de 36 migraciones y activacion del navegador: PASS.
