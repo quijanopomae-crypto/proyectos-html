@@ -1,0 +1,29 @@
+name: Cliente 001 - crear tablas en Turso (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cliente-001-migraciones-turso
+  cancel-in-progress: false
+jobs:
+  migrar:
+    name: Aplicar 36 migraciones a la base exclusiva
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Leer esquema y migrador
+        uses: actions/checkout@v4
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validar sintaxis del migrador
+        run: node --check scripts/client-001-migrate/migrate.mjs
+      - name: Instalar cliente libSQL
+        run: npm install --prefix scripts/client-001-migrate --no-save --no-package-lock --no-audit --no-fund @libsql/client@0.18.0
+      - name: Aplicar las migraciones sin habilitar ventas
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.CLIENT001_TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.CLIENT001_TURSO_AUTH_TOKEN }}
+        run: node scripts/client-001-migrate/migrate.mjs
