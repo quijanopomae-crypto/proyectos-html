@@ -7,9 +7,20 @@ import { join, resolve } from 'node:path';
 const expectedUrl = 'libsql://cliente-001-pos-db-cr-cristian.aws-sa-east-1.turso.io';
 const url = (process.env.TURSO_DATABASE_URL || '').trim();
 const authToken = (process.env.TURSO_AUTH_TOKEN || '').trim();
+const target = process.env.CLIENT001_MIGRATION_TARGET || 'production';
+let temporaryUrl = false;
+try {
+  const parsed = new URL(url);
+  temporaryUrl = parsed.protocol === 'libsql:'
+    && parsed.hostname.startsWith('cliente-001-canon-temp-')
+    && parsed.hostname.endsWith('.turso.io')
+    && !parsed.username && !parsed.password && !parsed.pathname && !parsed.search && !parsed.hash;
+} catch { /* Invalid URLs fail the guard below. */ }
 
-if (url !== expectedUrl || !authToken) {
-  throw new Error('Detenido: faltan credenciales o la URL no es la base exclusiva del Cliente 001.');
+if (!authToken || (target === 'production' && url !== expectedUrl)
+    || (target === 'temporary' && (!temporaryUrl || url === expectedUrl))
+    || !['production', 'temporary'].includes(target)) {
+  throw new Error('Detenido: credenciales o URL incompatibles con el destino Cliente 001 seleccionado.');
 }
 
 const root = resolve(fileURLToPath(new URL('../../', import.meta.url)));
