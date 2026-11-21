@@ -41,7 +41,9 @@ async function authorizeCanonicalRead(request, env, helpers) {
   if (request.headers.get('authorization') || request.headers.get('x-session-token')) {
     const auth = await helpers.authorizeSession(request, env);
     if (auth instanceof Response) return { denied: auth };
-    return { denied: await helpers.authorizeRead(request, env), role: auth && auth.posRole };
+    // authorizeSession validates the credential, revocation and route role.
+    // READ_TOKEN is an alternative gateway for requests without a session.
+    return { denied: null, role: auth.posRole };
   }
   return { denied: await helpers.authorizeRead(request, env) };
 }
