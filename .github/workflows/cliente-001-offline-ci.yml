@@ -8,6 +8,7 @@ on:
       - infra/database/migrations/**
       - scripts/client-001-migrate/**
       - tools/cloudflare-prod/wrangler.turso.jsonc
+      - tools/cloudflare-lab/src/a6-canonical.js
       - tools/cloudflare-lab/src/client-001-canon-init.js
       - tools/cloudflare-lab/src/worker.js
       - tools/cloudflare-lab/src/turso-d1-adapter.js
@@ -20,6 +21,7 @@ on:
       - infra/database/migrations/**
       - scripts/client-001-migrate/**
       - tools/cloudflare-prod/wrangler.turso.jsonc
+      - tools/cloudflare-lab/src/a6-canonical.js
       - tools/cloudflare-lab/src/client-001-canon-init.js
       - tools/cloudflare-lab/src/worker.js
       - tools/cloudflare-lab/src/turso-d1-adapter.js

@@ -4,6 +4,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
 import { DatabaseSync } from 'node:sqlite';
 import worker from '../../tools/cloudflare-lab/src/worker.js';
+import { handleA6 } from '../../tools/cloudflare-lab/src/a6-canonical.js';
 import { tursoSqlite } from '../cloud-sync/turso-sqlite-protocol.mjs';
 import { device } from '../cloud-sync/canon-browser-harness.mjs';
 
@@ -208,4 +209,54 @@ test('new empty store can create catalog, sell with stock and cash, then record 
   assert.equal(f.sql("SELECT current_balance_cents n FROM canonical_credit_balances WHERE credit_id=?", credit.credit_id).n, 150);
   assert.equal(f.sql("SELECT current_stock_quantity n FROM canonical_live_products WHERE product_id='CLIENT001-P1'").n, 2);
   assert.equal(f.sql('SELECT COUNT(*) n FROM import_staging').n, 0);
+});
+
+
+test('CANON handler accepts a validated session without invoking the read-token gateway', async t => {
+  const f = fixture(t);
+  const token = await f.activate();
+  assert.equal((await f.post(token)).status, 201);
+  f.env.CANONICAL_RUNTIME_ENABLED = 'enabled';
+  const url = new URL('https://cliente-001.test/read/canonical/status');
+  const response = await handleA6(new Request(url, { headers: { authorization: 'Bearer ' + token } }), url, f.env, {
+    json: (body, status = 200) => Response.json(body, { status }),
+    authorizeSession: async () => ({ posRole: 'owner' }),
+    authorizeRead: async () => Response.json({ error: 'unauthorized' }, { status: 401 }),
+  });
+  assert.equal(response.status, 200);
+});
+
+test('real CANON routes accept owner session alone and retain anonymous and revoked-session protection', async t => {
+  const f = fixture(t);
+  const token = await f.activate();
+  assert.equal((await f.post(token)).status, 201);
+  const headers = { authorization: 'Bearer ' + token };
+  assert.equal((await f.fetch('/read/canonical/status', { headers })).status, 404);
+  f.env.CANONICAL_RUNTIME_ENABLED = 'enabled';
+  delete f.env.READ_TOKEN;
+  assert.equal((await f.fetch('/read/canonical/status', { headers })).status, 200);
+  assert.equal((await f.fetch('/read/canonical/snapshot', { headers })).status, 200);
+  assert.equal((await f.fetch('/read/canonical/status')).status, 503);
+  f.env.READ_TOKEN = 'synthetic-read-token';
+  assert.equal((await f.fetch('/read/canonical/status')).status, 401);
+  assert.equal((await f.fetch('/read/canonical/status', { headers: { 'x-read-token': f.env.READ_TOKEN } })).status, 200);
+  assert.equal((await f.fetch('/read/canonical/status', { headers: { authorization: 'Bearer invalid', 'x-read-token': f.env.READ_TOKEN } })).status, 401);
+  f.database.exec("UPDATE auth_sessions SET status='revoked'");
+  assert.equal((await f.fetch('/read/canonical/status', { headers })).status, 403);
+});
+
+test('employee CANON reads preserve role restrictions with only a session token', async t => {
+  const f = fixture(t);
+  const token = await f.activate();
+  assert.equal((await f.post(token)).status, 201);
+  f.env.CANONICAL_RUNTIME_ENABLED = 'enabled';
+  delete f.env.READ_TOKEN;
+  const session = f.sql('SELECT session_id FROM auth_sessions');
+  f.database.prepare("INSERT INTO pos_device_roles(device_id,pos_role,created_by,created_at) VALUES (?,'empleado','owner','2026-11-21T00:00:00Z')").run('session:' + session.session_id);
+  const headers = { authorization: 'Bearer ' + token };
+  assert.equal((await f.fetch('/read/canonical/products', { headers })).status, 200);
+  assert.equal((await f.fetch('/read/canonical/expenses', { headers })).status, 403);
+  const snapshot = await f.fetch('/read/canonical/snapshot', { headers });
+  assert.equal(snapshot.status, 200);
+  assert.deepEqual((await snapshot.json()).expenses, []);
 });
