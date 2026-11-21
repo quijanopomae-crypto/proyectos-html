@@ -7,8 +7,10 @@
   "observability": { "enabled": false },
   "vars": {
     "RUNTIME_ENVIRONMENT": "production",
-    "CANONICAL_RUNTIME_ENABLED": "disabled",
-    "DB_PROVIDER": "turso"
+    "CANONICAL_RUNTIME_ENABLED": "enabled",
+    "DB_PROVIDER": "turso",
+    "ASSISTANT_ENABLED": "1",
+    "AI_PROVIDER": "ohmyagent"
   },
   "secrets": {
     "required": ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN", "POS_ACTIVATION_SECRET", "ASSISTANT_CONFIRM_SECRET"]
