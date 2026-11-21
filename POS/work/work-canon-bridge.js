@@ -50,6 +50,7 @@
     var id='work-'+(++msgId)+'-'+Date.now();
     var loading=bubble('theirs',image?'Leyendo la imagen…':'Consultando WORK…');
     pending.set(id,{loading:loading,mode:mode||'chat'});
+    // Signed invoice memory stays in the host, never copied or edited by this iframe.
     var payload={id:id,text:text};if(image)payload.image=image;
     post('chat',payload);
     return true;
