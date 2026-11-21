@@ -3,6 +3,12 @@ on:
   push:
     branches: [main]
     paths:
+      - POS/js/work-host.js
+      - POS/work/work-canon-bridge.js
+      - tests/cloud-sync/work-host-session.test.mjs
+      - tests/asistente/assistant-invoice-memory.test.mjs
+      - tools/cloudflare-lab/src/pos-assistant.js
+      - tools/cloudflare-lab/src/pos-assistant-invoice-memory.js
       - POS/js/sync/hosted-canonical-guard.js
       - tests/client-001/**
       - infra/database/migrations/**
@@ -16,6 +22,12 @@ on:
       - .github/workflows/cliente-001-offline-ci.yml
   pull_request:
     paths:
+      - POS/js/work-host.js
+      - POS/work/work-canon-bridge.js
+      - tests/cloud-sync/work-host-session.test.mjs
+      - tests/asistente/assistant-invoice-memory.test.mjs
+      - tools/cloudflare-lab/src/pos-assistant.js
+      - tools/cloudflare-lab/src/pos-assistant-invoice-memory.js
       - POS/js/sync/hosted-canonical-guard.js
       - tests/client-001/**
       - infra/database/migrations/**
@@ -49,6 +61,8 @@ jobs:
         run: python3 tests/client-001/migraciones_sqlite.py
       - name: Probar inicializacion CANON de tienda vacia
         run: node --test tests/client-001/canon-initialization.test.mjs
+      - name: Probar memoria de imagen y sesion WORK
+        run: node --test tests/cloud-sync/work-host-session.test.mjs tests/asistente/assistant-invoice-memory.test.mjs
       - name: Validar sintaxis del migrador y verificador Turso
         run: |
           node --check scripts/client-001-migrate/migrate.mjs
@@ -70,9 +84,10 @@ jobs:
           assert turso['vars']['DB_PROVIDER']=='turso'
           assert turso['vars']['CANONICAL_RUNTIME_ENABLED']=='disabled'
           assert 'd1_databases' not in turso
-          assert sorted(turso['secrets']['required']) == sorted(['TURSO_DATABASE_URL','TURSO_AUTH_TOKEN','POS_ACTIVATION_SECRET'])
+          assert sorted(turso['secrets']['required']) == sorted(['TURSO_DATABASE_URL','TURSO_AUTH_TOKEN','POS_ACTIVATION_SECRET','ASSISTANT_CONFIRM_SECRET'])
           assert 'TURSO_AUTH_TOKEN' not in turso.get('vars', {})
           assert 'TURSO_DATABASE_URL' not in turso.get('vars', {})
           assert 'POS_ACTIVATION_SECRET' not in turso.get('vars', {})
+          assert 'ASSISTANT_CONFIRM_SECRET' not in turso.get('vars', {})
           print('D1 en espera y Turso preparado sin secretos ni escrituras dobles: OK')
           PY

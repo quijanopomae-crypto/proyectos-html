@@ -53,3 +53,45 @@ test('confirmed identity change discards the previous WORK frame and private con
  f.root.NA_ROLES.role='empleado';f.root.NA_ROLES.isOwner=()=>false;
  f.listeners['na:role']();assert.equal(f.frames.length,2);
 });
+
+test('WORK keeps exact invoice token across two follow-ups and clears it on reset and identity change',async()=>{
+ const f=fixture(true,true),calls=[];
+ const token='opaque.original-signature';
+ f.root.NA_ROLES.api=async(path,body)=>{calls.push(body);return {reply:'Ocho líneas',invoice_memory:token};};
+ const send=data=>f.listeners.message({origin:'https://pos.test',source:f.frames.at(-1).contentWindow,data});
+ for(const [i,text] of ['Revisa la boleta','Cuántos productos hay','Enumera todos los productos'].entries()){
+  send({type:'na-work:chat',id:String(i),text});await new Promise(setImmediate);
+ }
+ assert.equal(calls[0].invoice_memory,undefined);
+ assert.equal(calls[1].invoice_memory,token);assert.equal(calls[2].invoice_memory,token);
+ send({type:'na-work:reset'});send({type:'na-work:chat',id:'reset',text:'Nuevo'});await new Promise(setImmediate);
+ assert.equal(calls[3].invoice_memory,undefined);
+ f.root.NA_ROLES.deviceId='another-owner';f.listeners['na:role']();
+ send({type:'na-work:chat',id:'other',text:'Hola'});await new Promise(setImmediate);
+ assert.equal(calls[4].invoice_memory,undefined);
+});
+
+
+test('new photo replaces memory and null memory is not falsely claimed as retained',async()=>{
+ const f=fixture(true,true),calls=[];
+ let response={reply:'Lectura',invoice_memory:'old.signed'};
+ f.root.NA_ROLES.api=async(path,body)=>{if(body.ping)return {role:'owner',vision:true}; calls.push(body);return response;};
+ const send=data=>f.listeners.message({origin:'https://pos.test',source:f.frames.at(-1).contentWindow,data});
+ send({type:'na-work:chat',id:'initial',text:'Primera'});await new Promise(setImmediate);
+ response={reply:'Otra foto',invoice_memory:null};
+ send({type:'na-work:chat',id:'photo',text:'Revisa',image:'data:image/jpeg;base64,YWJj'});await new Promise(setImmediate);
+ assert.equal(calls[1].invoice_memory,undefined);assert.ok(calls[1].image);
+ assert.ok(f.sent.some(m=>m.id==='photo'&&m.text.includes('No pude conservar')));
+ send({type:'na-work:chat',id:'next',text:'Cuántos'});await new Promise(setImmediate);
+ assert.equal(calls[2].invoice_memory,undefined);
+});
+
+test('an in-flight response after new conversation cannot restore discarded memory',async()=>{
+ const f=fixture(true,true),calls=[];let release;
+ f.root.NA_ROLES.api=async(path,body)=>{calls.push(body);if(calls.length===1)return new Promise(resolve=>{release=resolve;});return {reply:'nuevo'};};
+ const send=data=>f.listeners.message({origin:'https://pos.test',source:f.frames.at(-1).contentWindow,data});
+ send({type:'na-work:chat',id:'old',text:'Primero'});await new Promise(setImmediate);
+ send({type:'na-work:reset'});release({reply:'respuesta anterior',invoice_memory:'stale.signed'});await new Promise(setImmediate);
+ send({type:'na-work:chat',id:'new',text:'Nuevo'});await new Promise(setImmediate);
+ assert.equal(calls[1].invoice_memory,undefined);assert.ok(!f.sent.some(m=>m.id==='old'));
+});

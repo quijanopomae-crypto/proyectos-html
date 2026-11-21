@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { invoiceListReply } from '../../tools/cloudflare-lab/src/pos-assistant-invoice-memory.js';
 import { assistantChatRoute, createMemoryUsageStore } from '../../tools/cloudflare-lab/src/pos-assistant.js';
 const env={ASSISTANT_ENABLED:'1',ASSISTANT_CONFIRM_SECRET:'invoice-memory-test-secret-123456',OHMYAGENT_API_KEY:'test-only'};
 const auth={principalId:'owner-test',sessionId:'session-test'};
@@ -95,4 +96,36 @@ test('contenido del documento no cierra el bloque de datos recordados',async()=>
  const next=await chat({text:'Recuérdame',invoice_memory:malicious.body.invoice_memory});
  const memory=next.request.messages.find(m=>m.content.startsWith('<boleta_recordada>'));
  assert.equal((memory.content.match(/<\/boleta_recordada>/g)||[]).length,1);assert.doesNotMatch(memory.content,/<system>/);
+});
+
+test('Cliente 001 ticket preserves eight printed rows, quantities and totals through two photo-free turns',async()=>{
+ const rows=[
+  ['FIDEO FANSI 50 g',100,1.10,110.00],['TAMARINDO CHUPON 500 ml',24,5.50,132.01],
+  ['B-B SILLAO TITO 85 ml',16,9.50,152.00],['VALLE VERDE BLANCO 1 L',5,2.23,133.80],
+  ['TALLARIN SALTADO FOCH 500 ml',3,6.50,19.50],['CHAUFA FOCH 500 ml',24,6.50,156.01],
+  ['LOMO SALTADO FOCH 500 ml',24,6.50,156.01],['LINTERNA TOKAI 10DIS',60,3.90,234.02],
+ ].map(([nombre,cantidad,costo_unitario,total_linea])=>({nombre,cantidad,costo_unitario,total_linea}));
+ rows[3].nota='5 paquetes x 12 und = 60 und';
+ const invoice={documento:'T001-0001481',lineas:rows,total_documento:1093.35,unidades_documento:311,items_documento:8};
+ let r=await chat({text:'Revisa esta imagen',image},{response:{content:'La boleta tiene 8 productos.',tool_calls:[{id:'ticket',type:'function',function:{name:'leer_factura_compra',arguments:JSON.stringify(invoice)}}]}});
+ for(const text of ['Cuántos productos hay en total','Enumera todos los productos con cantidades, precios y totales']){
+  r=await chat({text,invoice_memory:r.body.invoice_memory,history:[],context:{products:[{id:'catalog-only',nombre:'PAPEL NOBLE PREMIUM',precio:7}]} });
+  const remembered=r.request.messages.find(m=>typeof m.content==='string'&&m.content.startsWith('<boleta_recordada>'));
+  assert.ok(remembered);const doc=JSON.parse(remembered.content.split('\n')[1]).facturas[0];
+  assert.equal(doc.lineas.length,8);assert.equal(doc.total_documento,1093.35);assert.equal(doc.unidades_documento,311);
+  rows.forEach((row,i)=>{assert.equal(doc.lineas[i].nombre,row.nombre);assert.equal(doc.lineas[i].cantidad,row.cantidad);assert.equal(doc.lineas[i].costo_unitario,row.costo_unitario);assert.equal(doc.lineas[i].total_linea,row.total_linea);});
+  assert.equal(doc.lineas[3].nota,rows[3].nota);
+  assert.doesNotMatch(remembered.content,/PAPEL NOBLE/);
+  assert.doesNotMatch(JSON.stringify(r.request.messages),/data:image/);
+  assert.match(r.request.messages[0].content,/todas las filas legibles/i);
+  assert.equal(r.request.tools?.length || 0,0);
+  if (/Cuántos/.test(text)) { assert.match(r.body.reply,/8 productos/); assert.match(r.body.reply,/311 unidades/); }
+  if (/Enumera/.test(text)) { rows.forEach(row=>assert.ok(r.body.reply.includes(row.nombre))); assert.doesNotMatch(r.body.reply,/PAPEL NOBLE/); assert.match(r.body.reply,/1093\.35/); assert.match(r.body.reply,/311/); }
+ }
+});
+
+
+test('invoice summaries do not intercept unit-price questions, catalogue queries or change requests',()=>{
+ const memory={invoices:[{lineas:[{nombre:'Ticket item',cantidad:2,costo_unitario:3}]}]};
+ for(const text of ['Cuánto cuesta el producto','Cuántas unidades de arroz hay','Enumera todos los productos del catálogo','Actualiza todos los productos','Prepara la compra con todos los productos']) assert.equal(invoiceListReply(memory,text),null,text);
 });

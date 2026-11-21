@@ -60,9 +60,13 @@ export async function readInvoiceMemory(token, secret, auth, now) {
     return m;
   } catch { return null; }
 }
-export async function writeInvoiceMemory({previous, image, proposals, reply, text, secret, auth, now, clean}) {
+function printedNumbers(value, keys) {
+  return Object.fromEntries(keys.filter(k => typeof value[k] === 'number' && Number.isFinite(value[k]) && value[k] >= 0).map(k => [k,value[k]]));
+}
+export async function writeInvoiceMemory({previous, image, proposals, reply, text, secret, auth, now, clean, extractedInvoices = []}) {
   if (!secret) return null;
-  const purchases = proposals.filter(p => p.type === 'compra');
+  // Photo readings precede catalogue matching: preserve printed names and totals.
+  const purchases = image && extractedInvoices.length ? extractedInvoices : proposals.filter(p => p.type === 'compra');
   const fresh = !!image || purchases.length > 0;
   const fact = !image ? taughtFact(text) : null, taughtBefore = previous?.taught || [];
   if (!fresh && !previous && !fact) return null;
@@ -71,8 +75,9 @@ export async function writeInvoiceMemory({previous, image, proposals, reply, tex
   const keep = previous && !image && !newDocument;
   const m = fresh ? {v:1, scope:await scope(secret, auth), exp:keep ? previous.exp : now + TTL, invoices:purchases.slice(0,2).map(p => ({
     proveedor:clean(p.proveedor || '').slice(0,120), documento:clean(p.documento || '').slice(0,80), fecha:clean(p.fecha || '').slice(0,20),
-    lineas:(p.lineas || []).slice(0,30).map(l => ({nombre:clean(l.nombre || '').slice(0,160), cantidad:l.cantidad, costo_unitario:l.costo_unitario}))
-  })), lectura:clean(reply || '').slice(0,1500), clarifications:keep ? previous.clarifications : []}
+    ...printedNumbers(p, ['total_documento','unidades_documento','items_documento']),
+    lineas:(Array.isArray(p.lineas) ? p.lineas : []).filter(l => l && typeof l === 'object' && typeof l.nombre === 'string').slice(0,30).map(l => ({nombre:clean(l.nombre || '').slice(0,160), cantidad:typeof l.cantidad === 'number' && Number.isFinite(l.cantidad) ? l.cantidad : null, costo_unitario:typeof l.costo_unitario === 'number' && Number.isFinite(l.costo_unitario) ? l.costo_unitario : null, ...printedNumbers(l, ['total_linea']), ...(typeof l.nota === 'string' ? {nota:clean(l.nota).slice(0,240)} : {})}))
+  })), lectura:clean(reply || '').slice(0,12000), clarifications:keep ? previous.clarifications : []}
     : previous ? {...previous} : {v:1, scope:await scope(secret, auth), exp:now + TTL, invoices:[], lectura:'', clarifications:[]};
   m.taught = taughtBefore.slice();
   if (fact) { const f = clean(fact).slice(0, 200); m.taught = [...m.taught.filter((x) => x !== f), f].slice(-MAX_TAUGHT); }
@@ -95,4 +100,19 @@ export function taughtMemoryMessage(memory, lessons = []) {
   const list = [...new Set([...(Array.isArray(lessons) ? lessons : []), ...(memory && Array.isArray(memory.taught) ? memory.taught : [])])].slice(-MAX_TAUGHT);
   if (!list.length) return null;
   return {role:'user', content:'<ensenado_por_usuario>\n' + JSON.stringify({dicho_por_el_usuario:list}).replace(/</g, '\\u003c').replace(/>/g, '\\u003e') + '\n</ensenado_por_usuario>'};
+}
+
+// Only authenticated photo data, never catalogue fallback or inferred arithmetic.
+export function invoiceListReply(memory, text) {
+  if (!memory?.invoices?.length || /cat[aá]logo|inventario|CANON|actualiza|registra|agrega|modifica|prepara|cambia|compra|vende/i.test(text || '')) return null;
+  if (/^[¿\s]*(?:y\s+)?(?:cu[aá]ntos?\s+(?:productos?|[ií]tems?)|cu[aá]ntas?\s+unidades)(?:\s+(?:hay|son|tiene|en|total|la|el|de|esa|esta|imagen|boleta|ticket|foto|por|favor))*[?.!\s]*$/i.test(text || '')) {
+    return memory.invoices.map(p => 'Según la imagen: ' + (p.items_documento ?? p.lineas.length) + ' productos legibles' + (p.unidades_documento != null ? ', ' + p.unidades_documento + ' unidades impresas' : '') + '.').join('\n');
+  }
+  if (!/\b(?:todos?|todas?|enumera\w*|lista\w*)\b/i.test(text || '') || !/producto|fila|l[ií]nea|imagen|boleta|ticket|foto/i.test(text || '')) return null;
+  const money = n => typeof n === 'number' && Number.isFinite(n) ? 'S/ ' + n.toFixed(2) : 'no legible';
+  return memory.invoices.map(p => 'Datos de la imagen (no del catálogo CANON):\n' +
+    p.lineas.map((l,i) => (i+1) + '. ' + l.nombre + ' — Cant.: ' + (l.cantidad ?? 'no legible') + '; P. U.: ' + money(l.costo_unitario) + '; total impreso: ' + money(l.total_linea) + (l.nota ? ' (' + l.nota + ')' : '')).join('\n') +
+    (p.items_documento != null ? '\nÍtems impresos: ' + p.items_documento : '') +
+    (p.unidades_documento != null ? '; unidades impresas: ' + p.unidades_documento : '') +
+    (p.total_documento != null ? '; total impreso: ' + money(p.total_documento) : '')).join('\n\n');
 }

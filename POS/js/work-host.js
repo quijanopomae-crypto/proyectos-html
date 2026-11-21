@@ -85,7 +85,7 @@
       target.postMessage(Object.assign({type:'na-work:response'},data),root.location.origin);
     }
   }
-  var history = [], generation = 0, busy = false, cards = Object.create(null), cardSeq = 0;
+  var history = [], invoiceMemory = null, generation = 0, busy = false, cards = Object.create(null), cardSeq = 0;
   var MAX_TEXT = 1500, MAX_CARDS = 30;
   function engine() { var a = root.NA_ASISTENTE; return a && a.engine ? a.engine : null; }
   function core() { return root.NA_ASISTENTE_CORE || null; }
@@ -108,7 +108,7 @@
     if (!e) return;
     try { e.cancel(key, 'cancelada'); } catch (_) {} try { e.forget(key); } catch (_) {}
   }
-  function resetConversation() { dropCards(); history = []; generation++; busy = false; }
+  function resetConversation() { dropCards(); history = []; invoiceMemory = null; generation++; busy = false; }
   function close() {
     resetConversation(); parked = false;
     if (overlay) { overlay.remove(); overlay=null; frame=null; doc.body.classList.remove('na-work-open'); }
@@ -680,16 +680,21 @@
       var answer;
       try {
         var chatBody={text:finalText,history:history.slice(),context:prepared.context,cards:prepared.cards};
-        if(hasImage)chatBody.image=image;
+        if(hasImage) { chatBody.image=image; invoiceMemory=null; }
+        else if(ownerDataAllowed() && invoiceMemory) chatBody.invoice_memory=invoiceMemory;
         answer=await root.NA_ROLES.api('/auth/assistant/chat'+(hasImage?'?image=1':''),chatBody);
       }
       finally { if (typeof root.clearInterval === 'function') root.clearInterval(prog); }
       if (requestGeneration !== generation || !sessionReady()) return;
       var out=answer && typeof answer==='object' ? answer : {};
       if (out.error) { var codeErr = new Error(String(out.error).slice(0,80)); codeErr.data = out; throw codeErr; }
+      // Keep the signed envelope opaque; only the server may update it.
+      if (ownerDataAllowed() && typeof out.invoice_memory === 'string') invoiceMemory=out.invoice_memory;
+      else if (out.invoice_memory === null || !ownerDataAllowed()) invoiceMemory=null;
       var text=out.texto || out.text || out.reply || out.respuesta || out.answer || out.message || '';
       if (typeof text!=='string') text='';
       if (!text && out.final) text=typeof out.final==='string'?out.final:out.final.text || out.final.respuesta || '';
+      if (hasImage && !invoiceMemory) text += (text ? '\n\n' : '') + 'No pude conservar los detalles de esta imagen para las siguientes consultas. Esta lectura no queda guardada en la conversación.';
       var views = buildCards(out.proposals);
       var loteN = views.reduce(function (a, v) { return v.kind === 'lote' ? v.count : a; }, 0);
       var Cn = core(); if (Cn && typeof Cn.batchNote === 'function') text = Cn.batchNote(text, loteN);
