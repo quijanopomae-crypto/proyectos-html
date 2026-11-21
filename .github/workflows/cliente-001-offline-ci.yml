@@ -82,7 +82,9 @@ jobs:
           turso=json.loads(Path("tools/cloudflare-prod/wrangler.turso.jsonc").read_text())
           assert turso['name']=='cliente-001-pos-api'
           assert turso['vars']['DB_PROVIDER']=='turso'
-          assert turso['vars']['CANONICAL_RUNTIME_ENABLED']=='disabled'
+          assert turso['vars']['CANONICAL_RUNTIME_ENABLED']=='enabled'
+          assert turso['vars']['ASSISTANT_ENABLED']=='1'
+          assert turso['vars']['AI_PROVIDER']=='ohmyagent'
           assert 'd1_databases' not in turso
           assert sorted(turso['secrets']['required']) == sorted(['TURSO_DATABASE_URL','TURSO_AUTH_TOKEN','POS_ACTIVATION_SECRET','ASSISTANT_CONFIRM_SECRET'])
           assert 'TURSO_AUTH_TOKEN' not in turso.get('vars', {})
