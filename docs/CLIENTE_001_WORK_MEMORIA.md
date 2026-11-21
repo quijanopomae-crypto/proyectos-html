@@ -31,3 +31,21 @@ No se escribieron ventas ni datos Turso, no se modificó Nuevo Amanecer original
 La primera batería amplia ejecutó 1.249 pruebas y detectó 13 fallos. Se corrigieron las dos regresiones del prompt/tamaño introducidas durante esta implementación y se reejecutaron sus pruebas con éxito. Los demás incluyen archivos ausentes (demo-data.mjs, CONTRATO.md y un workflow histórico), expectativas antiguas de nombre comercial y CSS, y dos umbrales de rendimiento. Los fallos funcionales ajenos al parche se reproducen en un checkout limpio de main; los umbrales dependen de la carga y se registran por separado. No se afirma que la batería amplia esté completamente verde.
 
 Para instalar este parche deberán publicarse los assets web de Cliente 001 y la API de Cliente 001, con autorización previa. Desplegar únicamente la API no actualiza work-host.js del navegador. No ejecutar migraciones ni tocar ventas para instalar esta corrección.
+
+### Fallos ajenos al parche observados en la batería amplia
+
+Reproducidos en main:
+- assistant-admin.test.mjs: falta tools/asistente-proto/demo-data.mjs.
+- assistant-mensaje-largo-varios.test.mjs: falta el mismo demo-data.mjs.
+- assistant-canon-config.test.mjs: falta .github/workflows/v1.3-turso-prod-worker-hotfix.yml.
+- assistant-followups-25ffde10.test.mjs: «la tabla se crea con su primera fila… sin :has»; el CSS existente contiene :has.
+- assistant-followups-3ee80c18.test.mjs: «CONTRATO.md: 409 same_session…»; falta docs/asistente/CONTRATO.md.
+- assistant-followups-5646a4c9.test.mjs: «CONTRATO.md: año con…»; falta el mismo documento.
+- assistant-followups-f773911f.test.mjs: «11) /confirm no guarda ni cambia el nivel de un empleado…»; falta el mismo documento.
+- assistant-simple.test.mjs: «403: el texto de asistente-core.js es EXACTAMENTE el de CONTRATO.md»; falta el mismo documento.
+- assistant-memoria-celular.test.mjs: «nombre del negocio: el de Configuración; sin él Nuevo Amanecer»; expectativa histórica del nombre comercial.
+- Umbral «1) correo: 50 KB… corrida más rápida…»: también falló en main.
+
+El umbral «8b) Bot 3: costo lineal con pin pin pin…» falló bajo carga en la batería amplia y pasó en la repetición aislada de main. No se atribuye su causa al parche ni se garantiza estabilidad temporal de ese umbral.
+
+Las dos regresiones intermedias propias (assistant-simple: regla de 2–3 frases; assistant-proponer-configuracion: presupuesto de payload) se corrigieron y sus pruebas específicas pasan en el estado final.
